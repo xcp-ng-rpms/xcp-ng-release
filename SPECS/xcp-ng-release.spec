@@ -13,10 +13,16 @@
 
 %define _unitdir /usr/lib/systemd/system
 
-Name:           xenserver-release
+# TO BE UPDATED FOR EACH NEW RELEASE
+%define PRODUCT_VERSION 7.5.0
+%define PRODUCT_VERSION_TEXT 7.5
+%define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
+%define PLATFORM_VERSION 2.6.0
+
+Name:           xcp-ng-release
 Version:        7.5.0
 Release:        1
-Summary:        XenServer release file
+Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
 Provides:       centos-release = %{base_release_version}
@@ -25,6 +31,7 @@ Provides:       redhat-release = %{upstream_rel}
 Provides:       system-release = %{upstream_rel}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      centos-release
+Obsoletes:      xenserver-release <= %{version}
 
 # Obsolete Supp Pack control packages, (which requires xs version = 7.2.0) to allow upgrade.
 Obsoletes:      control-xenserver-auto-cert-kit = 1.0-1
@@ -41,7 +48,7 @@ Obsoletes:      update-XS73E003 control-XS73E003
 Obsoletes:      update-XS74 control-XS74
 
 # Metadata for the installer to consume
-Provides:       product-brand = XenServer
+Provides:       product-brand = XCP-ng
 Provides:       product-version = %{PRODUCT_VERSION}
 Provides:       product-build = 0x
 Provides:       platform-name = XCP
@@ -49,24 +56,26 @@ Provides:       platform-version = %{PLATFORM_VERSION}
 Provides:       product-version-text = %{PRODUCT_VERSION_TEXT}
 Provides:       produce-version-text-short = %{PRODUCT_VERSION_TEXT_SHORT}
 
-BuildRequires:  systemd branding-xenserver
-Source0:       https://code.citrite.net/rest/archive/latest/projects/XS/repos/%{name}/archive?at=v%{version}-%{release}&format=tar.gz&prefix=%{name}-%{version}#/%{name}.tar.gz
+BuildRequires:  systemd branding-xcp-ng
+URL:            https://github.com/xcp-ng/xcp-ng-release
+Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
 
 %description
-XenServer release files
+XCP-ng release files
 
 
 %package        config
-Summary:        XenServer configuration
+Summary:        XCP-ng configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
 Requires(post): sed
+Obsoletes:      xenserver-release-config <= %{version}
 
 %description    config
-Additional utilities and configuration for XenServer.
+Additional utilities and configuration for XCP-ng.
 
 
 %prep
@@ -77,13 +86,8 @@ Additional utilities and configuration for XenServer.
 %install
 rm -rf %{buildroot}
 
-%{_usrsrc}/branding/brand-directory.py src/common %{buildroot}
-%{_usrsrc}/branding/brand-directory.py src/xenserver %{buildroot}
-
-install -m 644 %{_usrsrc}/branding/xenserver/EULA %{buildroot}/
-install -D -m 644 \
-    %{_usrsrc}/branding/xenserver/LICENSES \
-    %{buildroot}%{_defaultdocdir}/XenServer/LICENSES
+%{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/common %{buildroot}
+%{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/xenserver %{buildroot}
 
 # create /etc/system-release and /etc/redhat-release
 ln -s centos-release %{buildroot}%{_sysconfdir}/system-release
@@ -101,6 +105,8 @@ install -m 644 CentOS-Base-production.repo %{buildroot}%{_sysconfdir}/yum.repos.
 #install -m 644 CentOS-Base-devel.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
 install -m 644 CentOS-Debuginfo.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 install -m 644 CentOS-Sources.repo %{buildroot}%{_sysconfdir}/yum.repos.d
+# install the xcp-ng repo
+install -m 644 xcp-ng.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 
 # set up the dist tag macros
 install -d -m 755 %{buildroot}%{_sysconfdir}/rpm
@@ -129,10 +135,18 @@ ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/getty@tty2.service
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty1.service
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty2.service
 
-ln -s Citrix-index.html %{buildroot}/opt/xensource/www/index.html
+ln -s XCP-ng-index.html %{buildroot}/opt/xensource/www/index.html
 
 %clean
 rm -rf %{buildroot}
+
+%post
+# update repo file from XCP-ng 7.4.1
+if grep /etc/yum.repos.d/xcp-ng.repo -e "^name=XCP-ng 7\.4$" > /dev/null; then
+    cp -f %{_pkgdocdir}/xcp-ng.repo /etc/yum.repos.d/xcp-ng.repo
+    rm -f /etc/yum.repos.d/xcp-ng.repo.rpmnew
+    yum clean all
+fi
 
 %triggerin config -- mcelog
 
@@ -475,6 +489,7 @@ fi
 
 
 %files
+%doc xcp-ng.repo
 %defattr(0644,root,root,0755)
 %{_sysconfdir}/redhat-release
 %{_sysconfdir}/system-release
@@ -491,8 +506,6 @@ fi
 %{_datadir}/redhat-release
 %{_datadir}/centos-release
 %{_prefix}/lib/systemd/system-preset/*
-/EULA
-%{_docdir}/XenServer/LICENSES
 
 %files config
 %defattr(0644,root,root,0755)
@@ -524,5 +537,10 @@ fi
 %attr(0755,-,-) /opt/xensource/libexec/set-printk-console
 
 %changelog
+* Fri Jul 06 2018 Samuel Verschelde <stormi-xcp@ylix.fr>
+- Rename to xcp-ng-release
+- Update to XCP-ng 7.5.0
+* Sun Apr 29 2018 John Else <john.else@gmail.com>
+- Update packaging for XCP-ng
 * Wed Nov 19 2014 Ross Lagerwall <ross.lagerwall@citrix.com>
 - Initial xenserver-release packaging
