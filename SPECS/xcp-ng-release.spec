@@ -21,7 +21,7 @@
 
 Name:           xcp-ng-release
 Version:        7.5.0
-Release:        1
+Release:        2
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -466,7 +466,7 @@ fi
 %systemd_post update-issue.service
 %systemd_post xs-fcoe.service
 
-if [ "$1" -gt "1" -a -f %{_sysconfdir}/xensource-inventory ]; then
+if [ -f %{_sysconfdir}/xensource-inventory ]; then
     sed -i \
         -e "s@^\(PRODUCT_VERSION=\).*@\1'%{PRODUCT_VERSION}'@" \
         -e "s@^\(PLATFORM_VERSION=\).*@\1'%{PLATFORM_VERSION}'@" \
