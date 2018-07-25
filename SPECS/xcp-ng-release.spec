@@ -487,6 +487,16 @@ fi
 %systemd_postun update-issue.service
 %systemd_postun xs-fcoe.service
 
+%triggerpostun config -- xenserver-release-config <= 7.5
+# Fix upgrade from XCP-ng 7.4.x:
+# when xenserver-release-config gets obsoleted by xcp-ng-release-config,
+# its preun gets run last and disables the services.
+# We don't want that, so we re-enable the services in this trigger
+# which will be set off after postun has been executed.
+systemctl preset move-kernel-messages.service >/dev/null 2>&1 || :
+systemctl preset update-issue.service >/dev/null 2>&1 || :
+systemctl preset xs-fcoe.service >/dev/null 2>&1 || :
+
 
 %files
 %doc xcp-ng.repo
@@ -537,7 +547,9 @@ fi
 %attr(0755,-,-) /opt/xensource/libexec/set-printk-console
 
 %changelog
-* Fri Jul 06 2018 Samuel Verschelde <stormi-xcp@ylix.fr>
+* Wed Jul 25 2018 Samuel Verschelde <stormi-xcp@ylix.fr> - 7.5.0-2
+- Add triggerun scriptlet for smooth upgrade
+* Fri Jul 06 2018 Samuel Verschelde <stormi-xcp@ylix.fr> - 7.5.0-1
 - Rename to xcp-ng-release
 - Update to XCP-ng 7.5.0
 * Sun Apr 29 2018 John Else <john.else@gmail.com>
