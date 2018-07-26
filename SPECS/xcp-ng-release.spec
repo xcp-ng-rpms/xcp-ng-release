@@ -14,10 +14,12 @@
 %define _unitdir /usr/lib/systemd/system
 
 # TO BE UPDATED FOR EACH NEW RELEASE
+# TODO: use data from branding file instead
 %define PRODUCT_VERSION 7.5.0
 %define PRODUCT_VERSION_TEXT 7.5
 %define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
 %define PLATFORM_VERSION 2.6.0
+%define BUILD_NUMBER release/kolkata/master/29
 
 Name:           xcp-ng-release
 Version:        7.5.0
@@ -472,6 +474,7 @@ if [ -f %{_sysconfdir}/xensource-inventory ]; then
         -e "s@^\(PLATFORM_VERSION=\).*@\1'%{PLATFORM_VERSION}'@" \
         -e "s@^\(PRODUCT_VERSION_TEXT=\).*@\1'%{PRODUCT_VERSION_TEXT}'@" \
         -e "s@^\(PRODUCT_VERSION_TEXT_SHORT=\).*@\1'%{PRODUCT_VERSION_TEXT_SHORT}'@" \
+        -e "s@^\(BUILD_NUMBER=\).*@\1'%{BUILD_NUMBER}'@" \
         %{_sysconfdir}/xensource-inventory
 fi
 
@@ -487,7 +490,7 @@ fi
 %systemd_postun update-issue.service
 %systemd_postun xs-fcoe.service
 
-%triggerpostun config -- xenserver-release-config <= 7.5
+%triggerpostun config -- xenserver-release-config < 7.5
 # Fix upgrade from XCP-ng 7.4.x:
 # when xenserver-release-config gets obsoleted by xcp-ng-release-config,
 # its preun gets run last and disables the services.
@@ -496,7 +499,10 @@ fi
 systemctl preset move-kernel-messages.service >/dev/null 2>&1 || :
 systemctl preset update-issue.service >/dev/null 2>&1 || :
 systemctl preset xs-fcoe.service >/dev/null 2>&1 || :
-
+# Also restore changes to /etc/sysconfig/snmp, removed by a triggerun scriptlet
+if [ -f /etc/sysconfig/snmpd ]; then
+    grep -qs '^OPTIONS' /etc/sysconfig/snmpd || echo 'OPTIONS="-c /etc/snmp/snmpd.xs.conf"' >>/etc/sysconfig/snmpd
+fi
 
 %files
 %doc xcp-ng.repo
