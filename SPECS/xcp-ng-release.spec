@@ -23,7 +23,7 @@
 
 Name:           xcp-ng-release
 Version:        7.5.0
-Release:        2
+Release:        3
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -141,14 +141,6 @@ ln -s XCP-ng-index.html %{buildroot}/opt/xensource/www/index.html
 
 %clean
 rm -rf %{buildroot}
-
-%post
-# update repo file from XCP-ng 7.4.1
-if grep /etc/yum.repos.d/xcp-ng.repo -e "^name=XCP-ng 7\.4$" > /dev/null; then
-    cp -f %{_pkgdocdir}/xcp-ng.repo /etc/yum.repos.d/xcp-ng.repo
-    rm -f /etc/yum.repos.d/xcp-ng.repo.rpmnew
-    yum clean all
-fi
 
 %triggerin config -- mcelog
 
