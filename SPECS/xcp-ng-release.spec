@@ -15,15 +15,15 @@
 
 # TO BE UPDATED FOR EACH NEW RELEASE
 # TODO: use data from branding file instead
-%define PRODUCT_VERSION 7.5.0
-%define PRODUCT_VERSION_TEXT 7.5
+%define PRODUCT_VERSION 7.6.0
+%define PRODUCT_VERSION_TEXT 7.6
 %define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
-%define PLATFORM_VERSION 2.6.0
-%define BUILD_NUMBER release/kolkata/master/29
+%define PLATFORM_VERSION 2.7.0
+%define BUILD_NUMBER release/lima/master/8
 
 Name:           xcp-ng-release
-Version:        7.5.0
-Release:        3
+Version:        7.6.0
+Release:        1
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -35,19 +35,13 @@ Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      centos-release
 Obsoletes:      xenserver-release <= %{version}
 
-# Obsolete Supp Pack control packages, (which requires xs version = 7.2.0) to allow upgrade.
-Obsoletes:      control-xenserver-auto-cert-kit = 1.0-1
-Obsoletes:      control-xencert = 1.0-1
-Obsoletes:      control-xscontainer = 1.0-1
-Obsoletes:      control-xenserver-measured-boot = 1.0-1
-Obsoletes:      control-pvsaccelerator = 1.0-1
-
-#Obsolete XS73+XS74 hotfixes
-Obsoletes:      update-XS73 control-XS73
-Obsoletes:      update-XS73E001 control-XS73E001
-Obsoletes:      update-XS73E002 control-XS73E002
-Obsoletes:      update-XS73E003 control-XS73E003
+#Obsolete XS74+XS75 hotfixes
 Obsoletes:      update-XS74 control-XS74
+Obsoletes:      update-XS74E001 control-XS74E001
+Obsoletes:      update-XS74E002 control-XS74E002
+Obsoletes:      update-XS74E003 control-XS74E003
+Obsoletes:      update-XS75 control-XS75
+Obsoletes:      update-XS75E001 control-XS75E001
 
 # Metadata for the installer to consume
 Provides:       product-brand = XCP-ng
@@ -90,6 +84,8 @@ rm -rf %{buildroot}
 
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/common %{buildroot}
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/xenserver %{buildroot}
+install -d -m 755 %{buildroot}%{python_sitelib}/xcp
+%{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python_sitelib}/xcp/branding.py
 
 # create /etc/system-release and /etc/redhat-release
 ln -s centos-release %{buildroot}%{_sysconfdir}/system-release
@@ -443,13 +439,13 @@ EOF
  distroverpkg=centos-release
 EOF
 
-# Hide previous 7.3+7.4 hotfixes from xapi
-%triggerun config -- %{name}-config = 7.3.0, %{name}-config = 7.4.0
+# Hide previous 7.4+7.5 hotfixes from xapi
+%triggerun config -- %{name}-config = 7.4.0, %{name}-config = 7.5.0
 if [ -d /var/update/applied ]; then
     shopt -s nullglob
     for sfile in /var/update/applied/*; do
         label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
-        if [[ "$label" =~ ^XS7[34](E[0-9]{3}$|$) ]]; then
+        if [[ "$label" =~ ^XS7[45](E[0-9]{3}$|$) ]]; then
             rm -f $sfile
         fi
     done
@@ -514,6 +510,7 @@ fi
 %{_datadir}/redhat-release
 %{_datadir}/centos-release
 %{_prefix}/lib/systemd/system-preset/*
+%{python_sitelib}/xcp/branding.py*
 
 %files config
 %defattr(0644,root,root,0755)
