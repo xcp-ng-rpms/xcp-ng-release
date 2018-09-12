@@ -14,7 +14,7 @@
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xenserver-release
-Version:        7.5.0
+Version:        7.6.0
 Release:        1
 Summary:        XenServer release file
 Group:          System Environment/Base
@@ -26,19 +26,13 @@ Provides:       system-release = %{upstream_rel}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      centos-release
 
-# Obsolete Supp Pack control packages, (which requires xs version = 7.2.0) to allow upgrade.
-Obsoletes:      control-xenserver-auto-cert-kit = 1.0-1
-Obsoletes:      control-xencert = 1.0-1
-Obsoletes:      control-xscontainer = 1.0-1
-Obsoletes:      control-xenserver-measured-boot = 1.0-1
-Obsoletes:      control-pvsaccelerator = 1.0-1
-
-#Obsolete XS73+XS74 hotfixes
-Obsoletes:      update-XS73 control-XS73
-Obsoletes:      update-XS73E001 control-XS73E001
-Obsoletes:      update-XS73E002 control-XS73E002
-Obsoletes:      update-XS73E003 control-XS73E003
+#Obsolete XS74+XS75 hotfixes
 Obsoletes:      update-XS74 control-XS74
+Obsoletes:      update-XS74E001 control-XS74E001
+Obsoletes:      update-XS74E002 control-XS74E002
+Obsoletes:      update-XS74E003 control-XS74E003
+Obsoletes:      update-XS75 control-XS75
+Obsoletes:      update-XS75E001 control-XS75E001
 
 # Metadata for the installer to consume
 Provides:       product-brand = XenServer
@@ -79,6 +73,8 @@ rm -rf %{buildroot}
 
 %{_usrsrc}/branding/brand-directory.py src/common %{buildroot}
 %{_usrsrc}/branding/brand-directory.py src/xenserver %{buildroot}
+install -d -m 755 %{buildroot}%{python_sitelib}/xcp
+%{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python_sitelib}/xcp/branding.py
 
 install -m 644 %{_usrsrc}/branding/xenserver/EULA %{buildroot}/
 install -D -m 644 \
@@ -435,13 +431,13 @@ EOF
  distroverpkg=centos-release
 EOF
 
-# Hide previous 7.3+7.4 hotfixes from xapi
-%triggerun config -- %{name}-config = 7.3.0, %{name}-config = 7.4.0
+# Hide previous 7.4+7.5 hotfixes from xapi
+%triggerun config -- %{name}-config = 7.4.0, %{name}-config = 7.5.0
 if [ -d /var/update/applied ]; then
     shopt -s nullglob
     for sfile in /var/update/applied/*; do
         label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
-        if [[ "$label" =~ ^XS7[34](E[0-9]{3}$|$) ]]; then
+        if [[ "$label" =~ ^XS7[45](E[0-9]{3}$|$) ]]; then
             rm -f $sfile
         fi
     done
@@ -493,6 +489,7 @@ fi
 %{_prefix}/lib/systemd/system-preset/*
 /EULA
 %{_docdir}/XenServer/LICENSES
+%{python_sitelib}/xcp/branding.py*
 
 %files config
 %defattr(0644,root,root,0755)
