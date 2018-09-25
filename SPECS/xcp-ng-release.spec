@@ -23,7 +23,7 @@
 
 Name:           xcp-ng-release
 Version:        7.6.0
-Release:        1
+Release:        2
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -542,12 +542,19 @@ fi
 %attr(0755,-,-) /opt/xensource/libexec/set-printk-console
 
 %changelog
+* Tue Sep 25 2018 Samuel Verschelde <stormi-xcp@ylix.fr> - 7.6.0-2
+- Update to XCP-ng 7.6.0
+- New welcome page
+
 * Wed Jul 25 2018 Samuel Verschelde <stormi-xcp@ylix.fr> - 7.5.0-2
 - Add triggerun scriptlet for smooth upgrade
+
 * Fri Jul 06 2018 Samuel Verschelde <stormi-xcp@ylix.fr> - 7.5.0-1
 - Rename to xcp-ng-release
 - Update to XCP-ng 7.5.0
+
 * Sun Apr 29 2018 John Else <john.else@gmail.com>
 - Update packaging for XCP-ng
+
 * Wed Nov 19 2014 Ross Lagerwall <ross.lagerwall@citrix.com>
 - Initial xenserver-release packaging
