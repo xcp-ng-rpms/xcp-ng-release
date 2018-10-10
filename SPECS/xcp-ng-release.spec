@@ -23,7 +23,7 @@
 
 Name:           xcp-ng-release
 Version:        7.6.0
-Release:        2
+Release:        3
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -542,6 +542,9 @@ fi
 %attr(0755,-,-) /opt/xensource/libexec/set-printk-console
 
 %changelog
+* Wed Oct 10 2018 Samuel Verschelde <stormi-xcp@ylix.fr> - 7.6.0-3
+- Add XCP-ng's RPM GPG key
+
 * Tue Sep 25 2018 Samuel Verschelde <stormi-xcp@ylix.fr> - 7.6.0-2
 - Update to XCP-ng 7.6.0
 - New welcome page
