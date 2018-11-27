@@ -9,7 +9,7 @@
 %define upstream_rel 7.2
 %define centos_rel 2.1511
 #define beta Beta
-%define dist .el%{dist_release_version}.centos
+%define dist .xcpng
 
 %define _unitdir /usr/lib/systemd/system
 
@@ -23,7 +23,7 @@
 
 Name:           xcp-ng-release
 Version:        7.6.0
-Release:        3
+Release:        4
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -542,6 +542,9 @@ fi
 %attr(0755,-,-) /opt/xensource/libexec/set-printk-console
 
 %changelog
+* Tue Nov 27 2018 Samuel Verschelde <stormi-xcp@ylix.fr> - 7.6.0-4
+- Set the 'dist' macro to ".xcpng"
+
 * Wed Oct 10 2018 Samuel Verschelde <stormi-xcp@ylix.fr> - 7.6.0-3
 - Add XCP-ng's RPM GPG key
 
