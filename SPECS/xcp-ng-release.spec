@@ -6,8 +6,9 @@
 %define base_release_version 7
 %define full_release_version 7
 %define dist_release_version 7
-%define upstream_rel 7.2
-%define centos_rel 2.1511
+%define upstream_rel 7.5
+%define redhat_release %{upstream_rel}-8
+%define centos_rel 5.1804
 #define beta Beta
 %define dist .xcpng
 
@@ -23,14 +24,14 @@
 
 Name:           xcp-ng-release
 Version:        7.6.0
-Release:        4
+Release:        5
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
 Provides:       centos-release = %{base_release_version}
 Provides:       centos-release(upstream) = %{upstream_rel}
-Provides:       redhat-release = %{upstream_rel}
-Provides:       system-release = %{upstream_rel}
+Provides:       redhat-release = %{redhat_release}
+Provides:       system-release = %{redhat_release}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      centos-release
 Obsoletes:      xenserver-release <= %{version}
@@ -542,6 +543,10 @@ fi
 %attr(0755,-,-) /opt/xensource/libexec/set-printk-console
 
 %changelog
+* Tue Dec 11 2018 Samuel Verschelde <stormi-xcp@ylix.fr> - 7.6.0-5
+- Update centos-release to 7.5-8
+- Needed by iniscript update.
+
 * Tue Nov 27 2018 Samuel Verschelde <stormi-xcp@ylix.fr> - 7.6.0-4
 - Set the 'dist' macro to ".xcpng"
 
