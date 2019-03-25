@@ -23,7 +23,7 @@
 
 Name:           xcp-ng-release
 Version:        7.6.0
-Release:        4
+Release:        5
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
