@@ -439,6 +439,27 @@ EOF
  distroverpkg=centos-release
 EOF
 
+# XCP-ng: change depmod global configuration to give priority to 'override' modules dir
+%triggerin config -- kmod
+DEPMOD_PATCH=$(cat <<'EOF'
+--- /etc/depmod.d/dist.conf.orig        2019-04-23 11:31:19.107096410 +0200
++++ /etc/depmod.d/dist.conf     2019-04-23 11:31:30.533088996 +0200
+@@ -3,4 +3,4 @@
+ #
+
+ # override default search ordering for kmod packaging
+-search updates extra built-in weak-updates
++search override updates extra built-in weak-updates
+EOF
+)
+# Do not apply patch if it was already applied
+if ! echo "$DEPMOD_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
+    # Apply patch. Output NOT redirected to /dev/null so that error messages are displayed
+    if ! echo "$DEPMOD_PATCH" | patch -tsN -r - -d / -p1; then
+        echo "Error: failed to patch /etc/depmod.d/dist.conf"
+    fi
+fi
+
 # Hide previous 7.4+7.5 hotfixes from xapi
 %triggerun config -- %{name}-config = 7.4.0, %{name}-config = 7.5.0
 if [ -d /var/update/applied ]; then
