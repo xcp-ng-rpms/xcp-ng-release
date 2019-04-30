@@ -1,3 +1,11 @@
+# XCP-ng: TO BE UPDATED FOR EACH NEW RELEASE
+# TODO: use data from branding file instead
+%define PRODUCT_VERSION 8.0.0
+%define PRODUCT_VERSION_TEXT 8.0
+%define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
+%define PLATFORM_VERSION 3.0.0
+%define BUILD_NUMBER release/naples/master/45
+
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -6,31 +14,25 @@
 %define base_release_version 7
 %define full_release_version 7
 %define dist_release_version 7
-%define upstream_rel 7.2
-%define centos_rel 2.1511
+%define upstream_rel_long 7.5-8
+%define upstream_rel 7.5
+%define centos_rel 5.1804
 #define beta Beta
-%define dist .xcpng
+%define dist .xcpng%{PRODUCT_VERSION_TEXT_SHORT}
 
 %define _unitdir /usr/lib/systemd/system
 
-# TO BE UPDATED FOR EACH NEW RELEASE
-# TODO: use data from branding file instead
-%define PRODUCT_VERSION 7.6.0
-%define PRODUCT_VERSION_TEXT 7.6
-%define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
-%define PLATFORM_VERSION 2.7.0
-%define BUILD_NUMBER release/lima/master/8
-
 Name:           xcp-ng-release
-Version:        7.6.0
-Release:        5
+Version:        8.0.0
+Release:        1
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
+Requires:       coreutils, grep
 Provides:       centos-release = %{base_release_version}
 Provides:       centos-release(upstream) = %{upstream_rel}
-Provides:       redhat-release = %{upstream_rel}
-Provides:       system-release = %{upstream_rel}
+Provides:       redhat-release = %{upstream_rel_long}
+Provides:       system-release = %{upstream_rel_long}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      centos-release
 Obsoletes:      xenserver-release <= %{version}
@@ -50,17 +52,22 @@ Provides:       product-build = 0x
 Provides:       platform-name = XCP
 Provides:       platform-version = %{PLATFORM_VERSION}
 Provides:       product-version-text = %{PRODUCT_VERSION_TEXT}
-Provides:       produce-version-text-short = %{PRODUCT_VERSION_TEXT_SHORT}
+Provides:       product-version-text-short = %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xcp-ng
 URL:            https://github.com/xcp-ng/xcp-ng-release
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
+
+
+Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.0.0-2&format=tar.gz&prefix=xenserver-release-8.0.0#/xenserver-release.tar.gz) = 63ae7f04d1fa2f89d65262ad1826301c9b4b2e1c
+
 
 %description
 XCP-ng release files
 
 
 %package        config
+Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.0.0-2&format=tar.gz&prefix=xenserver-release-8.0.0#/xenserver-release.tar.gz) = 63ae7f04d1fa2f89d65262ad1826301c9b4b2e1c
 Summary:        XCP-ng configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
@@ -134,6 +141,9 @@ ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty1.service
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty2.service
 
 ln -s XCP-ng-index.html %{buildroot}/opt/xensource/www/index.html
+
+%post
+/usr/bin/uname -m | grep -q 'x86_64'  && echo 'centos' >/etc/yum/vars/contentdir || echo 'altarch' > /etc/yum/vars/contentdir
 
 %clean
 rm -rf %{buildroot}
@@ -460,17 +470,18 @@ if ! echo "$DEPMOD_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
     fi
 fi
 
-# Hide previous 7.4+7.5 hotfixes from xapi
-%triggerun config -- %{name}-config = 7.4.0, %{name}-config = 7.5.0
-if [ -d /var/update/applied ]; then
-    shopt -s nullglob
-    for sfile in /var/update/applied/*; do
-        label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
-        if [[ "$label" =~ ^XS7[45](E[0-9]{3}$|$) ]]; then
-            rm -f $sfile
-        fi
-    done
-fi
+## Comment out hotfix hiding logic until it is needed again
+## Hide previous 7.4+7.5 hotfixes from xapi
+#%%triggerun config -- %%{name}-config = 7.4.0, %%{name}-config = 7.5.0
+#if [ -d /var/update/applied ]; then
+#    shopt -s nullglob
+#    for sfile in /var/update/applied/*; do
+#        label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
+#        if [[ "$label" =~ ^XS7[45](E[0-9]{3}$|$) ]]; then
+#            rm -f $sfile
+#        fi
+#    done
+#fi
 
 %post config
 %systemd_post move-kernel-messages.service
@@ -500,6 +511,7 @@ fi
 %systemd_postun xs-fcoe.service
 
 %triggerpostun config -- xenserver-release-config < 7.5
+# To be reviewed at each release to make sure the fixes are still valid.
 # Fix upgrade from XCP-ng 7.4.x:
 # when xenserver-release-config gets obsoleted by xcp-ng-release-config,
 # its preun gets run last and disables the services.
@@ -562,7 +574,12 @@ fi
 %attr(0755,-,-) /opt/xensource/libexec/move-kernel-messages
 %attr(0755,-,-) /opt/xensource/libexec/set-printk-console
 
+# Keep this changelog through future updates
 %changelog
+* Tue Apr 30 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-1
+- Update to XCP-ng 8.0.0
+- Update 'dist' macro to include the version number: ".xcpng8.0"
+
 * Tue Nov 27 2018 Samuel Verschelde <stormi-xcp@ylix.fr> - 7.6.0-4
 - Set the 'dist' macro to ".xcpng"
 
