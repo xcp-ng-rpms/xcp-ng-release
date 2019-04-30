@@ -6,23 +6,25 @@
 %define base_release_version 7
 %define full_release_version 7
 %define dist_release_version 7
-%define upstream_rel 7.2
-%define centos_rel 2.1511
+%define upstream_rel_long 7.5-8
+%define upstream_rel 7.5
+%define centos_rel 5.1804
 #define beta Beta
 %define dist .el%{dist_release_version}.centos
 
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xenserver-release
-Version:        7.6.0
-Release:        1
+Version:        8.0.0
+Release:        2
 Summary:        XenServer release file
 Group:          System Environment/Base
 License:        GPLv2
+Requires:       coreutils, grep
 Provides:       centos-release = %{base_release_version}
 Provides:       centos-release(upstream) = %{upstream_rel}
-Provides:       redhat-release = %{upstream_rel}
-Provides:       system-release = %{upstream_rel}
+Provides:       redhat-release = %{upstream_rel_long}
+Provides:       system-release = %{upstream_rel_long}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      centos-release
 
@@ -41,16 +43,22 @@ Provides:       product-build = 0x
 Provides:       platform-name = XCP
 Provides:       platform-version = %{PLATFORM_VERSION}
 Provides:       product-version-text = %{PRODUCT_VERSION_TEXT}
-Provides:       produce-version-text-short = %{PRODUCT_VERSION_TEXT_SHORT}
+Provides:       product-version-text-short = %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xenserver
-Source0:       https://code.citrite.net/rest/archive/latest/projects/XS/repos/%{name}/archive?at=v%{version}-%{release}&format=tar.gz&prefix=%{name}-%{version}#/%{name}.tar.gz
+
+Source0: https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.0.0-2&format=tar.gz&prefix=xenserver-release-8.0.0#/xenserver-release.tar.gz
+
+
+Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.0.0-2&format=tar.gz&prefix=xenserver-release-8.0.0#/xenserver-release.tar.gz) = 63ae7f04d1fa2f89d65262ad1826301c9b4b2e1c
+
 
 %description
 XenServer release files
 
 
 %package        config
+Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.0.0-2&format=tar.gz&prefix=xenserver-release-8.0.0#/xenserver-release.tar.gz) = 63ae7f04d1fa2f89d65262ad1826301c9b4b2e1c
 Summary:        XenServer configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
@@ -126,6 +134,9 @@ ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty1.service
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty2.service
 
 ln -s Citrix-index.html %{buildroot}/opt/xensource/www/index.html
+
+%post
+/usr/bin/uname -m | grep -q 'x86_64'  && echo 'centos' >/etc/yum/vars/contentdir || echo 'altarch' > /etc/yum/vars/contentdir
 
 %clean
 rm -rf %{buildroot}
@@ -431,17 +442,18 @@ EOF
  distroverpkg=centos-release
 EOF
 
-# Hide previous 7.4+7.5 hotfixes from xapi
-%triggerun config -- %{name}-config = 7.4.0, %{name}-config = 7.5.0
-if [ -d /var/update/applied ]; then
-    shopt -s nullglob
-    for sfile in /var/update/applied/*; do
-        label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
-        if [[ "$label" =~ ^XS7[45](E[0-9]{3}$|$) ]]; then
-            rm -f $sfile
-        fi
-    done
-fi
+## Comment out hotfix hiding logic until it is needed again
+## Hide previous 7.4+7.5 hotfixes from xapi
+#%%triggerun config -- %%{name}-config = 7.4.0, %%{name}-config = 7.5.0
+#if [ -d /var/update/applied ]; then
+#    shopt -s nullglob
+#    for sfile in /var/update/applied/*; do
+#        label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
+#        if [[ "$label" =~ ^XS7[45](E[0-9]{3}$|$) ]]; then
+#            rm -f $sfile
+#        fi
+#    done
+#fi
 
 %post config
 %systemd_post move-kernel-messages.service
@@ -521,5 +533,8 @@ fi
 %attr(0755,-,-) /opt/xensource/libexec/set-printk-console
 
 %changelog
+* Tue Nov 20 2018 Alex Brett <alex.brett@citrix.com> - 7.9.50-4
+- Fix typo in product-version-text-short provide
+
 * Wed Nov 19 2014 Ross Lagerwall <ross.lagerwall@citrix.com>
 - Initial xenserver-release packaging
