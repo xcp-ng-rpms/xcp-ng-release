@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.0.0
-Release:        4
+Release:        5
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -576,7 +576,7 @@ fi
 
 # Keep this changelog through future updates
 %changelog
-* Wed May 15 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-4
+* Wed May 15 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-5
 - Update to XCP-ng 8.0.0
 - Update 'dist' macro to include the version number: ".xcpng8.0"
 - Update web page and add XOA deployment
