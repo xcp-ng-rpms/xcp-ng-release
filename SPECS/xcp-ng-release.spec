@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.0.0
-Release:        6
+Release:        7
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -576,7 +576,7 @@ fi
 
 # Keep this changelog through future updates
 %changelog
-* Thu Jun 06 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-6
+* Thu Jun 07 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-7
 - Add custom bash prompt for XCP-ng
 
 * Wed May 15 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-5
