@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.0.0
-Release:        9
+Release:        10
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -576,6 +576,9 @@ fi
 
 # Keep this changelog through future updates
 %changelog
+* Thu Jun 27 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-10
+- Update XOA quick deploy: set XOA unix password
+
 * Fri Jun 15 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-9
 - Fix auto-add of first host in XOA during fast deploy
 
