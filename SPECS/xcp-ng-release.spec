@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.0.0
-Release:        11
+Release:        12
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -449,6 +449,29 @@ EOF
  distroverpkg=centos-release
 EOF
 
+# XCP-ng: exclude fallback mirror from fastestmirror
+%triggerin config -- yum-plugin-fastestmirror
+FM_PATCH=$(cat <<'EOF'
+--- /etc/yum/pluginconf.d/fastestmirror.conf.orig     2019-07-10 18:51:55.253695553 +0200
++++ /etc/yum/pluginconf.d/fastestmirror.conf  2019-07-10 18:52:57.774059664 +0200
+@@ -10,3 +10,6 @@
+ maxthreads=15
+ #exclude=.gov, facebook
+ #include_only=.nl,.de,.uk,.ie
++
++# Exclude fallback mirror so that it's used as last resort
++exclude=updates.xcp-ng.org
+EOF
+)
+# Do not apply patch if it was already applied
+if ! echo "$FM_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
+    # Apply patch. Output NOT redirected to /dev/null so that error messages are displayed
+    if ! echo "$FM_PATCH" | patch -tsN -r - -d / -p1; then
+        echo "Error: failed to apply patch:"
+        echo "$FM_PATCH"
+    fi
+fi
+
 # XCP-ng: change depmod global configuration to give priority to 'override' modules dir
 %triggerin config -- kmod
 DEPMOD_PATCH=$(cat <<'EOF'
@@ -466,7 +489,8 @@ EOF
 if ! echo "$DEPMOD_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
     # Apply patch. Output NOT redirected to /dev/null so that error messages are displayed
     if ! echo "$DEPMOD_PATCH" | patch -tsN -r - -d / -p1; then
-        echo "Error: failed to patch /etc/depmod.d/dist.conf"
+        echo "Error: failed to apply patch:"
+        echo "$DEPMOD_PATCH"
     fi
 fi
 
@@ -576,6 +600,10 @@ fi
 
 # Keep this changelog through future updates
 %changelog
+* Wed Jul 10 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-12
+- Add fallback yum mirror in case mirrors.xcp-ng.org is down
+- Includes updated repo file and updated fastestmirror configuration
+
 * Thu Jun 27 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-11
 - Update XOA quick deploy: workaround issue with xoa-updater
 
