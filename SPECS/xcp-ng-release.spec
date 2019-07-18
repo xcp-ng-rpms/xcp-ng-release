@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.0.0
-Release:        12
+Release:        13
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -35,6 +35,7 @@ Provides:       redhat-release = %{upstream_rel_long}
 Provides:       system-release = %{upstream_rel_long}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      centos-release
+Obsoletes:      epel-release
 Obsoletes:      xenserver-release <= %{version}
 
 #Obsolete XS74+XS75 hotfixes
@@ -110,6 +111,9 @@ install -m 644 CentOS-Base-production.repo %{buildroot}%{_sysconfdir}/yum.repos.
 #install -m 644 CentOS-Base-devel.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
 install -m 644 CentOS-Debuginfo.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 install -m 644 CentOS-Sources.repo %{buildroot}%{_sysconfdir}/yum.repos.d
+# install epel repos (disabled by default)
+install -m 644 epel.repo %{buildroot}%{_sysconfdir}/yum.repos.d
+install -m 644 epel-testing.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 # install the xcp-ng repo
 install -m 644 xcp-ng.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 
@@ -600,6 +604,10 @@ fi
 
 # Keep this changelog through future updates
 %changelog
+* Thu Jul 18 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-13
+- Add EPEL repos, disabled by default
+- Warn against enabling CentOS and EPEL repos in .repo files
+
 * Wed Jul 10 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-12
 - Add fallback yum mirror in case mirrors.xcp-ng.org is down
 - Includes updated repo file and updated fastestmirror configuration
