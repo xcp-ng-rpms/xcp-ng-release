@@ -312,6 +312,8 @@ EOF
 /usr/bin/systemctl -q disable elxsnmp.service
 
 # default firewall rules, to be replaced by dynamic rule addition/removal
+# /!\ XCP-ng: if the following is updated, make sure to also adapt the rules
+# in the netdata package, because they depend on this
 %triggerin config -- iptables-services
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
 --- /etc/sysconfig/iptables	2014-06-10 06:02:35.000000000 +0100
