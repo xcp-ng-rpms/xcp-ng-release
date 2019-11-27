@@ -84,6 +84,7 @@ Additional utilities and configuration for XCP-ng.
 
 %prep
 %autosetup -p1
+cp %{_usrsrc}/branding/LICENSES .
 
 %build
 
@@ -94,6 +95,8 @@ rm -rf %{buildroot}
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/xenserver %{buildroot}
 install -d -m 755 %{buildroot}%{python_sitelib}/xcp
 %{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python_sitelib}/xcp/branding.py
+
+install -m 644 %{_usrsrc}/branding/EULA %{buildroot}/
 
 # create /etc/system-release and /etc/redhat-release
 ln -s centos-release %{buildroot}%{_sysconfdir}/system-release
@@ -556,7 +559,7 @@ if [ -f /etc/sysconfig/snmpd ]; then
 fi
 
 %files
-%doc xcp-ng.repo
+%doc xcp-ng.repo LICENSES
 %defattr(0644,root,root,0755)
 %{_sysconfdir}/redhat-release
 %{_sysconfdir}/system-release
@@ -573,6 +576,7 @@ fi
 %{_datadir}/redhat-release
 %{_datadir}/centos-release
 %{_prefix}/lib/systemd/system-preset/*
+/EULA
 %{python_sitelib}/xcp/branding.py*
 
 %files config
@@ -606,6 +610,9 @@ fi
 
 # Keep this changelog through future updates
 %changelog
+* soon
+- Add EULA and LICENSES back
+
 * Thu Jul 18 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-13
 - Add EPEL repos, disabled by default
 - Warn against enabling CentOS and EPEL repos in .repo files
