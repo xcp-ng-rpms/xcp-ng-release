@@ -15,12 +15,13 @@
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xenserver-release
-Version:        8.0.0
-Release:        2
+Version:        8.1.0
+Release:        1
 Summary:        XenServer release file
 Group:          System Environment/Base
 License:        GPLv2
-Requires:       coreutils, grep
+Requires(post): coreutils, grep
+Requires:       %{name}-presets
 Provides:       centos-release = %{base_release_version}
 Provides:       centos-release(upstream) = %{upstream_rel}
 Provides:       redhat-release = %{upstream_rel_long}
@@ -28,13 +29,15 @@ Provides:       system-release = %{upstream_rel_long}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      centos-release
 
-#Obsolete XS74+XS75 hotfixes
-Obsoletes:      update-XS74 control-XS74
-Obsoletes:      update-XS74E001 control-XS74E001
-Obsoletes:      update-XS74E002 control-XS74E002
-Obsoletes:      update-XS74E003 control-XS74E003
-Obsoletes:      update-XS75 control-XS75
-Obsoletes:      update-XS75E001 control-XS75E001
+#Obsolete CH80 hotfixes
+Obsoletes:      update-XS80E001 control-XS80E001
+Obsoletes:      update-XS80E002 control-XS80E002
+Obsoletes:      update-XS80E003 control-XS80E003
+Obsoletes:      update-XS80E004 control-XS80E004
+Obsoletes:      update-XS80E005 control-XS80E005
+Obsoletes:      update-XS80E006 control-XS80E006
+#there has been no XS80E007
+Obsoletes:      update-XS80E008 control-XS80E008
 
 # Metadata for the installer to consume
 Provides:       product-brand = XenServer
@@ -47,24 +50,32 @@ Provides:       product-version-text-short = %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xenserver
 
-Source0: https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.0.0-2&format=tar.gz&prefix=xenserver-release-8.0.0#/xenserver-release.tar.gz
+Source0: https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.1.0-1&format=tar.gz&prefix=xenserver-release-8.1.0#/xenserver-release.tar.gz
 
 
-Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.0.0-2&format=tar.gz&prefix=xenserver-release-8.0.0#/xenserver-release.tar.gz) = 63ae7f04d1fa2f89d65262ad1826301c9b4b2e1c
+Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.1.0-1&format=tar.gz&prefix=xenserver-release-8.1.0#/xenserver-release.tar.gz) = 42c00397b6126235d7740375fb58d6504aa9a444
 
 
 %description
 XenServer release files
 
+%package        presets
+Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.1.0-1&format=tar.gz&prefix=xenserver-release-8.1.0#/xenserver-release.tar.gz) = 42c00397b6126235d7740375fb58d6504aa9a444
+Summary:        XenServer presets file
+Group:          System Environment/Base
+Provides:       xs-presets = 1.1
+
+%description    presets
+XenServer preset file.
 
 %package        config
-Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.0.0-2&format=tar.gz&prefix=xenserver-release-8.0.0#/xenserver-release.tar.gz) = 63ae7f04d1fa2f89d65262ad1826301c9b4b2e1c
+Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.1.0-1&format=tar.gz&prefix=xenserver-release-8.1.0#/xenserver-release.tar.gz) = 42c00397b6126235d7740375fb58d6504aa9a444
 Summary:        XenServer configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
-Requires(post): systemd
-Requires(preun): systemd
-Requires(postun): systemd
+Requires(post): systemd xs-presets >= 1.0
+Requires(preun): systemd xs-presets >= 1.0
+Requires(postun): systemd xs-presets >= 1.0
 Requires(post): sed
 
 %description    config
@@ -402,21 +413,6 @@ EOF
 %triggerin config -- tzdata
 ln -f %{_datadir}/zoneinfo/Asia/Shanghai %{_datadir}/zoneinfo/Asia/Beijing
 
-%triggerin config -- ntpdate
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/sysconfig/ntpdate.orig 2015-11-19 21:46:56.000000000 +0000
-+++ /etc/sysconfig/ntpdate  2016-01-22 14:23:25.000000000 +0000
-@@ -2,7 +2,7 @@
- OPTIONS="-p 2"
-
- # Number of retries before giving up
--RETRIES=2
-+RETRIES=3
-
- # Set to 'yes' to sync hw clock after successful ntpdate
- SYNC_HWCLOCK=no
-EOF
-
 %triggerin config -- shadow-utils
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
 --- /etc/login.defs.orig    2016-02-26 11:11:20.000000000 +0000
@@ -442,23 +438,23 @@ EOF
  distroverpkg=centos-release
 EOF
 
-## Comment out hotfix hiding logic until it is needed again
-## Hide previous 7.4+7.5 hotfixes from xapi
-#%%triggerun config -- %%{name}-config = 7.4.0, %%{name}-config = 7.5.0
-#if [ -d /var/update/applied ]; then
-#    shopt -s nullglob
-#    for sfile in /var/update/applied/*; do
-#        label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
-#        if [[ "$label" =~ ^XS7[45](E[0-9]{3}$|$) ]]; then
-#            rm -f $sfile
-#        fi
-#    done
-#fi
+# Hide previous 8.0 hotfixes from xapi
+%triggerun config -- %{name}-config = 8.0.0
+if [ -d /var/update/applied ]; then
+    shopt -s nullglob
+    for sfile in /var/update/applied/*; do
+        label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
+        if [[ "$label" =~ ^XS80(E[0-9]{3}$|$) ]]; then
+            rm -f $sfile
+        fi
+    done
+fi
 
 %post config
 %systemd_post move-kernel-messages.service
 %systemd_post update-issue.service
 %systemd_post xs-fcoe.service
+%systemd_post vm.slice
 
 if [ "$1" -gt "1" -a -f %{_sysconfdir}/xensource-inventory ]; then
     sed -i \
@@ -469,17 +465,28 @@ if [ "$1" -gt "1" -a -f %{_sysconfdir}/xensource-inventory ]; then
         %{_sysconfdir}/xensource-inventory
 fi
 
+# Add myhostname to the hosts line of nsswitch.conf if it is not there already.
+# This needs to be kept until the next upgrade-only release after 8.0.
+grep -q '^hosts:.*myhostname' %{_sysconfdir}/nsswitch.conf || sed -i 's/^hosts:.*/\0 myhostname/' %{_sysconfdir}/nsswitch.conf
+
+# Add ntp configuration to /etc/sysconfig/network which is written
+# normally by the installer.
+# This needs to be kept until the next upgrade-only release after 8.0.
+grep -q '^NTPSERVERARGS=' %{_sysconfdir}/sysconfig/network || echo 'NTPSERVERARGS="iburst prefer"' >> %{_sysconfdir}/sysconfig/network
+
 
 %preun config
 %systemd_preun move-kernel-messages.service
 %systemd_preun update-issue.service
 %systemd_preun xs-fcoe.service
+%systemd_preun vm.slice
 
 
 %postun config
 %systemd_postun move-kernel-messages.service
 %systemd_postun update-issue.service
 %systemd_postun xs-fcoe.service
+%systemd_postun vm.slice
 
 
 %files
@@ -498,10 +505,13 @@ fi
 %{_docdir}/centos-release
 %{_datadir}/redhat-release
 %{_datadir}/centos-release
-%{_prefix}/lib/systemd/system-preset/*
+%{_prefix}/lib/systemd/system-preset/90-default.preset
 /EULA
 %{_docdir}/XenServer/LICENSES
 %{python_sitelib}/xcp/branding.py*
+
+%files presets
+%{_prefix}/lib/systemd/system-preset/89-default.preset
 
 %files config
 %defattr(0644,root,root,0755)
@@ -533,6 +543,43 @@ fi
 %attr(0755,-,-) /opt/xensource/libexec/set-printk-console
 
 %changelog
+* Thu Nov 21 2019 Konstantina Chremmou <konstantina.chremmou@citrix.com> - 8.1.0-1
+- CP-31924: Bumped version-release to 8.1.0-1 for Quebec.
+
+* Tue Oct 29 2019 Pau Ruiz Safont <pau.safont@citrix.com> - 8.0.50-16
+- CP-32138: Enable wsproxy.socket
+
+* Fri Sep 27 2019 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.0.50-15
+- CA-326057: Clean up config for interfaces stopped being FCoE capable
+
+* Fri Aug 23 2019 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.0.50-14
+- CP-30221: xenserver-release: Remove ntpdate configuration
+- CA-293794: Prefer NTP servers from DHCP
+
+* Thu Aug 08 2019 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.0.50-12
+- CA-324664/CP-32019: Fix various issues with starting FCoE
+
+* Thu Aug 08 2019 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.0.50-12
+- CA-324664/CP-32019: Fix various issues with starting FCoE
+- Cleanup the fcoe_driver script
+
+* Mon Aug 5 2019 Ming Lu <ming.lu@citrix.com> - 8.0.50-11
+- CA-323312: Remove circular dependency by new xenserver-release-presets
+
+* Fri Jun 14 2019 Edwin Török <edvin.torok@citrix.com> - 8.0.50-10
+- CA-321652: move our own preset customizations to a new file
+- CA-321652: xs-presets virtual package
+
+* Wed Jun 12 2019 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.0.50-9
+- CA-319463: Fix rsyslog not starting under certain conditions
+- CP-27247: Add a blkio cgroup for VMs
+
+* Fri Jun 07 2019 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.0.50-8
+- Enable vm.slice
+
+* Wed May 29 2019 Edwin Török <edvin.torok@citrix.com> - 8.0.50-6
+- add secureboot-certificates startup service
+
 * Tue Nov 20 2018 Alex Brett <alex.brett@citrix.com> - 7.9.50-4
 - Fix typo in product-version-text-short provide
 
