@@ -1,10 +1,10 @@
 # XCP-ng: TO BE UPDATED FOR EACH NEW RELEASE
 # TODO: use data from branding file instead
-%define PRODUCT_VERSION 8.0.0
-%define PRODUCT_VERSION_TEXT 8.0
+%define PRODUCT_VERSION 8.1.0
+%define PRODUCT_VERSION_TEXT 8.1
 %define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
-%define PLATFORM_VERSION 3.0.0
-%define BUILD_NUMBER release/naples/master/45
+%define PLATFORM_VERSION 3.1.0
+%define BUILD_NUMBER release/quebec/master/17
 
 %define debug_package %{nil}
 %define product_family CentOS Linux
@@ -23,12 +23,13 @@
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xcp-ng-release
-Version:        8.0.0
-Release:        13
+Version:        8.1.0
+Release:        1
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
-Requires:       coreutils, grep
+Requires(post): coreutils, grep
+Requires:       %{name}-presets
 Provides:       centos-release = %{base_release_version}
 Provides:       centos-release(upstream) = %{upstream_rel}
 Provides:       redhat-release = %{upstream_rel_long}
@@ -38,13 +39,15 @@ Obsoletes:      centos-release
 Obsoletes:      epel-release
 Obsoletes:      xenserver-release <= %{version}
 
-#Obsolete XS74+XS75 hotfixes
-Obsoletes:      update-XS74 control-XS74
-Obsoletes:      update-XS74E001 control-XS74E001
-Obsoletes:      update-XS74E002 control-XS74E002
-Obsoletes:      update-XS74E003 control-XS74E003
-Obsoletes:      update-XS75 control-XS75
-Obsoletes:      update-XS75E001 control-XS75E001
+#Obsolete CH80 hotfixes
+Obsoletes:      update-XS80E001 control-XS80E001
+Obsoletes:      update-XS80E002 control-XS80E002
+Obsoletes:      update-XS80E003 control-XS80E003
+Obsoletes:      update-XS80E004 control-XS80E004
+Obsoletes:      update-XS80E005 control-XS80E005
+Obsoletes:      update-XS80E006 control-XS80E006
+#there has been no XS80E007
+Obsoletes:      update-XS80E008 control-XS80E008
 
 # Metadata for the installer to consume
 Provides:       product-brand = XCP-ng
@@ -60,21 +63,24 @@ URL:            https://github.com/xcp-ng/xcp-ng-release
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
 
 
-Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.0.0-2&format=tar.gz&prefix=xenserver-release-8.0.0#/xenserver-release.tar.gz) = 63ae7f04d1fa2f89d65262ad1826301c9b4b2e1c
-
-
 %description
 XCP-ng release files
 
+%package        presets
+Summary:        XCP-ng presets file
+Group:          System Environment/Base
+Provides:       xs-presets = 1.1
+
+%description    presets
+XCP-ng presets file.
 
 %package        config
-Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.0.0-2&format=tar.gz&prefix=xenserver-release-8.0.0#/xenserver-release.tar.gz) = 63ae7f04d1fa2f89d65262ad1826301c9b4b2e1c
 Summary:        XCP-ng configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
-Requires(post): systemd
-Requires(preun): systemd
-Requires(postun): systemd
+Requires(post): systemd xs-presets >= 1.0
+Requires(preun): systemd xs-presets >= 1.0
+Requires(postun): systemd xs-presets >= 1.0
 Requires(post): sed
 Obsoletes:      xenserver-release-config <= %{version}
 
@@ -84,6 +90,7 @@ Additional utilities and configuration for XCP-ng.
 
 %prep
 %autosetup -p1
+# XCP-ng: copy LICENSES from branding package
 cp %{_usrsrc}/branding/LICENSES .
 
 %build
@@ -114,6 +121,7 @@ install -m 644 CentOS-Base-production.repo %{buildroot}%{_sysconfdir}/yum.repos.
 #install -m 644 CentOS-Base-devel.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
 install -m 644 CentOS-Debuginfo.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 install -m 644 CentOS-Sources.repo %{buildroot}%{_sysconfdir}/yum.repos.d
+# XCP-ng: add epel and xcp-ng repos
 # install epel repos (disabled by default)
 install -m 644 epel.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 install -m 644 epel-testing.repo %{buildroot}%{_sysconfdir}/yum.repos.d
@@ -418,21 +426,6 @@ EOF
 %triggerin config -- tzdata
 ln -f %{_datadir}/zoneinfo/Asia/Shanghai %{_datadir}/zoneinfo/Asia/Beijing
 
-%triggerin config -- ntpdate
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/sysconfig/ntpdate.orig 2015-11-19 21:46:56.000000000 +0000
-+++ /etc/sysconfig/ntpdate  2016-01-22 14:23:25.000000000 +0000
-@@ -2,7 +2,7 @@
- OPTIONS="-p 2"
-
- # Number of retries before giving up
--RETRIES=2
-+RETRIES=3
-
- # Set to 'yes' to sync hw clock after successful ntpdate
- SYNC_HWCLOCK=no
-EOF
-
 %triggerin config -- shadow-utils
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
 --- /etc/login.defs.orig    2016-02-26 11:11:20.000000000 +0000
@@ -503,24 +496,30 @@ if ! echo "$DEPMOD_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
     fi
 fi
 
-## Comment out hotfix hiding logic until it is needed again
-## Hide previous 7.4+7.5 hotfixes from xapi
-#%%triggerun config -- %%{name}-config = 7.4.0, %%{name}-config = 7.5.0
-#if [ -d /var/update/applied ]; then
-#    shopt -s nullglob
-#    for sfile in /var/update/applied/*; do
-#        label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
-#        if [[ "$label" =~ ^XS7[45](E[0-9]{3}$|$) ]]; then
-#            rm -f $sfile
-#        fi
-#    done
-#fi
+# Hide previous 8.0 hotfixes from xapi
+%triggerun config -- %{name}-config = 8.0.0
+if [ -d /var/update/applied ]; then
+    shopt -s nullglob
+    for sfile in /var/update/applied/*; do
+        label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
+        if [[ "$label" =~ ^XS80(E[0-9]{3}$|$) ]]; then
+            rm -f $sfile
+        fi
+    done
+fi
 
 %post config
 %systemd_post move-kernel-messages.service
 %systemd_post update-issue.service
 %systemd_post xs-fcoe.service
+%systemd_post vm.slice
 
+# XCP-ng: we update the BUILD_NUMBER here because in XS world
+# it is updated separately by a script in the update-XSxx package.
+# 
+# Also, we update the file each time the package is installed, not just for upgrades, because in the past we renamed the package and then this wasn't run.
+# Theoretically we shouldn't need that anymore, but it's not doing any harm
+# and who knows, maybe we'll change the name again in the future.
 if [ -f %{_sysconfdir}/xensource-inventory ]; then
     sed -i \
         -e "s@^\(PRODUCT_VERSION=\).*@\1'%{PRODUCT_VERSION}'@" \
@@ -531,32 +530,45 @@ if [ -f %{_sysconfdir}/xensource-inventory ]; then
         %{_sysconfdir}/xensource-inventory
 fi
 
+# Add myhostname to the hosts line of nsswitch.conf if it is not there already.
+# This needs to be kept until the next upgrade-only release after 8.0.
+grep -q '^hosts:.*myhostname' %{_sysconfdir}/nsswitch.conf || sed -i 's/^hosts:.*/\0 myhostname/' %{_sysconfdir}/nsswitch.conf
+
+# Add ntp configuration to /etc/sysconfig/network which is written
+# normally by the installer.
+# This needs to be kept until the next upgrade-only release after 8.0.
+grep -q '^NTPSERVERARGS=' %{_sysconfdir}/sysconfig/network || echo 'NTPSERVERARGS="iburst prefer"' >> %{_sysconfdir}/sysconfig/network
+
 
 %preun config
 %systemd_preun move-kernel-messages.service
 %systemd_preun update-issue.service
 %systemd_preun xs-fcoe.service
+%systemd_preun vm.slice
 
 
 %postun config
 %systemd_postun move-kernel-messages.service
 %systemd_postun update-issue.service
 %systemd_postun xs-fcoe.service
+%systemd_postun vm.slice
 
-%triggerpostun config -- xenserver-release-config < 7.5
-# To be reviewed at each release to make sure the fixes are still valid.
-# Fix upgrade from XCP-ng 7.4.x:
-# when xenserver-release-config gets obsoleted by xcp-ng-release-config,
-# its preun gets run last and disables the services.
-# We don't want that, so we re-enable the services in this trigger
-# which will be set off after postun has been executed.
-systemctl preset move-kernel-messages.service >/dev/null 2>&1 || :
-systemctl preset update-issue.service >/dev/null 2>&1 || :
-systemctl preset xs-fcoe.service >/dev/null 2>&1 || :
-# Also restore changes to /etc/sysconfig/snmp, removed by a triggerun scriptlet
-if [ -f /etc/sysconfig/snmpd ]; then
-    grep -qs '^OPTIONS' /etc/sysconfig/snmpd || echo 'OPTIONS="-c /etc/snmp/snmpd.xs.conf"' >>/etc/sysconfig/snmpd
-fi
+# XCP-ng: Not needed anymore but kept as documentation in case
+# we rename the package again in the future
+##%%triggerpostun config -- xenserver-release-config < 7.5
+## XCP-ng: To be reviewed at each release to make sure the fixes are still valid.
+## Fix upgrade from XCP-ng 7.4.x:
+## when xenserver-release-config gets obsoleted by xcp-ng-release-config,
+## its preun gets run last and disables the services.
+## We don't want that, so we re-enable the services in this trigger
+## which will be set off after postun has been executed.
+#systemctl preset move-kernel-messages.service >/dev/null 2>&1 || :
+#systemctl preset update-issue.service >/dev/null 2>&1 || :
+#systemctl preset xs-fcoe.service >/dev/null 2>&1 || :
+## Also restore changes to /etc/sysconfig/snmp, removed by a triggerun scriptlet
+#if [ -f /etc/sysconfig/snmpd ]; then
+#    grep -qs '^OPTIONS' /etc/sysconfig/snmpd || echo 'OPTIONS="-c /etc/snmp/snmpd.xs.conf"' >>/etc/sysconfig/snmpd
+#fi
 
 %files
 %doc xcp-ng.repo LICENSES
@@ -575,9 +587,12 @@ fi
 %{_docdir}/centos-release
 %{_datadir}/redhat-release
 %{_datadir}/centos-release
-%{_prefix}/lib/systemd/system-preset/*
+%{_prefix}/lib/systemd/system-preset/90-default.preset
 /EULA
 %{python_sitelib}/xcp/branding.py*
+
+%files presets
+%{_prefix}/lib/systemd/system-preset/89-default.preset
 
 %files config
 %defattr(0644,root,root,0755)
@@ -610,7 +625,8 @@ fi
 
 # Keep this changelog through future updates
 %changelog
-* soon
+* Fri Dec 20 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.1.0-1
+- Update to XCP-ng 8.1.0
 - Add EULA and LICENSES back
 
 * Thu Jul 18 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-13
