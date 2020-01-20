@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.1.0
-Release:        1
+Release:        2
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -157,7 +157,9 @@ ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty2.service
 
 ln -s XCP-ng-index.html %{buildroot}/opt/xensource/www/index.html
 
-%post
+%posttrans
+# running this in posttrans instead of post because xcp-ng-release may be installed after
+# coreutils, since they both require each other: no guaranteed order
 /usr/bin/uname -m | grep -q 'x86_64'  && echo 'centos' >/etc/yum/vars/contentdir || echo 'altarch' > /etc/yum/vars/contentdir
 
 %clean
@@ -625,6 +627,11 @@ grep -q '^NTPSERVERARGS=' %{_sysconfdir}/sysconfig/network || echo 'NTPSERVERARG
 
 # Keep this changelog through future updates
 %changelog
+* Mon Jan 20 2020 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.1.0-2
+- Move POST scriptlet to POSTTRANS to avoid bugs due to ordering issues
+- Avoids issue where uname is missing when executing the script
+- See https://bugs.centos.org/view.php?id=14795
+
 * Fri Dec 20 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.1.0-1
 - Update to XCP-ng 8.1.0
 - Add EULA and LICENSES back
@@ -643,10 +650,10 @@ grep -q '^NTPSERVERARGS=' %{_sysconfdir}/sysconfig/network || echo 'NTPSERVERARG
 * Thu Jun 27 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-10
 - Update XOA quick deploy: set XOA unix password
 
-* Fri Jun 15 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-9
+* Fri Jun 14 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-9
 - Fix auto-add of first host in XOA during fast deploy
 
-* Thu Jun 14 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-8
+* Thu Jun 13 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-8
 - Add custom bash prompt for XCP-ng
 
 * Wed May 15 2019 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.0.0-5
