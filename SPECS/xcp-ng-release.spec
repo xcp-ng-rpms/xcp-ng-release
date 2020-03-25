@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.1.0
-Release:        2
+Release:        3
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -627,6 +627,9 @@ grep -q '^NTPSERVERARGS=' %{_sysconfdir}/sysconfig/network || echo 'NTPSERVERARG
 
 # Keep this changelog through future updates
 %changelog
+* Wed Mar 25 2020 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.1.0-3
+- Update console welcome message to invite using Xen Orchestra
+
 * Mon Jan 20 2020 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.1.0-2
 - Move POST scriptlet to POSTTRANS to avoid bugs due to ordering issues
 - Avoids issue where uname is missing when executing the script
