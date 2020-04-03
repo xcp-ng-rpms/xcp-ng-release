@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.1.0
-Release:        4
+Release:        5
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -498,7 +498,7 @@ if ! echo "$DEPMOD_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
     fi
 fi
 
-# XCP-ng: reduce timeout for chrony-wait from 600s to 15s
+# XCP-ng: reduce timeout for chrony-wait
 # TODO: review me for 8.2 since Citrix may have implemented something similar too.
 # Also review me if the chrony package changed.
 # We can't use an override file for ExecStart, so overriding the whole unit
@@ -517,8 +517,8 @@ Wants=time-sync.target
 Type=oneshot
 # Wait up to ~10 minutes for chronyd to synchronize and the remaining
 # clock correction to be less than 0.1 seconds
-# XCP-ng: NO! Wait only for 15s.
-ExecStart=/usr/bin/chronyc -h 127.0.0.1,::1 waitsync 15 0.1 0.0 1
+# XCP-ng: NO! Wait only for 120s.
+ExecStart=/usr/bin/chronyc -h 127.0.0.1,::1 waitsync 120 0.1 0.0 1
 RemainAfterExit=yes
 StandardOutput=null
 
@@ -659,8 +659,8 @@ grep -q '^NTPSERVERARGS=' %{_sysconfdir}/sysconfig/network || echo 'NTPSERVERARG
 
 # Keep this changelog through future updates
 %changelog
-* Fri Apr 03 2020 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.1.0-4
-- Reduce chrony-wait timeout from 600s to 15s
+* Fri Apr 03 2020 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.1.0-5
+- Reduce chrony-wait timeout from 600s to 120s
 - This reduces boot time a lot for hosts that can't reach a ntp server
 
 * Wed Mar 25 2020 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.1.0-3
