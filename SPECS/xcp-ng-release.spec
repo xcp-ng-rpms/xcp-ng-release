@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.1.0
-Release:        5
+Release:        6
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -498,7 +498,9 @@ if ! echo "$DEPMOD_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
     fi
 fi
 
-# XCP-ng: reduce timeout for chrony-wait
+# XCP-ng: Enable chronyd and chrony-wait services.
+#         They are not active in case of yum update from 8.0.
+# XCP-ng: Also reduce timeout for chrony-wait
 # TODO: review me for 8.2 since Citrix may have implemented something similar too.
 # Also review me if the chrony package changed.
 # We can't use an override file for ExecStart, so overriding the whole unit
@@ -526,7 +528,11 @@ StandardOutput=null
 WantedBy=multi-user.target
 EOF
 
-    systemctl daemon-reload >/dev/null 2>&1 || :
+    systemctl enable chronyd >/dev/null 2>&1 || :
+    # Disable chrony-wait first before enabling in case it was enabled
+    # so that the symlink points to our service file written above
+    systemctl disable chrony-wait >/dev/null 2>&1 || :
+    systemctl enable chrony-wait >/dev/null 2>&1 || :
 fi
 
 
@@ -659,7 +665,8 @@ grep -q '^NTPSERVERARGS=' %{_sysconfdir}/sysconfig/network || echo 'NTPSERVERARG
 
 # Keep this changelog through future updates
 %changelog
-* Fri Apr 03 2020 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.1.0-5
+* Fri Apr 03 2020 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.1.0-6
+- Enable chronyd and chrony-wait service
 - Reduce chrony-wait timeout from 600s to 120s
 - This reduces boot time a lot for hosts that can't reach a ntp server
 
