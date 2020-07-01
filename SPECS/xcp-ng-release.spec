@@ -1,10 +1,10 @@
 # XCP-ng: TO BE UPDATED FOR EACH NEW RELEASE
 # TODO: use data from branding file instead
-%define PRODUCT_VERSION 8.1.0
-%define PRODUCT_VERSION_TEXT 8.1
+%define PRODUCT_VERSION 8.2.0
+%define PRODUCT_VERSION_TEXT 8.2
 %define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
-%define PLATFORM_VERSION 3.1.0
-%define BUILD_NUMBER release/quebec/master/17
+%define PLATFORM_VERSION 3.2.0
+%define BUILD_NUMBER release/stockholm/master/7
 
 %define debug_package %{nil}
 %define product_family CentOS Linux
@@ -23,8 +23,8 @@
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xcp-ng-release
-Version:        8.1.0
-Release:        6
+Version:        8.2.0
+Release:        1
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -48,6 +48,18 @@ Obsoletes:      update-XS80E005 control-XS80E005
 Obsoletes:      update-XS80E006 control-XS80E006
 #there has been no XS80E007
 Obsoletes:      update-XS80E008 control-XS80E008
+Obsoletes:      update-XS80E009 control-XS80E009
+Obsoletes:      update-XS80E010 control-XS80E010
+Obsoletes:      update-XS80E011 control-XS80E011
+Obsoletes:      update-XS80E012 control-XS80E012
+
+#Obsolete CH81 hotfixes
+Obsoletes:      update-CH81 control-CH81
+Obsoletes:      update-XS81E001 control-XS81E001
+Obsoletes:      update-XS81E002 control-XS81E002
+Obsoletes:      update-XS81E003 control-XS81E003
+Obsoletes:      update-XS81E004 control-XS81E004
+Obsoletes:      update-XS81E005 control-XS81E005
 
 # Metadata for the installer to consume
 Provides:       product-brand = XCP-ng
@@ -69,7 +81,8 @@ XCP-ng release files
 %package        presets
 Summary:        XCP-ng presets file
 Group:          System Environment/Base
-Provides:       xs-presets = 1.1
+Provides:       xs-presets = 1.3
+Requires(posttrans): systemd
 
 %description    presets
 XCP-ng presets file.
@@ -78,9 +91,9 @@ XCP-ng presets file.
 Summary:        XCP-ng configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
-Requires(post): systemd xs-presets >= 1.0
-Requires(preun): systemd xs-presets >= 1.0
-Requires(postun): systemd xs-presets >= 1.0
+Requires(post): systemd xs-presets >= 1.3
+Requires(preun): systemd xs-presets >= 1.3
+Requires(postun): systemd xs-presets >= 1.3
 Requires(post): sed
 Obsoletes:      xenserver-release-config <= %{version}
 
@@ -158,8 +171,9 @@ ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty2.service
 ln -s XCP-ng-index.html %{buildroot}/opt/xensource/www/index.html
 
 %posttrans
-# running this in posttrans instead of post because xcp-ng-release may be installed after
+# XCP-ng 8.1: running this in posttrans instead of post because xcp-ng-release may be installed after
 # coreutils, since they both require each other: no guaranteed order
+# XCP-ng 8.2: looks like CH 8.2 switched to posttrans too. I'm keeping my comment all the same.
 /usr/bin/uname -m | grep -q 'x86_64'  && echo 'centos' >/etc/yum/vars/contentdir || echo 'altarch' > /etc/yum/vars/contentdir
 
 %clean
@@ -257,6 +271,42 @@ EOF
  GSSAPICleanupCredentials no
  #GSSAPIStrictAcceptorCheck yes
  #GSSAPIKeyExchange no
+ EOF
+
+( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
+--- sshd_config	2019-10-28 13:56:02.147699860 +0000
++++ sshd_config	2019-10-28 13:27:07.094341902 +0000
+@@ -24,7 +24,12 @@
+ HostKey /etc/ssh/ssh_host_ecdsa_key
+ HostKey /etc/ssh/ssh_host_ed25519_key
+ 
+-# Ciphers and keying
++# Ciphers, MACs, KEX Algorithms & HostKeyAlgorithms
++Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
++MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
++KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
++HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
++
+ #RekeyLimit default none
+ 
+ # Logging
+
+EOF
+
+%triggerin config -- openssh-clients
+( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
+--- ssh_config	2019-10-28 13:56:16.791811367 +0000
++++ ssh_config	2019-10-28 13:26:42.374146454 +0000
+@@ -66,3 +66,8 @@
+ 	SendEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+ 	SendEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+ 	SendEnv XMODIFIERS
++
++	Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
++	MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
++	KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
++	HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
+
 EOF
 
 %triggerin config -- net-snmp
@@ -537,12 +587,12 @@ fi
 
 
 # Hide previous 8.0 hotfixes from xapi
-%triggerun config -- %{name}-config = 8.0.0
+%triggerun config -- %{name}-config = 8.0.0, %{name}-config = 8.1.0
 if [ -d /var/update/applied ]; then
     shopt -s nullglob
     for sfile in /var/update/applied/*; do
         label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
-        if [[ "$label" =~ ^XS80(E[0-9]{3}$|$) ]]; then
+        if [[ "$label" =~ ^XS8[01](E[0-9]{3}$|$) ]]; then
             rm -f $sfile
         fi
     done
@@ -579,6 +629,10 @@ grep -q '^hosts:.*myhostname' %{_sysconfdir}/nsswitch.conf || sed -i 's/^hosts:.
 # This needs to be kept until the next upgrade-only release after 8.0.
 grep -q '^NTPSERVERARGS=' %{_sysconfdir}/sysconfig/network || echo 'NTPSERVERARGS="iburst prefer"' >> %{_sysconfdir}/sysconfig/network
 
+# This package provides an updated rsyslog.service file.
+# Reenable it to ensure that the systemd symlink points to the correct file.
+systemctl reenable rsyslog.service
+
 
 %preun config
 %systemd_preun move-kernel-messages.service
@@ -609,6 +663,11 @@ grep -q '^NTPSERVERARGS=' %{_sysconfdir}/sysconfig/network || echo 'NTPSERVERARG
 #if [ -f /etc/sysconfig/snmpd ]; then
 #    grep -qs '^OPTIONS' /etc/sysconfig/snmpd || echo 'OPTIONS="-c /etc/snmp/snmpd.xs.conf"' >>/etc/sysconfig/snmpd
 #fi
+
+%posttrans presets
+# Install or Upgrade, run when all new .service files got installed by other packages.
+# Ensure that new service files installed by existing packages get appropriate defaults.
+systemctl preset-all --preset-mode=enable-only || :
 
 %files
 %doc xcp-ng.repo LICENSES
@@ -663,8 +722,15 @@ grep -q '^NTPSERVERARGS=' %{_sysconfdir}/sysconfig/network || echo 'NTPSERVERARG
 %attr(0755,-,-) /opt/xensource/libexec/move-kernel-messages
 %attr(0755,-,-) /opt/xensource/libexec/set-printk-console
 
+# harden ciphers / TLS version used by curl/wget
+/root/.curlrc
+/root/.wgetrc
+
 # Keep this changelog through future updates
 %changelog
+* Wed Jul 01 2020 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.0-1
+- Update to XCP-ng 8.2
+
 * Fri Apr 03 2020 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.1.0-6
 - Enable chronyd and chrony-wait service
 - Reduce chrony-wait timeout from 600s to 120s
