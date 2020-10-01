@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.0
-Release:        1
+Release:        2
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -728,6 +728,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Thu Oct 01 2020 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.0-2
+- Update link to official doc in the HTML welcome page
+
 * Wed Jul 01 2020 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.0-1
 - Update to XCP-ng 8.2
 
