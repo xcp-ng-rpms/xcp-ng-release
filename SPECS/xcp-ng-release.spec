@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.0
-Release:        4
+Release:        4.0.ipv6.1
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -74,6 +74,7 @@ BuildRequires:  systemd branding-xcp-ng
 URL:            https://github.com/xcp-ng/xcp-ng-release
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
 
+# XCP-ng specific sources and patches
 Patch1000: xcp-ng-release-8.2.0-ipv6.patch
 
 %description
@@ -729,6 +730,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Fri Jan 29 2021 Benjamin Reis <benjamin.reis@vates.fr> - 8.2.0-4.0.ipv6.1
+- Add IPv6 patch: xcp-ng-release-8.2.0-ipv6.patch
+
 * Fri Nov 13 2020 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.0-4
 - Show xe CLI in the host page instead of XCP-ng Center
 
