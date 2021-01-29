@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        5
+Release:        5.0.ipv6.1
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -89,8 +89,7 @@ BuildRequires:  systemd branding-xcp-ng
 URL:            https://github.com/xcp-ng/xcp-ng-release
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
 
-# Patches generated with git format-patch v8.2.1
-# (None at the moment)
+Patch1000: xcp-ng-release-8.2.0-ipv6.patch
 
 %description
 XCP-ng release files
@@ -310,7 +309,7 @@ SSHD_PATCH=$(cat <<'EOF'
 +++ /etc/ssh/sshd_config	2022-02-01 11:56:04.074367389 +0100
 @@ -25,10 +25,10 @@
  HostKey /etc/ssh/ssh_host_ed25519_key
- 
+
  # Ciphers, MACs, KEX Algorithms & HostKeyAlgorithms
 -Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
 -MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
@@ -320,9 +319,9 @@ SSHD_PATCH=$(cat <<'EOF'
 +MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
 +KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
 +HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
- 
+
  #RekeyLimit default none
- 
+
 EOF
 )
 # Do not apply patch if it was already applied
@@ -358,7 +357,7 @@ SSH_PATCH=$(cat <<'EOF'
 @@ -67,7 +67,7 @@
  	SendEnv LC_IDENTIFICATION LC_ALL LANGUAGE
  	SendEnv XMODIFIERS
- 
+
 -	Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
 -	MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
 -	KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
@@ -669,7 +668,7 @@ fi
 
 # XCP-ng: we update the BUILD_NUMBER here because in XS world
 # it is updated separately by a script in the update-XSxx package.
-# 
+#
 # Also, we update the file each time the package is installed, not just for upgrades, because in the past we renamed the package and then this wasn't run.
 # Theoretically we shouldn't need that anymore, but it's not doing any harm
 # and who knows, maybe we'll change the name again in the future.
@@ -795,6 +794,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Thu Feb 17 2022 Benjamin Reis <benjamin.reis@vates.fr> - 8.2.1-5.0.ipv6.1
+- Add IPv6 patch: xcp-ng-release-8.2.0-ipv6.patch
+
 * Tue Feb 15 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-5
 - Rebuild for updated branding-xcp-ng
 - Sets "copyright" year to 2022
