@@ -74,6 +74,7 @@ BuildRequires:  systemd branding-xcp-ng
 URL:            https://github.com/xcp-ng/xcp-ng-release
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
 
+Patch1000: xcp-ng-release-8.2.0-ipv6.patch
 
 %description
 XCP-ng release files

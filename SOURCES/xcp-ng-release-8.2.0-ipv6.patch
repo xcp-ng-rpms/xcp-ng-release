@@ -1,0 +1,12 @@
+diff -NaurZ xcp-ng-release-8.2.0-copy/src/common/sbin/update-issue xcp-ng-release-8.2.0/src/common/sbin/update-issue
+--- xcp-ng-release-8.2.0-copy/src/common/sbin/update-issue	2021-01-26 09:29:14.011580635 +0100
++++ xcp-ng-release-8.2.0/src/common/sbin/update-issue	2021-01-26 09:31:30.669856728 +0100
+@@ -28,7 +28,7 @@
+ 
+ 
+ [ -z "$MANAGEMENT_INTERFACE" ] || {
+-   IP=$(ip addr show dev $MANAGEMENT_INTERFACE | awk '/ inet / { print $2 }')
++   IP=$(ip addr show dev $MANAGEMENT_INTERFACE | awk '/ inet6? / { print $2 }')
+    IP=${IP%%/*}
+ }
+ : ${IP:="IP address not configured"}
