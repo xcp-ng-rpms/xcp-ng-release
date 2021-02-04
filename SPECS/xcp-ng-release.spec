@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.0
-Release:        4
+Release:        5
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -260,8 +260,20 @@ EOF
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
 --- /etc/ssh/sshd_config	2010-03-31 10:24:13.000000000 +0100
 +++ /etc/ssh/sshd_config	2010-09-03 16:08:27.000000000 +0100
---- /etc/ssh/sshd_config.orig   2016-01-22 14:23:59.000000000 +0000
-+++ /etc/ssh/sshd_config    2016-01-22 15:50:45.000000000 +0000
+@@ -24,7 +24,12 @@
+ HostKey /etc/ssh/ssh_host_ecdsa_key
+ HostKey /etc/ssh/ssh_host_ed25519_key
+
+-# Ciphers and keying
++# Ciphers, MACs, KEX Algorithms & HostKeyAlgorithms
++Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
++MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
++KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
++HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
++
+ #RekeyLimit default none
+
+ # Logging
 @@ -90,7 +90,7 @@
  #KerberosUseKuserok yes
 
@@ -271,32 +283,12 @@ EOF
  GSSAPICleanupCredentials no
  #GSSAPIStrictAcceptorCheck yes
  #GSSAPIKeyExchange no
- EOF
-
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- sshd_config	2019-10-28 13:56:02.147699860 +0000
-+++ sshd_config	2019-10-28 13:27:07.094341902 +0000
-@@ -24,7 +24,12 @@
- HostKey /etc/ssh/ssh_host_ecdsa_key
- HostKey /etc/ssh/ssh_host_ed25519_key
- 
--# Ciphers and keying
-+# Ciphers, MACs, KEX Algorithms & HostKeyAlgorithms
-+Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
-+MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
-+HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
-+
- #RekeyLimit default none
- 
- # Logging
-
 EOF
 
 %triggerin config -- openssh-clients
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- ssh_config	2019-10-28 13:56:16.791811367 +0000
-+++ ssh_config	2019-10-28 13:26:42.374146454 +0000
+--- /etc/ssh/ssh_config	2019-10-28 13:56:16.791811367 +0000
++++ /etc/ssh/ssh_config	2019-10-28 13:26:42.374146454 +0000
 @@ -66,3 +66,8 @@
  	SendEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
  	SendEnv LC_IDENTIFICATION LC_ALL LANGUAGE
@@ -306,7 +298,6 @@ EOF
 +	MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
 +	KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
 +	HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
-
 EOF
 
 %triggerin config -- net-snmp
@@ -551,9 +542,10 @@ fi
 # XCP-ng: Enable chronyd and chrony-wait services.
 #         They are not active in case of yum update from 8.0.
 # XCP-ng: Also reduce timeout for chrony-wait
-# TODO: review me for 8.2 since Citrix may have implemented something similar too.
+# TODO: review me for 8.3 since Citrix has implemented it differently.
 # Also review me if the chrony package changed.
 # We can't use an override file for ExecStart, so overriding the whole unit
+# (or so I thought. Actually you can but it requires erasing it first with an empty value)
 %triggerin config -- chrony
 if [ ! -f /etc/systemd/system/chrony-wait.service ]; then
     cat <<'EOF' > /etc/systemd/system/chrony-wait.service
@@ -728,6 +720,11 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Wed Feb 03 2021 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.0-5
+- Sync with XS82E015
+- Fix sshd and ssh config patching
+- Handling of chronyd systemd unit override not synced yet, on purpose
+
 * Fri Nov 13 2020 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.0-4
 - Show xe CLI in the host page instead of XCP-ng Center
 
