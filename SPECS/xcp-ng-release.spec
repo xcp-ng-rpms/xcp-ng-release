@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.0
-Release:        5
+Release:        6
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -74,6 +74,7 @@ BuildRequires:  systemd branding-xcp-ng
 URL:            https://github.com/xcp-ng/xcp-ng-release
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
 
+Patch1000: xcp-ng-release-8.2.0-eula-shorter-lines.XCP-ng.patch
 
 %description
 XCP-ng release files
@@ -720,6 +721,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Wed Mar 03 2021 Benjamin Reis <benjamin.reis@vates.fr> - 8.2.0-6
+- Add xcp-ng-release-8.2.0-eula-shorter-lines.XCP-ng.patch
+
 * Wed Feb 03 2021 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.0-5
 - Sync with XS82E015
 - Fix sshd and ssh config patching
