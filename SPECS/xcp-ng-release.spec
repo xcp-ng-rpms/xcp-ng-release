@@ -73,8 +73,7 @@ Provides:       product-version-text-short = %{PRODUCT_VERSION_TEXT_SHORT}
 BuildRequires:  systemd branding-xcp-ng
 URL:            https://github.com/xcp-ng/xcp-ng-release
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
-
-Patch1000: xcp-ng-release-8.2.0-eula-shorter-lines.XCP-ng.patch
+Source1:        xcp-ng-release-8.2.0-eula-shorter-lines.XCP-ng.patch
 
 %description
 XCP-ng release files
@@ -117,7 +116,10 @@ rm -rf %{buildroot}
 install -d -m 755 %{buildroot}%{python_sitelib}/xcp
 %{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python_sitelib}/xcp/branding.py
 
-install -m 644 %{_usrsrc}/branding/EULA %{buildroot}/
+# Copy EULA file to patch it before install
+cp %{_usrsrc}/branding/EULA .
+patch -p0 < %{SOURCE1}
+install -m 644 EULA %{buildroot}/
 
 # create /etc/system-release and /etc/redhat-release
 ln -s centos-release %{buildroot}%{_sysconfdir}/system-release
