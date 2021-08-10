@@ -626,7 +626,11 @@ grep -q '^NTPSERVERARGS=' %{_sysconfdir}/sysconfig/network || echo 'NTPSERVERARG
 
 # This package provides an updated rsyslog.service file.
 # Reenable it to ensure that the systemd symlink points to the correct file.
-systemctl reenable rsyslog.service
+# (XCP-ng: ... But do it only when needed...)
+if [ $(realpath /etc/systemd/system/multi-user.target.wants/rsyslog.service) != /etc/systemd/system/rsyslog.service ];
+then
+    systemctl reenable rsyslog.service
+fi
 
 
 %preun config
@@ -723,6 +727,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* next
+- Don't reenable rsyslog.service when not needed
+
 * Wed Mar 03 2021 Benjamin Reis <benjamin.reis@vates.fr> - 8.2.0-6
 - Add xcp-ng-release-8.2.0-eula-shorter-lines.XCP-ng.patch
 
