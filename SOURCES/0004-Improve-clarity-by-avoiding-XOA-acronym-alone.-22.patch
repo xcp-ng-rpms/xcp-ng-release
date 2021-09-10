@@ -1,0 +1,45 @@
+From 10d91dcd7560c9ee6588b90ba3efaf50ab85fe51 Mon Sep 17 00:00:00 2001
+From: Olivier Lambert <olivier.lambert@vates.fr>
+Date: Wed, 8 Sep 2021 14:50:11 +0200
+Subject: [PATCH 4/4] Improve clarity by avoiding "XOA" acronym alone. (#22)
+
+Signed-off-by: Olivier Lambert <olivier.lambert@vates.fr>
+---
+ src/xenserver/opt/xensource/www/XCP-ng-index.html | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/xenserver/opt/xensource/www/XCP-ng-index.html b/src/xenserver/opt/xensource/www/XCP-ng-index.html
+index 076b64e..03930e9 100644
+--- a/src/xenserver/opt/xensource/www/XCP-ng-index.html
++++ b/src/xenserver/opt/xensource/www/XCP-ng-index.html
+@@ -344,7 +344,7 @@
+                 </span>
+               </p>
+               <p class="management">
+-                XO comes in a virtual appliance covering all the management,
++                XO comes in a virtual appliance (XOA) covering all the management,
+                 backup and cloud features you may need in your infrastructure,
+                 directly from your web browser.
+               </p>
+@@ -448,7 +448,8 @@
+       </div>
+       <!-- Modalcontent -->
+       <div id="ex1" class="modal">
+-        <h3 class="subtitle">XOA quick deploy</h3>
++        <h3 class="subtitle">Xen Orchestra quick deploy</h3>
++        <p style="font-size: small;">This will download and deploy a new virtual machine on your host, called "XOA" (Xen Orchestra virtual Appliance).</p>
+         <form id="connect" onsubmit="event.preventDefault(); connect()">
+           <fieldset>
+             <p>
+@@ -492,7 +493,7 @@
+             </p>
+             <p>
+               <label>
+-                IP address of the XOA<br />
++                XOA VM IP address<br />
+                 <input type="text" id="ip" />
+               </label>
+             </p>
+-- 
+2.30.2
+

@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.0
-Release:        6
+Release:        7
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -74,6 +74,12 @@ BuildRequires:  systemd branding-xcp-ng
 URL:            https://github.com/xcp-ng/xcp-ng-release
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
 Source1:        xcp-ng-release-8.2.0-eula-shorter-lines.XCP-ng.patch
+
+# Patches generated with git format-patch v8.2.0
+Patch1: 0001-fix-XOA-deploy-dont-fail-on-missing-XenStore-entries.patch
+Patch2: 0002-feat-XOA-deploy-account-disabled-if-no-password-set.patch
+Patch3: 0003-chore-landing-page-update-JQuery-from-3.3.1-to-3.6.0.patch
+Patch4: 0004-Improve-clarity-by-avoiding-XOA-acronym-alone.-22.patch
 
 %description
 XCP-ng release files
@@ -727,8 +733,10 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* next
+* Fri Sep 10 2021 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.0-7
 - Don't reenable rsyslog.service when not needed
+- Landing page: XOA deploy fixes
+- Landing page: update jquery to 3.6.0
 
 * Wed Mar 03 2021 Benjamin Reis <benjamin.reis@vates.fr> - 8.2.0-6
 - Add xcp-ng-release-8.2.0-eula-shorter-lines.XCP-ng.patch
