@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.0
-Release:        7
+Release:        8
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -80,6 +80,7 @@ Patch1: 0001-fix-XOA-deploy-dont-fail-on-missing-XenStore-entries.patch
 Patch2: 0002-feat-XOA-deploy-account-disabled-if-no-password-set.patch
 Patch3: 0003-chore-landing-page-update-JQuery-from-3.3.1-to-3.6.0.patch
 Patch4: 0004-Improve-clarity-by-avoiding-XOA-acronym-alone.-22.patch
+Patch5: 0005-feat-XOA-deploy-warning-when-XOA-IP-is-the-same-as-h.patch
 
 %description
 XCP-ng release files
@@ -733,6 +734,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Thu Dec 02 2021 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.0-8
+- XOA quick deploy: warn when XOA IP is same as host IP
+
 * Fri Sep 10 2021 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.0-7
 - Don't reenable rsyslog.service when not needed
 - Landing page: XOA deploy fixes

@@ -1,7 +1,7 @@
 From 93c3f1b5a2efd5871e53705daedbb67642150c44 Mon Sep 17 00:00:00 2001
 From: Julien Fontanet <julien.fontanet@isonoe.net>
 Date: Wed, 2 Jun 2021 17:10:22 +0200
-Subject: [PATCH 1/4] fix(XOA deploy): dont fail on missing XenStore entries
+Subject: [PATCH 1/5] fix(XOA deploy): dont fail on missing XenStore entries
 
 May fix https://twitter.com/cqchu/status/1396769270537785344
 

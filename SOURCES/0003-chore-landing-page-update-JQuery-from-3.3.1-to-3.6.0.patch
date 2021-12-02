@@ -1,7 +1,7 @@
 From 26fe0446854cb9d4e724c07620588f268d4f645e Mon Sep 17 00:00:00 2001
 From: Pierre Donias <pierre.donias@gmail.com>
 Date: Wed, 8 Sep 2021 14:48:40 +0200
-Subject: [PATCH 3/4] chore(landing page): update JQuery from 3.3.1 to 3.6.0
+Subject: [PATCH 3/5] chore(landing page): update JQuery from 3.3.1 to 3.6.0
  (#21)
 
 See https://xcp-ng.org/forum/topic/4875

@@ -1,7 +1,7 @@
 From 10d91dcd7560c9ee6588b90ba3efaf50ab85fe51 Mon Sep 17 00:00:00 2001
 From: Olivier Lambert <olivier.lambert@vates.fr>
 Date: Wed, 8 Sep 2021 14:50:11 +0200
-Subject: [PATCH 4/4] Improve clarity by avoiding "XOA" acronym alone. (#22)
+Subject: [PATCH 4/5] Improve clarity by avoiding "XOA" acronym alone. (#22)
 
 Signed-off-by: Olivier Lambert <olivier.lambert@vates.fr>
 ---

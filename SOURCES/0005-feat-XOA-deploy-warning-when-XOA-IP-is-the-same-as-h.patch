@@ -1,0 +1,92 @@
+From 28204237fd4bb58b478c4a6915f2d009727b45df Mon Sep 17 00:00:00 2001
+From: Pierre Donias <pierre.donias@gmail.com>
+Date: Mon, 29 Nov 2021 15:13:15 +0100
+Subject: [PATCH 5/5] feat(XOA deploy): warning when XOA IP is the same as host
+ IP
+
+Signed-off-by: Pierre Donias <pierre.donias@gmail.com>
+---
+ src/xenserver/opt/xensource/www/XCP-ng-index.html | 15 ++++++++++++++-
+ src/xenserver/opt/xensource/www/asset/deploy.js   | 11 +++++++++++
+ .../asset/fontawesome-pro-5.8.1-web/css/all.css   |  3 +++
+ 3 files changed, 28 insertions(+), 1 deletion(-)
+
+diff --git a/src/xenserver/opt/xensource/www/XCP-ng-index.html b/src/xenserver/opt/xensource/www/XCP-ng-index.html
+index 03930e9..c710946 100644
+--- a/src/xenserver/opt/xensource/www/XCP-ng-index.html
++++ b/src/xenserver/opt/xensource/www/XCP-ng-index.html
+@@ -41,6 +41,10 @@
+         margin: 0 auto;
+       }
+ 
++      .danger {
++        color: #d9534f;
++      }
++
+       p {
+         text-align: center;
+         padding: 0.5em 1em;
+@@ -475,7 +479,7 @@
+         </form>
+         <form
+           id="config"
+-          onsubmit="event.preventDefault(); setStep('config', 'accounts')"
++          onsubmit="event.preventDefault(); submitConfig()"
+           style="display: none"
+         >
+           <fieldset>
+@@ -491,6 +495,15 @@
+                 <select id="networks"></select>
+               </label>
+             </p>
++            <p id="ip-error" style="display: none">
++              <em class="danger"
++                ><i class="fas fa-exclamation-triangle"></i>
++                <span
++                  >You entered the same IP address as your host. Please choose a
++                  different one for your XOA:</span
++                ></em
++              >
++            </p>
+             <p>
+               <label>
+                 XOA VM IP address<br />
+diff --git a/src/xenserver/opt/xensource/www/asset/deploy.js b/src/xenserver/opt/xensource/www/asset/deploy.js
+index ad9faa7..081fd88 100644
+--- a/src/xenserver/opt/xensource/www/asset/deploy.js
++++ b/src/xenserver/opt/xensource/www/asset/deploy.js
+@@ -121,6 +121,17 @@ function connect() {
+     })
+ }
+ 
++function submitConfig() {
++  const ipError = $('#ip-error')
++  ipError.hide()
++  const ip = $('#ip').val()
++  if (ip === window.location.hostname) {
++    ipError.show()
++    return
++  }
++  setStep('config', 'accounts')
++}
++
+ function deploy() {
+   const status = text => $('#deploy').text(text)
+   $('i.fa-spinner.fa-pulse').css({ display: 'inherit' })
+diff --git a/src/xenserver/opt/xensource/www/asset/fontawesome-pro-5.8.1-web/css/all.css b/src/xenserver/opt/xensource/www/asset/fontawesome-pro-5.8.1-web/css/all.css
+index 535b638..fd35422 100644
+--- a/src/xenserver/opt/xensource/www/asset/fontawesome-pro-5.8.1-web/css/all.css
++++ b/src/xenserver/opt/xensource/www/asset/fontawesome-pro-5.8.1-web/css/all.css
+@@ -185,6 +185,9 @@ readers do not read off random characters that represent icons */
+ .fa-browser:before {
+   content: "\f37e"; }
+ 
++.fa-exclamation-triangle:before {
++  content: "\f071"; }
++
+ .fa-github:before {
+   content: "\f09b"; }
+ 
+-- 
+2.30.2
+
