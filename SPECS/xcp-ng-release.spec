@@ -1,10 +1,10 @@
 # XCP-ng: TO BE UPDATED FOR EACH NEW RELEASE
 # TODO: use data from branding file instead
-%define PRODUCT_VERSION 8.2.0
+%define PRODUCT_VERSION 8.2.1
 %define PRODUCT_VERSION_TEXT 8.2
 %define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
-%define PLATFORM_VERSION 3.2.0
-%define BUILD_NUMBER release/stockholm/master/7
+%define PLATFORM_VERSION 3.2.1
+%define BUILD_NUMBER release/yangtze/master/58
 
 %define debug_package %{nil}
 %define product_family CentOS Linux
@@ -23,8 +23,8 @@
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xcp-ng-release
-Version:        8.2.0
-Release:        8
+Version:        8.2.1
+Release:        1
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -39,27 +39,42 @@ Obsoletes:      centos-release
 Obsoletes:      epel-release
 Obsoletes:      xenserver-release <= %{version}
 
-#Obsolete CH80 hotfixes
-Obsoletes:      update-XS80E001 control-XS80E001
-Obsoletes:      update-XS80E002 control-XS80E002
-Obsoletes:      update-XS80E003 control-XS80E003
-Obsoletes:      update-XS80E004 control-XS80E004
-Obsoletes:      update-XS80E005 control-XS80E005
-Obsoletes:      update-XS80E006 control-XS80E006
-#there has been no XS80E007
-Obsoletes:      update-XS80E008 control-XS80E008
-Obsoletes:      update-XS80E009 control-XS80E009
-Obsoletes:      update-XS80E010 control-XS80E010
-Obsoletes:      update-XS80E011 control-XS80E011
-Obsoletes:      update-XS80E012 control-XS80E012
-
-#Obsolete CH81 hotfixes
-Obsoletes:      update-CH81 control-CH81
-Obsoletes:      update-XS81E001 control-XS81E001
-Obsoletes:      update-XS81E002 control-XS81E002
-Obsoletes:      update-XS81E003 control-XS81E003
-Obsoletes:      update-XS81E004 control-XS81E004
-Obsoletes:      update-XS81E005 control-XS81E005
+#Obsolete CH82 hotfixes
+Obsoletes:      update-CH82 control-CH82
+Obsoletes:      update-XS82E001 control-XS82E001
+Obsoletes:      update-XS82E002 control-XS82E002
+Obsoletes:      update-XS82E003 control-XS82E003
+Obsoletes:      update-XS82E004 control-XS82E004
+Obsoletes:      update-XS82E005 control-XS82E005
+Obsoletes:      update-XS82E006 control-XS82E006
+Obsoletes:      update-XS82E007 control-XS82E007
+Obsoletes:      update-XS82E008 control-XS82E008
+Obsoletes:      update-XS82E009 control-XS82E009
+Obsoletes:      update-XS82E010 control-XS82E010
+Obsoletes:      update-XS82E011 control-XS82E011
+Obsoletes:      update-XS82E012 control-XS82E012
+Obsoletes:      update-XS82E013 control-XS82E013
+Obsoletes:      update-XS82E014 control-XS82E014
+Obsoletes:      update-XS82E015 control-XS82E015
+Obsoletes:      update-XS82E016 control-XS82E016
+Obsoletes:      update-XS82E017 control-XS82E017
+Obsoletes:      update-XS82E018 control-XS82E018
+Obsoletes:      update-XS82E019 control-XS82E019
+Obsoletes:      update-XS82E020 control-XS82E020
+Obsoletes:      update-XS82E021 control-XS82E021
+Obsoletes:      update-XS82E022 control-XS82E022
+Obsoletes:      update-XS82E023 control-XS82E023
+Obsoletes:      update-XS82E024 control-XS82E024
+Obsoletes:      update-XS82E025 control-XS82E025
+Obsoletes:      update-XS82E026 control-XS82E026
+#there has been no XS82E027
+Obsoletes:      update-XS82E028 control-XS82E028
+Obsoletes:      update-XS82E029 control-XS82E029
+Obsoletes:      update-XS82E030 control-XS82E030
+Obsoletes:      update-XS82E031 control-XS82E031
+Obsoletes:      update-XS82E032 control-XS82E032
+Obsoletes:      update-XS82E033 control-XS82E033
+Obsoletes:      update-XS82E034 control-XS82E034
 
 # Metadata for the installer to consume
 Provides:       product-brand = XCP-ng
@@ -73,14 +88,9 @@ Provides:       product-version-text-short = %{PRODUCT_VERSION_TEXT_SHORT}
 BuildRequires:  systemd branding-xcp-ng
 URL:            https://github.com/xcp-ng/xcp-ng-release
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
-Source1:        xcp-ng-release-8.2.0-eula-shorter-lines.XCP-ng.patch
 
-# Patches generated with git format-patch v8.2.0
-Patch1: 0001-fix-XOA-deploy-dont-fail-on-missing-XenStore-entries.patch
-Patch2: 0002-feat-XOA-deploy-account-disabled-if-no-password-set.patch
-Patch3: 0003-chore-landing-page-update-JQuery-from-3.3.1-to-3.6.0.patch
-Patch4: 0004-Improve-clarity-by-avoiding-XOA-acronym-alone.-22.patch
-Patch5: 0005-feat-XOA-deploy-warning-when-XOA-IP-is-the-same-as-h.patch
+# Patches generated with git format-patch v8.2.1
+# (None at the moment)
 
 %description
 XCP-ng release files
@@ -123,10 +133,7 @@ rm -rf %{buildroot}
 install -d -m 755 %{buildroot}%{python_sitelib}/xcp
 %{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python_sitelib}/xcp/branding.py
 
-# Copy EULA file to patch it before install
-cp %{_usrsrc}/branding/EULA .
-patch -p0 < %{SOURCE1}
-install -m 644 EULA %{buildroot}/
+install -m 644 %{_usrsrc}/branding/EULA %{buildroot}/
 
 # create /etc/system-release and /etc/redhat-release
 ln -s centos-release %{buildroot}%{_sysconfdir}/system-release
@@ -276,10 +283,10 @@ EOF
 
 -# Ciphers and keying
 +# Ciphers, MACs, KEX Algorithms & HostKeyAlgorithms
-+Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
-+MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
-+HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
++Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
++MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
++KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
++HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
 +
  #RekeyLimit default none
 
@@ -304,10 +311,10 @@ EOF
  	SendEnv LC_IDENTIFICATION LC_ALL LANGUAGE
  	SendEnv XMODIFIERS
 +
-+	Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
-+	MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+	KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
-+	HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
++	Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
++	MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
++	KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
++	HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
 EOF
 
 %triggerin config -- net-snmp
@@ -351,6 +358,10 @@ fi
  # RPM packages drop log rotation information into this directory
  include /etc/logrotate.d
 EOF
+
+if ! grep -q 'maxsize 104857600' /etc/logrotate.conf > /dev/null 2>&1; then
+    sed -i 's/^create$/\0\n\n# rotate if log reaches 100 MiB\nmaxsize 104857600/' /etc/logrotate.conf
+fi
 
 %triggerin config -- iscsi-initiator-utils
 /usr/bin/systemctl -q disable iscsi.service
@@ -549,52 +560,30 @@ if ! echo "$DEPMOD_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
     fi
 fi
 
-# XCP-ng: Enable chronyd and chrony-wait services.
-#         They are not active in case of yum update from 8.0.
-# XCP-ng: Also reduce timeout for chrony-wait
-# TODO: review me for 8.3 since Citrix has implemented it differently.
-# Also review me if the chrony package changed.
-# We can't use an override file for ExecStart, so overriding the whole unit
-# (or so I thought. Actually you can but it requires erasing it first with an empty value)
+
+# XCP-ng: chrony
 %triggerin config -- chrony
 if [ ! -f /etc/systemd/system/chrony-wait.service ]; then
-    cat <<'EOF' > /etc/systemd/system/chrony-wait.service
-[Unit]
-Description=Wait for chrony to synchronize system clock
-Documentation=man:chronyc(1)
-After=chronyd.service
-Requires=chronyd.service
-Before=time-sync.target
-Wants=time-sync.target
-
-[Service]
-Type=oneshot
-# Wait up to ~10 minutes for chronyd to synchronize and the remaining
-# clock correction to be less than 0.1 seconds
-# XCP-ng: NO! Wait only for 120s.
-ExecStart=/usr/bin/chronyc -h 127.0.0.1,::1 waitsync 120 0.1 0.0 1
-RemainAfterExit=yes
-StandardOutput=null
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-    systemctl enable chronyd >/dev/null 2>&1 || :
-    # Disable chrony-wait first before enabling in case it was enabled
-    # so that the symlink points to our service file written above
-    systemctl disable chrony-wait >/dev/null 2>&1 || :
-    systemctl enable chrony-wait >/dev/null 2>&1 || :
+    # Since 8.2.1: remove our overriding service file
+    # Now chrony-wait's timeout is overriden through an override.conf
+    rm -f /etc/systemd/system/chrony-wait.service
 fi
 
+# XCP-ng: Enable chronyd and chrony-wait services.
+#         They are not active in case of yum update from 8.0.
+# TODO 8.3: check if still needed
 
-# Hide previous 8.0 hotfixes from xapi
-%triggerun config -- %{name}-config = 8.0.0, %{name}-config = 8.1.0
+systemctl enable chronyd >/dev/null 2>&1 || :
+systemctl enable chrony-wait >/dev/null 2>&1 || :
+
+
+# Hide previous 8.2 hotfixes from xapi
+%triggerun config -- %{name}-config = 8.2.0
 if [ -d /var/update/applied ]; then
     shopt -s nullglob
     for sfile in /var/update/applied/*; do
         label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
-        if [[ "$label" =~ ^XS8[01](E[0-9]{3}$|$) ]]; then
+        if [[ "$label" =~ ^XS82(E[0-9]{3}$|$) ]]; then
             rm -f $sfile
         fi
     done
@@ -734,6 +723,36 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Tue Jan 11 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-1
+- Update to xcp-ng-release 8.2.1
+- Sync with xenserver-release 8.2.1
+- Remove patches whose changes are now included in the tarball
+- Remove manual patching of EULA as the updated one is in 8.2.1's branding-xcp-ng RPM
+- Switch to Citrix's better way of overriding the timeout in chrony-wait
+- *** Upstream changelog ***
+- * Tue Oct 26 2021 Igor Druzhinin <igor.druzhinin@citrix.com> - 8.2.1-8
+- - CP-37372: Obsolete XS82E034 hotfix
+- * Wed Oct 20 2021 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.1-7
+- - CA-339520: fcoe_driver: Only run "fcoeadm -i" when needed
+- * Mon Sep 20 2021 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.1-6
+- - CP-34895: reduce verbosity of SM logs
+- - CA-343416: write crit log message to host console
+- - CA-343416: log corosync warning and above to console
+- - CA-343759: Send HUP to rsyslogd after DHCP setup
+- - CA-356624: Force log rotation when file size reaches 100 MiB
+- - CA-358540: Fix secure.log typo
+- * Tue Sep 14 2021 Christian Lindig <christian.linidg@citrix.com> - * 8.2.1-5
+- - Add obsoltes for XS82E033
+- * Fri Sep 10 2021 Igor Druzhinin <igor.druzhinin@citrix.com> - 8.2.1-4
+- - CP-37666: Obsolete XS82E032 hotfix
+- - CP-38080: Obsolete XS82E031
+- * Fri Jul 30 2021 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.1-3
+- - CP-37202: Obsolete XS82E030 hotfix
+- * Tue Jul 13 2021 Ming Lu <ming.lu@citrix.com> - 8.2.1-2
+- - CP-36430: Update ciphers for SSH server and client
+- * Fri Jun 25 2021 Pau Ruiz Safont <pau.safont@citrix.com> - 8.2.1-1
+- - CP-36759: First 8.2.1 release
+
 * Thu Dec 02 2021 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.0-8
 - XOA quick deploy: warn when XOA IP is same as host IP
 
