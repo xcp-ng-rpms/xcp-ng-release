@@ -15,8 +15,8 @@
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xenserver-release
-Version:        8.2.0
-Release:        2
+Version:        8.2.1
+Release:        8
 Summary:        XenServer release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -29,27 +29,42 @@ Provides:       system-release = %{upstream_rel_long}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      centos-release
 
-#Obsolete CH80 hotfixes
-Obsoletes:      update-XS80E001 control-XS80E001
-Obsoletes:      update-XS80E002 control-XS80E002
-Obsoletes:      update-XS80E003 control-XS80E003
-Obsoletes:      update-XS80E004 control-XS80E004
-Obsoletes:      update-XS80E005 control-XS80E005
-Obsoletes:      update-XS80E006 control-XS80E006
-#there has been no XS80E007
-Obsoletes:      update-XS80E008 control-XS80E008
-Obsoletes:      update-XS80E009 control-XS80E009
-Obsoletes:      update-XS80E010 control-XS80E010
-Obsoletes:      update-XS80E011 control-XS80E011
-Obsoletes:      update-XS80E012 control-XS80E012
-
-#Obsolete CH81 hotfixes
-Obsoletes:      update-CH81 control-CH81
-Obsoletes:      update-XS81E001 control-XS81E001
-Obsoletes:      update-XS81E002 control-XS81E002
-Obsoletes:      update-XS81E003 control-XS81E003
-Obsoletes:      update-XS81E004 control-XS81E004
-Obsoletes:      update-XS81E005 control-XS81E005
+#Obsolete CH82 hotfixes
+Obsoletes:      update-CH82 control-CH82
+Obsoletes:      update-XS82E001 control-XS82E001
+Obsoletes:      update-XS82E002 control-XS82E002
+Obsoletes:      update-XS82E003 control-XS82E003
+Obsoletes:      update-XS82E004 control-XS82E004
+Obsoletes:      update-XS82E005 control-XS82E005
+Obsoletes:      update-XS82E006 control-XS82E006
+Obsoletes:      update-XS82E007 control-XS82E007
+Obsoletes:      update-XS82E008 control-XS82E008
+Obsoletes:      update-XS82E009 control-XS82E009
+Obsoletes:      update-XS82E010 control-XS82E010
+Obsoletes:      update-XS82E011 control-XS82E011
+Obsoletes:      update-XS82E012 control-XS82E012
+Obsoletes:      update-XS82E013 control-XS82E013
+Obsoletes:      update-XS82E014 control-XS82E014
+Obsoletes:      update-XS82E015 control-XS82E015
+Obsoletes:      update-XS82E016 control-XS82E016
+Obsoletes:      update-XS82E017 control-XS82E017
+Obsoletes:      update-XS82E018 control-XS82E018
+Obsoletes:      update-XS82E019 control-XS82E019
+Obsoletes:      update-XS82E020 control-XS82E020
+Obsoletes:      update-XS82E021 control-XS82E021
+Obsoletes:      update-XS82E022 control-XS82E022
+Obsoletes:      update-XS82E023 control-XS82E023
+Obsoletes:      update-XS82E024 control-XS82E024
+Obsoletes:      update-XS82E025 control-XS82E025
+Obsoletes:      update-XS82E026 control-XS82E026
+#there has been no XS82E027
+Obsoletes:      update-XS82E028 control-XS82E028
+Obsoletes:      update-XS82E029 control-XS82E029
+Obsoletes:      update-XS82E030 control-XS82E030
+Obsoletes:      update-XS82E031 control-XS82E031
+Obsoletes:      update-XS82E032 control-XS82E032
+Obsoletes:      update-XS82E033 control-XS82E033
+Obsoletes:      update-XS82E034 control-XS82E034
 
 # Metadata for the installer to consume
 Provides:       product-brand = XenServer
@@ -62,17 +77,17 @@ Provides:       product-version-text-short = %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xenserver
 
-Source0: xenserver-release.tar.gz
+Source0: https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.2.1-8&format=tar.gz&prefix=xenserver-release-8.2.1#/xenserver-release.tar.gz
 
 
-Provides: gitsha(ssh://git@code.citrite.net/XS/xenserver-release.git) = ce3e34e6aaff7ce4feeb2305d7251d12048bd4d2
+Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.2.1-8&format=tar.gz&prefix=xenserver-release-8.2.1#/xenserver-release.tar.gz) = 73f7d7e6d5461d70dba35a302e9ad91e769883be
 
 
 %description
 XenServer release files
 
 %package        presets
-Provides: gitsha(ssh://git@code.citrite.net/XS/xenserver-release.git) = ce3e34e6aaff7ce4feeb2305d7251d12048bd4d2
+Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.2.1-8&format=tar.gz&prefix=xenserver-release-8.2.1#/xenserver-release.tar.gz) = 73f7d7e6d5461d70dba35a302e9ad91e769883be
 Summary:        XenServer presets file
 Group:          System Environment/Base
 Provides:       xs-presets = 1.3
@@ -82,7 +97,7 @@ Requires(posttrans): systemd
 XenServer preset file.
 
 %package        config
-Provides: gitsha(ssh://git@code.citrite.net/XS/xenserver-release.git) = ce3e34e6aaff7ce4feeb2305d7251d12048bd4d2
+Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.2.1-8&format=tar.gz&prefix=xenserver-release-8.2.1#/xenserver-release.tar.gz) = 73f7d7e6d5461d70dba35a302e9ad91e769883be
 Summary:        XenServer configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
@@ -252,10 +267,10 @@ EOF
 
 -# Ciphers and keying
 +# Ciphers, MACs, KEX Algorithms & HostKeyAlgorithms
-+Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
-+MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
-+HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
++Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
++MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
++KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
++HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
 +
  #RekeyLimit default none
 
@@ -280,10 +295,10 @@ EOF
  	SendEnv LC_IDENTIFICATION LC_ALL LANGUAGE
  	SendEnv XMODIFIERS
 +
-+	Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
-+	MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+	KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
-+	HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
++	Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
++	MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
++	KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
++	HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
 EOF
 
 %triggerin config -- net-snmp
@@ -327,6 +342,10 @@ fi
  # RPM packages drop log rotation information into this directory
  include /etc/logrotate.d
 EOF
+
+if ! grep -q 'maxsize 104857600' /etc/logrotate.conf > /dev/null 2>&1; then
+    sed -i 's/^create$/\0\n\n# rotate if log reaches 100 MiB\nmaxsize 104857600/' /etc/logrotate.conf
+fi
 
 %triggerin config -- iscsi-initiator-utils
 /usr/bin/systemctl -q disable iscsi.service
@@ -478,13 +497,13 @@ EOF
  distroverpkg=centos-release
 EOF
 
-# Hide previous 8.0 hotfixes from xapi
-%triggerun config -- %{name}-config = 8.0.0, %{name}-config = 8.1.0
+# Hide previous 8.2 hotfixes from xapi
+%triggerun config -- %{name}-config = 8.2.0
 if [ -d /var/update/applied ]; then
     shopt -s nullglob
     for sfile in /var/update/applied/*; do
         label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
-        if [[ "$label" =~ ^XS8[01](E[0-9]{3}$|$) ]]; then
+        if [[ "$label" =~ ^XS82(E[0-9]{3}$|$) ]]; then
             rm -f $sfile
         fi
     done
@@ -595,6 +614,36 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Tue Oct 26 2021 Igor Druzhinin <igor.druzhinin@citrix.com> - 8.2.1-8
+- CP-37372: Obsolete XS82E034 hotfix
+
+* Wed Oct 20 2021 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.1-7
+- CA-339520: fcoe_driver: Only run "fcoeadm -i" when needed
+
+* Mon Sep 20 2021 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.1-6
+- CP-34895: reduce verbosity of SM logs
+- CA-343416: write crit log message to host console
+- CA-343416: log corosync warning and above to console
+- CA-343759: Send HUP to rsyslogd after DHCP setup
+- CA-356624: Force log rotation when file size reaches 100 MiB
+- CA-358540: Fix secure.log typo
+
+* Tue Sep 14 2021 Christian Lindig <christian.linidg@citrix.com> - * 8.2.1-5
+- Add obsoltes for XS82E033
+
+* Fri Sep 10 2021 Igor Druzhinin <igor.druzhinin@citrix.com> - 8.2.1-4
+- CP-37666: Obsolete XS82E032 hotfix
+- CP-38080: Obsolete XS82E031
+
+* Fri Jul 30 2021 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.1-3
+- CP-37202: Obsolete XS82E030 hotfix
+
+* Tue Jul 13 2021 Ming Lu <ming.lu@citrix.com> - 8.2.1-2
+- CP-36430: Update ciphers for SSH server and client
+
+* Fri Jun 25 2021 Pau Ruiz Safont <pau.safont@citrix.com> - 8.2.1-1
+- CP-36759: First 8.2.1 release
+
 * Mon Dec 21 2020 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.0-2
 - CA-337541: Reduce chrony-wait timeout to 2 minutes
 - CA-346481: Fix sshd and ssh config patching
