@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        1
+Release:        2
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -563,7 +563,7 @@ fi
 
 # XCP-ng: chrony
 %triggerin config -- chrony
-if [ ! -f /etc/systemd/system/chrony-wait.service ]; then
+if [ -f /etc/systemd/system/chrony-wait.service ]; then
     # Since 8.2.1: remove our overriding service file
     # Now chrony-wait's timeout is overriden through an override.conf
     rm -f /etc/systemd/system/chrony-wait.service
@@ -723,6 +723,10 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Thu Jan 20 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-2
+- Fix inverted test for the presence of an old replacement chrony-wait service file
+- The file was not removed when it should.
+
 * Tue Jan 11 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-1
 - Update to xcp-ng-release 8.2.1
 - Sync with xenserver-release 8.2.1
