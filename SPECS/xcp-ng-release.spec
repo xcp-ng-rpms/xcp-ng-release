@@ -570,7 +570,9 @@ if [ -f /etc/systemd/system/chrony-wait.service ]; then
 fi
 
 # XCP-ng: Enable chronyd and chrony-wait services.
-#         They are not active in case of yum update from 8.0.
+#         They are not active in case of yum update from 8.0 because they're disabled in the preset file:
+#         /usr/lib/systemd/system-preset/89-default.preset
+#         An alternative fix would be to fix or patch the preset file.
 # TODO 8.3: check if still needed
 
 systemctl enable chronyd >/dev/null 2>&1 || :
@@ -723,6 +725,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* next
+- Adding a comment about chronyd and chrony-wait services. In 8.2.1 we still need to enable them manually.
+
 * Thu Jan 20 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-2
 - Fix inverted test for the presence of an old replacement chrony-wait service file
 - The file was not removed when it should.
