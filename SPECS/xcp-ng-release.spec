@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        2
+Release:        3
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -576,6 +576,15 @@ fi
 # TODO 8.3: check if still needed
 
 systemctl enable chronyd >/dev/null 2>&1 || :
+# XCP-ng 8.2.1: we switched back to using the official service file
+# instead of our replacement file in /etc/systemd/system/chrony-wait.service,
+# as we now use an override.conf to set the timeout to 120s.
+# In order to make the /etc/systemd/system/multi-user.target.wants/chrony-wait.service
+# symlink point to the right target (the official service /usr/lib/systemd/system/chrony-wait.service),
+# we disable then reenable the service.
+# TODO: remove in next major release when update using yum from 8.2 or lower is not supported.
+#       (but still enable the services if they need to be, or fix the preset file)
+systemctl disable chrony-wait >/dev/null 2>&1 || :
 systemctl enable chrony-wait >/dev/null 2>&1 || :
 
 
@@ -725,8 +734,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* next
-- Adding a comment about chronyd and chrony-wait services. In 8.2.1 we still need to enable them manually.
+* Mon Jan 31 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-3
+- Add a comment about chronyd and chrony-wait services. In 8.2.1 we still need to enable them manually.
+- Fix symlink to chrony-wait.service now that we removed our custom replacement from /etc
 
 * Thu Jan 20 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-2
 - Fix inverted test for the presence of an old replacement chrony-wait service file
