@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        3
+Release:        4
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -302,6 +302,38 @@ EOF
  #GSSAPIKeyExchange no
 EOF
 
+# XCP-ng 8.2.1: When updating the ciphers for 8.2 CU1, Citrix forgot to handle the case when
+# users already had the previous list of ciphers, in which case the patch above doesn't apply.
+# Despite how ugly this solution is, add another patch to handle this case.
+SSHD_PATCH=$(cat <<'EOF'
+--- /etc/ssh/sshd_config	2022-02-01 11:57:02.376507807 +0100
++++ /etc/ssh/sshd_config	2022-02-01 11:56:04.074367389 +0100
+@@ -25,10 +25,10 @@
+ HostKey /etc/ssh/ssh_host_ed25519_key
+ 
+ # Ciphers, MACs, KEX Algorithms & HostKeyAlgorithms
+-Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
+-MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+-KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
+-HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
++Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
++MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
++KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
++HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
+ 
+ #RekeyLimit default none
+ 
+EOF
+)
+# Do not apply patch if it was already applied
+if ! echo "$SSHD_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
+    # Apply patch. Output NOT redirected to /dev/null so that error messages are displayed
+    if ! echo "$SSHD_PATCH" | patch -tsN -r - -d / -p1; then
+        echo "Error: failed to apply patch (was the file manually modified by an admin user?):"
+        echo "$SSHD_PATCH"
+    fi
+fi
+
 %triggerin config -- openssh-clients
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
 --- /etc/ssh/ssh_config	2019-10-28 13:56:16.791811367 +0000
@@ -316,6 +348,35 @@ EOF
 +	KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
 +	HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
 EOF
+
+# XCP-ng 8.2.1: When updating the ciphers for 8.2 CU1, Citrix forgot to handle the case when
+# users already had the previous list of ciphers, in which case the patch above doesn't apply.
+# Despite how ugly this solution is, add another patch to handle this case.
+SSH_PATCH=$(cat <<'EOF'
+--- /etc/ssh/ssh_config	2022-02-01 11:56:56.157492828 +0100
++++ /etc/ssh/ssh_config	2022-02-01 11:56:14.355392151 +0100
+@@ -67,7 +67,7 @@
+ 	SendEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+ 	SendEnv XMODIFIERS
+ 
+-	Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
+-	MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+-	KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
+-	HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
++	Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
++	MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
++	KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
++	HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
+EOF
+)
+# Do not apply patch if it was already applied
+if ! echo "$SSH_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
+    # Apply patch. Output NOT redirected to /dev/null so that error messages are displayed
+    if ! echo "$SSH_PATCH" | patch -tsN -r - -d / -p1; then
+        echo "Error: failed to apply patch (was the file manually modified by an admin user?):"
+        echo "$SSH_PATCH"
+    fi
+fi
 
 %triggerin config -- net-snmp
 grep -qs '^OPTIONS' %{_sysconfdir}/sysconfig/snmpd || echo 'OPTIONS="-c %{_sysconfdir}/snmp/snmpd.xs.conf"' >>%{_sysconfdir}/sysconfig/snmpd
@@ -734,6 +795,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Tue Feb 01 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-4
+- Add inline patches to fix cipher lists in sshd and ssh config for people updating from an updated 8.2
+
 * Mon Jan 31 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-3
 - Add a comment about chronyd and chrony-wait services. In 8.2.1 we still need to enable them manually.
 - Fix symlink to chrony-wait.service now that we removed our custom replacement from /etc
