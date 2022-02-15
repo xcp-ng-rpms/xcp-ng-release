@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        4
+Release:        5
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -795,6 +795,10 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Tue Feb 15 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-5
+- Rebuild for updated branding-xcp-ng
+- Sets "copyright" year to 2022
+
 * Tue Feb 01 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-4
 - Add inline patches to fix cipher lists in sshd and ssh config for people updating from an updated 8.2
 
