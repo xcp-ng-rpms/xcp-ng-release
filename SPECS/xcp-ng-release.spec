@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        5.0.ipv6.1
+Release:        5.0.ipv6.2
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -794,6 +794,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Fri May 13 2022 Benjamin Reis <benjamin.reis@vates.fr> - 8.2.1-5.0.ipv6.2
+- Add ipv6 rpm repo + 91-net-ipv6.conf
+
 * Thu Feb 17 2022 Benjamin Reis <benjamin.reis@vates.fr> - 8.2.1-5.0.ipv6.1
 - Add IPv6 patch: xcp-ng-release-8.2.0-ipv6.patch
 
