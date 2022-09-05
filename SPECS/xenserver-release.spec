@@ -1,3 +1,12 @@
+%global package_speccommit 7482cca9b579d29c2e5e3d9e6072fc4aaaba2505
+%global usver 8.3.0
+%global xsver 3
+%global xsrel %{xsver}%{?xscount}%{?xshash}
+# This package is special since the package version needs to
+# match the product version. When making a change to the source
+# repo, only the release should be changed, not the version.
+
+%global package_srccommit v8.3.0-1
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -9,14 +18,21 @@
 %define upstream_rel_long 7.5-8
 %define upstream_rel 7.5
 %define centos_rel 5.1804
+
+%define private_config_path /opt/xensource/config/
+
+%define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
+
 #define beta Beta
-%define dist .el%{dist_release_version}.centos
+## Do not redefine dist. Pass on whatever the
+## Build target gives us
+#%%define dist .el%%{dist_release_version}.centos
 
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xenserver-release
-Version:        8.2.1
-Release:        8
+Version: 8.3.0
+Release: %{?xsrel}%{?dist}
 Summary:        XenServer release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -29,42 +45,27 @@ Provides:       system-release = %{upstream_rel_long}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      centos-release
 
-#Obsolete CH82 hotfixes
-Obsoletes:      update-CH82 control-CH82
-Obsoletes:      update-XS82E001 control-XS82E001
-Obsoletes:      update-XS82E002 control-XS82E002
-Obsoletes:      update-XS82E003 control-XS82E003
-Obsoletes:      update-XS82E004 control-XS82E004
-Obsoletes:      update-XS82E005 control-XS82E005
-Obsoletes:      update-XS82E006 control-XS82E006
-Obsoletes:      update-XS82E007 control-XS82E007
-Obsoletes:      update-XS82E008 control-XS82E008
-Obsoletes:      update-XS82E009 control-XS82E009
-Obsoletes:      update-XS82E010 control-XS82E010
-Obsoletes:      update-XS82E011 control-XS82E011
-Obsoletes:      update-XS82E012 control-XS82E012
-Obsoletes:      update-XS82E013 control-XS82E013
-Obsoletes:      update-XS82E014 control-XS82E014
-Obsoletes:      update-XS82E015 control-XS82E015
-Obsoletes:      update-XS82E016 control-XS82E016
-Obsoletes:      update-XS82E017 control-XS82E017
-Obsoletes:      update-XS82E018 control-XS82E018
-Obsoletes:      update-XS82E019 control-XS82E019
-Obsoletes:      update-XS82E020 control-XS82E020
-Obsoletes:      update-XS82E021 control-XS82E021
-Obsoletes:      update-XS82E022 control-XS82E022
-Obsoletes:      update-XS82E023 control-XS82E023
-Obsoletes:      update-XS82E024 control-XS82E024
-Obsoletes:      update-XS82E025 control-XS82E025
-Obsoletes:      update-XS82E026 control-XS82E026
-#there has been no XS82E027
-Obsoletes:      update-XS82E028 control-XS82E028
-Obsoletes:      update-XS82E029 control-XS82E029
-Obsoletes:      update-XS82E030 control-XS82E030
-Obsoletes:      update-XS82E031 control-XS82E031
-Obsoletes:      update-XS82E032 control-XS82E032
-Obsoletes:      update-XS82E033 control-XS82E033
-Obsoletes:      update-XS82E034 control-XS82E034
+#Obsolete CH80 hotfixes
+Obsoletes:      update-XS80E001 control-XS80E001
+Obsoletes:      update-XS80E002 control-XS80E002
+Obsoletes:      update-XS80E003 control-XS80E003
+Obsoletes:      update-XS80E004 control-XS80E004
+Obsoletes:      update-XS80E005 control-XS80E005
+Obsoletes:      update-XS80E006 control-XS80E006
+#there has been no XS80E007
+Obsoletes:      update-XS80E008 control-XS80E008
+Obsoletes:      update-XS80E009 control-XS80E009
+Obsoletes:      update-XS80E010 control-XS80E010
+Obsoletes:      update-XS80E011 control-XS80E011
+Obsoletes:      update-XS80E012 control-XS80E012
+
+#Obsolete CH81 hotfixes
+Obsoletes:      update-CH81 control-CH81
+Obsoletes:      update-XS81E001 control-XS81E001
+Obsoletes:      update-XS81E002 control-XS81E002
+Obsoletes:      update-XS81E003 control-XS81E003
+Obsoletes:      update-XS81E004 control-XS81E004
+Obsoletes:      update-XS81E005 control-XS81E005
 
 # Metadata for the installer to consume
 Provides:       product-brand = XenServer
@@ -72,38 +73,34 @@ Provides:       product-version = %{PRODUCT_VERSION}
 Provides:       product-build = 0x
 Provides:       platform-name = XCP
 Provides:       platform-version = %{PLATFORM_VERSION}
-Provides:       product-version-text = %{PRODUCT_VERSION_TEXT}
-Provides:       product-version-text-short = %{PRODUCT_VERSION_TEXT_SHORT}
+Provides:       product-version-text = %replace_spaces %{PRODUCT_VERSION_TEXT}
+Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xenserver
-
-Source0: https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.2.1-8&format=tar.gz&prefix=xenserver-release-8.2.1#/xenserver-release.tar.gz
-
-
-Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.2.1-8&format=tar.gz&prefix=xenserver-release-8.2.1#/xenserver-release.tar.gz) = 73f7d7e6d5461d70dba35a302e9ad91e769883be
-
+Source0: xenserver-release-8.3.0.tar.gz
+Source1: RPM-GPG-KEY-Citrix-Hypervisor
+Source2: sshd_config
+Source3: ssh_config
 
 %description
 XenServer release files
 
 %package        presets
-Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.2.1-8&format=tar.gz&prefix=xenserver-release-8.2.1#/xenserver-release.tar.gz) = 73f7d7e6d5461d70dba35a302e9ad91e769883be
 Summary:        XenServer presets file
 Group:          System Environment/Base
-Provides:       xs-presets = 1.3
+Provides:       xs-presets = 1.4
 Requires(posttrans): systemd
 
 %description    presets
 XenServer preset file.
 
 %package        config
-Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.2.1-8&format=tar.gz&prefix=xenserver-release-8.2.1#/xenserver-release.tar.gz) = 73f7d7e6d5461d70dba35a302e9ad91e769883be
 Summary:        XenServer configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
-Requires(post): systemd xs-presets >= 1.3
-Requires(preun): systemd xs-presets >= 1.3
-Requires(postun): systemd xs-presets >= 1.3
+Requires(post): systemd xs-presets >= 1.4
+Requires(preun): systemd xs-presets >= 1.4
+Requires(postun): systemd xs-presets >= 1.4
 Requires(post): sed
 
 %description    config
@@ -111,17 +108,20 @@ Additional utilities and configuration for XenServer.
 
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 
 %install
 rm -rf %{buildroot}
 
+## Ensure the Hypervisor key is present
+install -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-Citrix-Hypervisor
+
 %{_usrsrc}/branding/brand-directory.py src/common %{buildroot}
 %{_usrsrc}/branding/brand-directory.py src/xenserver %{buildroot}
-install -d -m 755 %{buildroot}%{python_sitelib}/xcp
-%{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python_sitelib}/xcp/branding.py
+install -d -m 755 %{buildroot}%{python2_sitelib}/xcp
+%{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python2_sitelib}/xcp/branding.py
 
 install -m 644 %{_usrsrc}/branding/xenserver/EULA %{buildroot}/
 install -D -m 644 \
@@ -141,7 +141,7 @@ touch -r %{buildroot}%{_sysconfdir}/issue.net %{buildroot}%{_sysconfdir}/issue
 install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
 # Use the production yum repos
 install -m 644 CentOS-Base-production.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
-#install -m 644 CentOS-Base-devel.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
+#install -m 644 CentOS-Base-devel.repo %%{buildroot}%%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
 install -m 644 CentOS-Debuginfo.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 install -m 644 CentOS-Sources.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 
@@ -165,6 +165,11 @@ ln -s centos-release %{buildroot}/%{_datadir}/redhat-release
 install -d -m 755 %{buildroot}/%{_docdir}/centos-release
 ln -s centos-release %{buildroot}/%{_docdir}/redhat-release
 
+# install dom0 configurations
+
+install -D -m 600 %{SOURCE2} %{buildroot}/%{private_config_path}/sshd_config
+install -D -m 644 %{SOURCE3} %{buildroot}/%{private_config_path}/ssh_config
+
 # Prevent spawning gettys on tty1 and tty2
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/system
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/getty@tty1.service
@@ -183,8 +188,8 @@ rm -rf %{buildroot}
 %triggerin config -- mcelog
 
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/mcelog/mcelog.conf	2014-01-22 00:03:35.000000000 +0000
-+++ /etc/mcelog/mcelog.conf	2014-11-13 13:49:57.152247000 +0000
+--- /etc/mcelog/mcelog.conf    2014-01-22 00:03:35.000000000 +0000
++++ /etc/mcelog/mcelog.conf    2014-11-13 13:49:57.152247000 +0000
 @@ -22,7 +22,7 @@
 
  [dimm]
@@ -229,8 +234,8 @@ EOF
 
 %triggerin config -- rsyslog
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/rsyslog.conf	2014-11-12 13:55:42.000000000 +0000
-+++ /etc/rsyslog.conf	2014-11-12 13:56:01.000000000 +0000
+--- /etc/rsyslog.conf    2014-11-12 13:55:42.000000000 +0000
++++ /etc/rsyslog.conf    2014-11-12 13:56:01.000000000 +0000
 @@ -7,8 +7,8 @@
 
  # The imjournal module bellow is now used as a message source instead of imuxsock.
@@ -258,48 +263,14 @@ EOF
 EOF
 
 %triggerin config -- openssh-server
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/ssh/sshd_config	2010-03-31 10:24:13.000000000 +0100
-+++ /etc/ssh/sshd_config	2010-09-03 16:08:27.000000000 +0100
-@@ -24,7 +24,12 @@
- HostKey /etc/ssh/ssh_host_ecdsa_key
- HostKey /etc/ssh/ssh_host_ed25519_key
-
--# Ciphers and keying
-+# Ciphers, MACs, KEX Algorithms & HostKeyAlgorithms
-+Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
-+MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
-+HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
-+
- #RekeyLimit default none
-
- # Logging
-@@ -90,7 +90,7 @@
- #KerberosUseKuserok yes
-
- # GSSAPI options
--GSSAPIAuthentication yes
-+GSSAPIAuthentication no
- GSSAPICleanupCredentials no
- #GSSAPIStrictAcceptorCheck yes
- #GSSAPIKeyExchange no
-EOF
+# Replace openssh-server config as openssh package mark it as noreplace as follows
+# attr(0600,root,root) config(noreplace) {_sysconfdir}/ssh/sshd_config
+install -D -m 600 %{private_config_path}/sshd_config /etc/ssh/
 
 %triggerin config -- openssh-clients
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/ssh/ssh_config	2019-10-28 13:56:16.791811367 +0000
-+++ /etc/ssh/ssh_config	2019-10-28 13:26:42.374146454 +0000
-@@ -66,3 +66,8 @@
- 	SendEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
- 	SendEnv LC_IDENTIFICATION LC_ALL LANGUAGE
- 	SendEnv XMODIFIERS
-+
-+	Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
-+	MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+	KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
-+	HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
-EOF
+# Replace openssh-clients config as openssh package mark it as noreplace as follows
+# attr(0644,root,root) config(noreplace) {_sysconfdir}/ssh/ssh_config
+install -D -m 644 %{private_config_path}/ssh_config /etc/ssh/
 
 %triggerin config -- net-snmp
 grep -qs '^OPTIONS' %{_sysconfdir}/sysconfig/snmpd || echo 'OPTIONS="-c %{_sysconfdir}/snmp/snmpd.xs.conf"' >>%{_sysconfdir}/sysconfig/snmpd
@@ -315,7 +286,7 @@ fi
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
 --- /etc/logrotate.conf   2013-07-31 12:46:23.000000000 +0100
 +++ /etc/logrotate.conf   2015-08-06 11:47:36.000000000 +0100
-@@ -1,18 +1,16 @@
+@@ -1,18 +1,19 @@
  # see "man logrotate" for details
 -# rotate log files weekly
 -weekly
@@ -332,7 +303,9 @@ fi
 
 -# use date as a suffix of the rotated file
 -dateext
--
++# rotate if log reaches 100 MiB
++maxsize 104857600
+
 -# uncomment this if you want your log files compressed
 -#compress
 +# compress log files
@@ -342,10 +315,6 @@ fi
  # RPM packages drop log rotation information into this directory
  include /etc/logrotate.d
 EOF
-
-if ! grep -q 'maxsize 104857600' /etc/logrotate.conf > /dev/null 2>&1; then
-    sed -i 's/^create$/\0\n\n# rotate if log reaches 100 MiB\nmaxsize 104857600/' /etc/logrotate.conf
-fi
 
 %triggerin config -- iscsi-initiator-utils
 /usr/bin/systemctl -q disable iscsi.service
@@ -366,15 +335,11 @@ fi
 %triggerin config -- device-mapper-event
 /usr/bin/systemctl -q disable dm-event.socket
 
-%triggerin config -- elxocmcore
-/usr/bin/systemctl -q disable elxhbamgr.service
-/usr/bin/systemctl -q disable elxsnmp.service
-
 # default firewall rules, to be replaced by dynamic rule addition/removal
 %triggerin config -- iptables-services
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/sysconfig/iptables	2014-06-10 06:02:35.000000000 +0100
-+++ /etc/sysconfig/iptables	2015-05-15 11:24:23.712024801 +0100
+--- /etc/sysconfig/iptables    2014-06-10 06:02:35.000000000 +0100
++++ /etc/sysconfig/iptables    2015-05-15 11:24:23.712024801 +0100
 @@ -5,10 +5,21 @@
  :INPUT ACCEPT [0:0]
  :FORWARD ACCEPT [0:0]
@@ -405,8 +370,8 @@ fi
  COMMIT
 EOF
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/sysconfig/ip6tables	2014-06-10 06:02:35.000000000 +0100
-+++ /etc/sysconfig/ip6tables	2015-05-15 11:25:34.416370193 +0100
+--- /etc/sysconfig/ip6tables    2014-06-10 06:02:35.000000000 +0100
++++ /etc/sysconfig/ip6tables    2015-05-15 11:25:34.416370193 +0100
 @@ -5,11 +5,21 @@
  :INPUT ACCEPT [0:0]
  :FORWARD ACCEPT [0:0]
@@ -441,8 +406,8 @@ EOF
 # CA-38350
 %triggerin config -- dhclient
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /usr/sbin/dhclient-script	2015-11-19 21:28:36.000000000 +0000
-+++ /usr/sbin/dhclient-script	2016-01-22 17:15:09.000000000 +0000
+--- /usr/sbin/dhclient-script    2015-11-19 21:28:36.000000000 +0000
++++ /usr/sbin/dhclient-script    2016-01-22 17:15:09.000000000 +0000
 @@ -790,6 +790,8 @@
              fi
 
@@ -456,8 +421,8 @@ EOF
 
 %triggerin config -- smartmontools
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/smartmontools/smartd.conf.orig	2015-09-24 09:13:05.000000000 +0100
-+++ /etc/smartmontools/smartd.conf	2015-09-24 09:12:19.000000000 +0100
+--- /etc/smartmontools/smartd.conf.orig    2015-09-24 09:13:05.000000000 +0100
++++ /etc/smartmontools/smartd.conf    2015-09-24 09:12:19.000000000 +0100
 @@ -20,7 +20,7 @@
  # Directives listed below, which will be applied to all devices that
  # are found.  Most users should comment out DEVICESCAN and explicitly
@@ -497,13 +462,13 @@ EOF
  distroverpkg=centos-release
 EOF
 
-# Hide previous 8.2 hotfixes from xapi
-%triggerun config -- %{name}-config = 8.2.0
+# Hide previous 8.0 hotfixes from xapi
+%triggerun config -- %{name}-config = 8.0.0, %{name}-config = 8.1.0
 if [ -d /var/update/applied ]; then
     shopt -s nullglob
     for sfile in /var/update/applied/*; do
         label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
-        if [[ "$label" =~ ^XS82(E[0-9]{3}$|$) ]]; then
+        if [[ "$label" =~ ^XS8[01](E[0-9]{3}$|$) ]]; then
             rm -f $sfile
         fi
     done
@@ -575,7 +540,7 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_prefix}/lib/systemd/system-preset/90-default.preset
 /EULA
 %{_docdir}/XenServer/LICENSES
-%{python_sitelib}/xcp/branding.py*
+%{python2_sitelib}/xcp/branding.py*
 
 %files presets
 %{_prefix}/lib/systemd/system-preset/89-default.preset
@@ -591,8 +556,10 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_sysconfdir}/logrotate.d/*
 %{_sysconfdir}/udev/rules.d/*.rules
 %{_sysconfdir}/systemd/system/*
+%{_sysconfdir}/xapi.conf.d/*.conf
 %{_unitdir}/*
 /opt/xensource/www/*
+%{private_config_path}/*
 %attr(0755,-,-) /sbin/update-issue
 %attr(0755,-,-) /opt/xensource/libexec/xen-cmdline
 %attr(0755,-,-) /opt/xensource/libexec/ibft-to-ignore
@@ -614,39 +581,66 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
-* Tue Oct 26 2021 Igor Druzhinin <igor.druzhinin@citrix.com> - 8.2.1-8
-- CP-37372: Obsolete XS82E034 hotfix
+* Mon Jul 11 2022 Lin Liu <lin.liu@citrix.com> - 8.3.0-3
+- CA-362922: Outdated Ciphers used by Openssh when host is updated from hotfix
 
-* Wed Oct 20 2021 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.1-7
-- CA-339520: fcoe_driver: Only run "fcoeadm -i" when needed
+* Fri Jul 08 2022 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.3.0-2
+- CP-39371: Update product version to 8.3.0 (take 2)
 
-* Mon Sep 20 2021 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.1-6
-- CP-34895: reduce verbosity of SM logs
-- CA-343416: write crit log message to host console
-- CA-343416: log corosync warning and above to console
-- CA-343759: Send HUP to rsyslogd after DHCP setup
-- CA-356624: Force log rotation when file size reaches 100 MiB
+* Thu Jul 07 2022 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.3.0-1
+- CP-39371: Update product version to 8.3.0
+
+* Thu Jun 23 2022 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.50-17
+- CA-366439: Silence critical warning from fcoeadm -i
+- CA-366439: Handle fipvlan failures properly
+
+* Thu Mar 10 2022 Ming Lu <ming.lu@citrix.com> - 8.2.50-16
+- CP-39253: Add hypervisor.cloud.com into allowed repo domain list
+
+* Thu Mar 03 2022 Tim Smith <tim.smith@citrix.com> - 8.2.50-15
+- CP-39330 Provide signing pubkey
+
+* Tue Jan 25 2022 Deli Zhang <deli.zhang@citrix.com> - 8.2.50-14
+- CP-38336: Remove elxocmcore trigger scripts
+- CA-362930: Replace space to underscore for provides
+
+* Thu Oct 07 2021 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.50-13
 - CA-358540: Fix secure.log typo
 
-* Tue Sep 14 2021 Christian Lindig <christian.linidg@citrix.com> - * 8.2.1-5
-- Add obsoltes for XS82E033
+* Tue Jul 13 2021 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.50-12
+- CA-356624: Rotate log when size reaches 100 MiB
 
-* Fri Sep 10 2021 Igor Druzhinin <igor.druzhinin@citrix.com> - 8.2.1-4
-- CP-37666: Obsolete XS82E032 hotfix
-- CP-38080: Obsolete XS82E031
+* Mon Jul 12 2021 Ming Lu <ming.lu@citrix.com> - 8.2.50-11
+- CP-36430: Remove support for CBC mode SSH ciphers
 
-* Fri Jul 30 2021 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.1-3
-- CP-37202: Obsolete XS82E030 hotfix
+* Wed Jul 07 2021 Ming Lu <ming.lu@citrix.com> - 8.2.50-10
+- CP-36857: Add Citrix specific conf file for XAPI
 
-* Tue Jul 13 2021 Ming Lu <ming.lu@citrix.com> - 8.2.1-2
-- CP-36430: Update ciphers for SSH server and client
+* Mon Apr 12 2021 Mark Syms <mark.syms@citrix.com> - 8.2.50-9
+- CA-352792: enable missing glock-logging.timer
 
-* Fri Jun 25 2021 Pau Ruiz Safont <pau.safont@citrix.com> - 8.2.1-1
-- CP-36759: First 8.2.1 release
+* Wed Feb 24 2021 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.50-8
+- CA-343759: Send HUP to rsyslogd after DHCP setup
+- CA-350429: Fix applying SSH client config
 
-* Mon Dec 21 2020 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.0-2
-- CA-337541: Reduce chrony-wait timeout to 2 minutes
+* Tue Dec 08 2020 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.50-7
+- CP-35517: Fix autosetup rule
+
+* Tue Dec 08 2020 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.50-6
+- CP-35517: Package for koji
+
+* Tue Nov 03 2020 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.50-5
 - CA-346481: Fix sshd and ssh config patching
+
+* Tue Oct 13 2020 Mark Syms <mark.syms@citrix.com> - 8.2.50-4
+- CA-337541: Reduce chrony-wait timeout to 2 minutes
+- CA-343416: write useful clustering messages to host console
+
+* Fri Sep 11 2020 Mark Syms <mark.syms@citrix.com> - 8.2.50-3
+- CP-34895: Reduce verbosity of SM logs
+
+* Wed Jul 08 2020 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.50-2
+- CA-339520: fcoe_driver: Only run "fcoeadm -i" when needed
 
 * Fri Jun 05 2020 Alex Brett <alex.brett@citrix.com> - 8.1.50-13
 - CA-340624: Add missing hotfix obsoletes
