@@ -1,11 +1,21 @@
 # XCP-ng: TO BE UPDATED FOR EACH NEW RELEASE
 # TODO: use data from branding file instead
-%define PRODUCT_VERSION 8.2.1
-%define PRODUCT_VERSION_TEXT 8.2
+%define PRODUCT_VERSION 8.3.0
+%define PRODUCT_VERSION_TEXT 8.3
 %define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
-%define PLATFORM_VERSION 3.2.1
-%define BUILD_NUMBER release/yangtze/master/58
+%define PLATFORM_VERSION 3.3.0
 
+
+%define BUILD_NUMBER release/yangtze/master/58
+%global package_speccommit 7482cca9b579d29c2e5e3d9e6072fc4aaaba2505
+%global usver 8.3.0
+%global xsver 3
+%global xsrel %{xsver}%{?xscount}%{?xshash}
+# This package is special since the package version needs to
+# match the product version. When making a change to the source
+# repo, only the release should be changed, not the version.
+
+%global package_srccommit v8.3.0-1
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -17,14 +27,19 @@
 %define upstream_rel_long 7.5-8
 %define upstream_rel 7.5
 %define centos_rel 5.1804
+
+%define private_config_path /opt/xensource/config/
+
+%define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
+
 #define beta Beta
 %define dist .xcpng%{PRODUCT_VERSION_TEXT_SHORT}
 
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xcp-ng-release
-Version:        8.2.1
-Release:        5
+Version:        8.3.0
+Release:        1
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -39,42 +54,27 @@ Obsoletes:      centos-release
 Obsoletes:      epel-release
 Obsoletes:      xenserver-release <= %{version}
 
-#Obsolete CH82 hotfixes
-Obsoletes:      update-CH82 control-CH82
-Obsoletes:      update-XS82E001 control-XS82E001
-Obsoletes:      update-XS82E002 control-XS82E002
-Obsoletes:      update-XS82E003 control-XS82E003
-Obsoletes:      update-XS82E004 control-XS82E004
-Obsoletes:      update-XS82E005 control-XS82E005
-Obsoletes:      update-XS82E006 control-XS82E006
-Obsoletes:      update-XS82E007 control-XS82E007
-Obsoletes:      update-XS82E008 control-XS82E008
-Obsoletes:      update-XS82E009 control-XS82E009
-Obsoletes:      update-XS82E010 control-XS82E010
-Obsoletes:      update-XS82E011 control-XS82E011
-Obsoletes:      update-XS82E012 control-XS82E012
-Obsoletes:      update-XS82E013 control-XS82E013
-Obsoletes:      update-XS82E014 control-XS82E014
-Obsoletes:      update-XS82E015 control-XS82E015
-Obsoletes:      update-XS82E016 control-XS82E016
-Obsoletes:      update-XS82E017 control-XS82E017
-Obsoletes:      update-XS82E018 control-XS82E018
-Obsoletes:      update-XS82E019 control-XS82E019
-Obsoletes:      update-XS82E020 control-XS82E020
-Obsoletes:      update-XS82E021 control-XS82E021
-Obsoletes:      update-XS82E022 control-XS82E022
-Obsoletes:      update-XS82E023 control-XS82E023
-Obsoletes:      update-XS82E024 control-XS82E024
-Obsoletes:      update-XS82E025 control-XS82E025
-Obsoletes:      update-XS82E026 control-XS82E026
-#there has been no XS82E027
-Obsoletes:      update-XS82E028 control-XS82E028
-Obsoletes:      update-XS82E029 control-XS82E029
-Obsoletes:      update-XS82E030 control-XS82E030
-Obsoletes:      update-XS82E031 control-XS82E031
-Obsoletes:      update-XS82E032 control-XS82E032
-Obsoletes:      update-XS82E033 control-XS82E033
-Obsoletes:      update-XS82E034 control-XS82E034
+#Obsolete CH80 hotfixes
+Obsoletes:      update-XS80E001 control-XS80E001
+Obsoletes:      update-XS80E002 control-XS80E002
+Obsoletes:      update-XS80E003 control-XS80E003
+Obsoletes:      update-XS80E004 control-XS80E004
+Obsoletes:      update-XS80E005 control-XS80E005
+Obsoletes:      update-XS80E006 control-XS80E006
+#there has been no XS80E007
+Obsoletes:      update-XS80E008 control-XS80E008
+Obsoletes:      update-XS80E009 control-XS80E009
+Obsoletes:      update-XS80E010 control-XS80E010
+Obsoletes:      update-XS80E011 control-XS80E011
+Obsoletes:      update-XS80E012 control-XS80E012
+
+#Obsolete CH81 hotfixes
+Obsoletes:      update-CH81 control-CH81
+Obsoletes:      update-XS81E001 control-XS81E001
+Obsoletes:      update-XS81E002 control-XS81E002
+Obsoletes:      update-XS81E003 control-XS81E003
+Obsoletes:      update-XS81E004 control-XS81E004
+Obsoletes:      update-XS81E005 control-XS81E005
 
 # Metadata for the installer to consume
 Provides:       product-brand = XCP-ng
@@ -82,14 +82,17 @@ Provides:       product-version = %{PRODUCT_VERSION}
 Provides:       product-build = 0x
 Provides:       platform-name = XCP
 Provides:       platform-version = %{PLATFORM_VERSION}
-Provides:       product-version-text = %{PRODUCT_VERSION_TEXT}
-Provides:       product-version-text-short = %{PRODUCT_VERSION_TEXT_SHORT}
+Provides:       product-version-text = %replace_spaces %{PRODUCT_VERSION_TEXT}
+Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xcp-ng
 URL:            https://github.com/xcp-ng/xcp-ng-release
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
+Source1: RPM-GPG-KEY-Citrix-Hypervisor
+Source2: sshd_config
+Source3: ssh_config
 
-# Patches generated with git format-patch v8.2.1
+# XCP-ng Patches generated during maintenance period with `git format-patch v8.3`
 # (None at the moment)
 
 %description
@@ -98,7 +101,7 @@ XCP-ng release files
 %package        presets
 Summary:        XCP-ng presets file
 Group:          System Environment/Base
-Provides:       xs-presets = 1.3
+Provides:       xs-presets = 1.4
 Requires(posttrans): systemd
 
 %description    presets
@@ -108,9 +111,9 @@ XCP-ng presets file.
 Summary:        XCP-ng configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
-Requires(post): systemd xs-presets >= 1.3
-Requires(preun): systemd xs-presets >= 1.3
-Requires(postun): systemd xs-presets >= 1.3
+Requires(post): systemd xs-presets >= 1.4
+Requires(preun): systemd xs-presets >= 1.4
+Requires(postun): systemd xs-presets >= 1.4
 Requires(post): sed
 Obsoletes:      xenserver-release-config <= %{version}
 
@@ -119,7 +122,8 @@ Additional utilities and configuration for XCP-ng.
 
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}-%{version}
+
 # XCP-ng: copy LICENSES from branding package
 cp %{_usrsrc}/branding/LICENSES .
 
@@ -128,10 +132,13 @@ cp %{_usrsrc}/branding/LICENSES .
 %install
 rm -rf %{buildroot}
 
+## Ensure the Hypervisor key is present
+install -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-Citrix-Hypervisor
+
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/common %{buildroot}
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/xenserver %{buildroot}
-install -d -m 755 %{buildroot}%{python_sitelib}/xcp
-%{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python_sitelib}/xcp/branding.py
+install -d -m 755 %{buildroot}%{python2_sitelib}/xcp
+%{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python2_sitelib}/xcp/branding.py
 
 install -m 644 %{_usrsrc}/branding/EULA %{buildroot}/
 
@@ -148,7 +155,7 @@ touch -r %{buildroot}%{_sysconfdir}/issue.net %{buildroot}%{_sysconfdir}/issue
 install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
 # Use the production yum repos
 install -m 644 CentOS-Base-production.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
-#install -m 644 CentOS-Base-devel.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
+#install -m 644 CentOS-Base-devel.repo %%{buildroot}%%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
 install -m 644 CentOS-Debuginfo.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 install -m 644 CentOS-Sources.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 # XCP-ng: add epel and xcp-ng repos
@@ -178,6 +185,11 @@ ln -s centos-release %{buildroot}/%{_datadir}/redhat-release
 install -d -m 755 %{buildroot}/%{_docdir}/centos-release
 ln -s centos-release %{buildroot}/%{_docdir}/redhat-release
 
+# install dom0 configurations
+
+install -D -m 600 %{SOURCE2} %{buildroot}/%{private_config_path}/sshd_config
+install -D -m 644 %{SOURCE3} %{buildroot}/%{private_config_path}/ssh_config
+
 # Prevent spawning gettys on tty1 and tty2
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/system
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/getty@tty1.service
@@ -190,7 +202,7 @@ ln -s XCP-ng-index.html %{buildroot}/opt/xensource/www/index.html
 %posttrans
 # XCP-ng 8.1: running this in posttrans instead of post because xcp-ng-release may be installed after
 # coreutils, since they both require each other: no guaranteed order
-# XCP-ng 8.2: looks like CH 8.2 switched to posttrans too. I'm keeping my comment all the same.
+# XCP-ng 8.2: CH 8.2 switched to posttrans too. I'm keeping my previous comment to document why.
 /usr/bin/uname -m | grep -q 'x86_64'  && echo 'centos' >/etc/yum/vars/contentdir || echo 'altarch' > /etc/yum/vars/contentdir
 
 %clean
@@ -199,8 +211,8 @@ rm -rf %{buildroot}
 %triggerin config -- mcelog
 
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/mcelog/mcelog.conf	2014-01-22 00:03:35.000000000 +0000
-+++ /etc/mcelog/mcelog.conf	2014-11-13 13:49:57.152247000 +0000
+--- /etc/mcelog/mcelog.conf    2014-01-22 00:03:35.000000000 +0000
++++ /etc/mcelog/mcelog.conf    2014-11-13 13:49:57.152247000 +0000
 @@ -22,7 +22,7 @@
 
  [dimm]
@@ -245,8 +257,8 @@ EOF
 
 %triggerin config -- rsyslog
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/rsyslog.conf	2014-11-12 13:55:42.000000000 +0000
-+++ /etc/rsyslog.conf	2014-11-12 13:56:01.000000000 +0000
+--- /etc/rsyslog.conf    2014-11-12 13:55:42.000000000 +0000
++++ /etc/rsyslog.conf    2014-11-12 13:56:01.000000000 +0000
 @@ -7,8 +7,8 @@
 
  # The imjournal module bellow is now used as a message source instead of imuxsock.
@@ -274,109 +286,14 @@ EOF
 EOF
 
 %triggerin config -- openssh-server
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/ssh/sshd_config	2010-03-31 10:24:13.000000000 +0100
-+++ /etc/ssh/sshd_config	2010-09-03 16:08:27.000000000 +0100
-@@ -24,7 +24,12 @@
- HostKey /etc/ssh/ssh_host_ecdsa_key
- HostKey /etc/ssh/ssh_host_ed25519_key
-
--# Ciphers and keying
-+# Ciphers, MACs, KEX Algorithms & HostKeyAlgorithms
-+Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
-+MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
-+HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
-+
- #RekeyLimit default none
-
- # Logging
-@@ -90,7 +90,7 @@
- #KerberosUseKuserok yes
-
- # GSSAPI options
--GSSAPIAuthentication yes
-+GSSAPIAuthentication no
- GSSAPICleanupCredentials no
- #GSSAPIStrictAcceptorCheck yes
- #GSSAPIKeyExchange no
-EOF
-
-# XCP-ng 8.2.1: When updating the ciphers for 8.2 CU1, Citrix forgot to handle the case when
-# users already had the previous list of ciphers, in which case the patch above doesn't apply.
-# Despite how ugly this solution is, add another patch to handle this case.
-SSHD_PATCH=$(cat <<'EOF'
---- /etc/ssh/sshd_config	2022-02-01 11:57:02.376507807 +0100
-+++ /etc/ssh/sshd_config	2022-02-01 11:56:04.074367389 +0100
-@@ -25,10 +25,10 @@
- HostKey /etc/ssh/ssh_host_ed25519_key
- 
- # Ciphers, MACs, KEX Algorithms & HostKeyAlgorithms
--Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
--MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
--KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
--HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
-+Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
-+MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
-+HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
- 
- #RekeyLimit default none
- 
-EOF
-)
-# Do not apply patch if it was already applied
-if ! echo "$SSHD_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
-    # Apply patch. Output NOT redirected to /dev/null so that error messages are displayed
-    if ! echo "$SSHD_PATCH" | patch -tsN -r - -d / -p1; then
-        echo "Error: failed to apply patch (was the file manually modified by an admin user?):"
-        echo "$SSHD_PATCH"
-    fi
-fi
+# Replace openssh-server config as openssh package mark it as noreplace as follows
+# attr(0600,root,root) config(noreplace) {_sysconfdir}/ssh/sshd_config
+install -D -m 600 %{private_config_path}/sshd_config /etc/ssh/
 
 %triggerin config -- openssh-clients
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/ssh/ssh_config	2019-10-28 13:56:16.791811367 +0000
-+++ /etc/ssh/ssh_config	2019-10-28 13:26:42.374146454 +0000
-@@ -66,3 +66,8 @@
- 	SendEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
- 	SendEnv LC_IDENTIFICATION LC_ALL LANGUAGE
- 	SendEnv XMODIFIERS
-+
-+	Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
-+	MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+	KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
-+	HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
-EOF
-
-# XCP-ng 8.2.1: When updating the ciphers for 8.2 CU1, Citrix forgot to handle the case when
-# users already had the previous list of ciphers, in which case the patch above doesn't apply.
-# Despite how ugly this solution is, add another patch to handle this case.
-SSH_PATCH=$(cat <<'EOF'
---- /etc/ssh/ssh_config	2022-02-01 11:56:56.157492828 +0100
-+++ /etc/ssh/ssh_config	2022-02-01 11:56:14.355392151 +0100
-@@ -67,7 +67,7 @@
- 	SendEnv LC_IDENTIFICATION LC_ALL LANGUAGE
- 	SendEnv XMODIFIERS
- 
--	Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
--	MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
--	KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
--	HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
-+	Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
-+	MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+	KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
-+	HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
-EOF
-)
-# Do not apply patch if it was already applied
-if ! echo "$SSH_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
-    # Apply patch. Output NOT redirected to /dev/null so that error messages are displayed
-    if ! echo "$SSH_PATCH" | patch -tsN -r - -d / -p1; then
-        echo "Error: failed to apply patch (was the file manually modified by an admin user?):"
-        echo "$SSH_PATCH"
-    fi
-fi
+# Replace openssh-clients config as openssh package mark it as noreplace as follows
+# attr(0644,root,root) config(noreplace) {_sysconfdir}/ssh/ssh_config
+install -D -m 644 %{private_config_path}/ssh_config /etc/ssh/
 
 %triggerin config -- net-snmp
 grep -qs '^OPTIONS' %{_sysconfdir}/sysconfig/snmpd || echo 'OPTIONS="-c %{_sysconfdir}/snmp/snmpd.xs.conf"' >>%{_sysconfdir}/sysconfig/snmpd
@@ -392,7 +309,7 @@ fi
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
 --- /etc/logrotate.conf   2013-07-31 12:46:23.000000000 +0100
 +++ /etc/logrotate.conf   2015-08-06 11:47:36.000000000 +0100
-@@ -1,18 +1,16 @@
+@@ -1,18 +1,19 @@
  # see "man logrotate" for details
 -# rotate log files weekly
 -weekly
@@ -409,7 +326,9 @@ fi
 
 -# use date as a suffix of the rotated file
 -dateext
--
++# rotate if log reaches 100 MiB
++maxsize 104857600
+
 -# uncomment this if you want your log files compressed
 -#compress
 +# compress log files
@@ -419,10 +338,6 @@ fi
  # RPM packages drop log rotation information into this directory
  include /etc/logrotate.d
 EOF
-
-if ! grep -q 'maxsize 104857600' /etc/logrotate.conf > /dev/null 2>&1; then
-    sed -i 's/^create$/\0\n\n# rotate if log reaches 100 MiB\nmaxsize 104857600/' /etc/logrotate.conf
-fi
 
 %triggerin config -- iscsi-initiator-utils
 /usr/bin/systemctl -q disable iscsi.service
@@ -443,17 +358,13 @@ fi
 %triggerin config -- device-mapper-event
 /usr/bin/systemctl -q disable dm-event.socket
 
-%triggerin config -- elxocmcore
-/usr/bin/systemctl -q disable elxhbamgr.service
-/usr/bin/systemctl -q disable elxsnmp.service
-
 # default firewall rules, to be replaced by dynamic rule addition/removal
 # /!\ XCP-ng: if the following is updated, make sure to also adapt the rules
 # in the netdata package, because they depend on this
 %triggerin config -- iptables-services
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/sysconfig/iptables	2014-06-10 06:02:35.000000000 +0100
-+++ /etc/sysconfig/iptables	2015-05-15 11:24:23.712024801 +0100
+--- /etc/sysconfig/iptables    2014-06-10 06:02:35.000000000 +0100
++++ /etc/sysconfig/iptables    2015-05-15 11:24:23.712024801 +0100
 @@ -5,10 +5,21 @@
  :INPUT ACCEPT [0:0]
  :FORWARD ACCEPT [0:0]
@@ -484,8 +395,8 @@ fi
  COMMIT
 EOF
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/sysconfig/ip6tables	2014-06-10 06:02:35.000000000 +0100
-+++ /etc/sysconfig/ip6tables	2015-05-15 11:25:34.416370193 +0100
+--- /etc/sysconfig/ip6tables    2014-06-10 06:02:35.000000000 +0100
++++ /etc/sysconfig/ip6tables    2015-05-15 11:25:34.416370193 +0100
 @@ -5,11 +5,21 @@
  :INPUT ACCEPT [0:0]
  :FORWARD ACCEPT [0:0]
@@ -520,8 +431,8 @@ EOF
 # CA-38350
 %triggerin config -- dhclient
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /usr/sbin/dhclient-script	2015-11-19 21:28:36.000000000 +0000
-+++ /usr/sbin/dhclient-script	2016-01-22 17:15:09.000000000 +0000
+--- /usr/sbin/dhclient-script    2015-11-19 21:28:36.000000000 +0000
++++ /usr/sbin/dhclient-script    2016-01-22 17:15:09.000000000 +0000
 @@ -790,6 +790,8 @@
              fi
 
@@ -535,8 +446,8 @@ EOF
 
 %triggerin config -- smartmontools
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/smartmontools/smartd.conf.orig	2015-09-24 09:13:05.000000000 +0100
-+++ /etc/smartmontools/smartd.conf	2015-09-24 09:12:19.000000000 +0100
+--- /etc/smartmontools/smartd.conf.orig    2015-09-24 09:13:05.000000000 +0100
++++ /etc/smartmontools/smartd.conf    2015-09-24 09:12:19.000000000 +0100
 @@ -20,7 +20,7 @@
  # Directives listed below, which will be applied to all devices that
  # are found.  Most users should comment out DEVICESCAN and explicitly
@@ -630,32 +541,25 @@ if [ -f /etc/systemd/system/chrony-wait.service ]; then
     rm -f /etc/systemd/system/chrony-wait.service
 fi
 
-# XCP-ng: Enable chronyd and chrony-wait services.
-#         They are not active in case of yum update from 8.0 because they're disabled in the preset file:
-#         /usr/lib/systemd/system-preset/89-default.preset
-#         An alternative fix would be to fix or patch the preset file.
-# TODO 8.3: check if still needed
-
-systemctl enable chronyd >/dev/null 2>&1 || :
 # XCP-ng 8.2.1: we switched back to using the official service file
 # instead of our replacement file in /etc/systemd/system/chrony-wait.service,
 # as we now use an override.conf to set the timeout to 120s.
 # In order to make the /etc/systemd/system/multi-user.target.wants/chrony-wait.service
 # symlink point to the right target (the official service /usr/lib/systemd/system/chrony-wait.service),
 # we disable then reenable the service.
-# TODO: remove in next major release when update using yum from 8.2 or lower is not supported.
+# TODO: remove in a future major release when update using yum from 8.2 or lower is not supported anymore.
 #       (but still enable the services if they need to be, or fix the preset file)
 systemctl disable chrony-wait >/dev/null 2>&1 || :
 systemctl enable chrony-wait >/dev/null 2>&1 || :
 
 
-# Hide previous 8.2 hotfixes from xapi
-%triggerun config -- %{name}-config = 8.2.0
+# Hide previous 8.0 hotfixes from xapi
+%triggerun config -- %{name}-config = 8.0.0, %{name}-config = 8.1.0
 if [ -d /var/update/applied ]; then
     shopt -s nullglob
     for sfile in /var/update/applied/*; do
         label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
-        if [[ "$label" =~ ^XS82(E[0-9]{3}$|$) ]]; then
+        if [[ "$label" =~ ^XS8[01](E[0-9]{3}$|$) ]]; then
             rm -f $sfile
         fi
     done
@@ -755,7 +659,7 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_datadir}/centos-release
 %{_prefix}/lib/systemd/system-preset/90-default.preset
 /EULA
-%{python_sitelib}/xcp/branding.py*
+%{python2_sitelib}/xcp/branding.py*
 
 %files presets
 %{_prefix}/lib/systemd/system-preset/89-default.preset
@@ -771,8 +675,12 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_sysconfdir}/logrotate.d/*
 %{_sysconfdir}/udev/rules.d/*.rules
 %{_sysconfdir}/systemd/system/*
+# XCP-ng 8.3: we don't ship the citrix-hypervisor.conf file
+# If more useful files were added since in xapi.conf.d, re-enable this.
+#%%{_sysconfdir}/xapi.conf.d/*.conf
 %{_unitdir}/*
 /opt/xensource/www/*
+%{private_config_path}/*
 %attr(0755,-,-) /sbin/update-issue
 %attr(0755,-,-) /opt/xensource/libexec/xen-cmdline
 %attr(0755,-,-) /opt/xensource/libexec/ibft-to-ignore
@@ -795,6 +703,19 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Mon Sep 05 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-1
+- Update to xcp-ng-release 8.3.0
+- Sync with xenserver-release 8.3.0
+- Removed /etc/xapi.conf.d/citrix-hypervisor.conf that was added by xenserver-release
+- Removed upgrade scriptlets meant to make sure chronyd and chrony-wait are enabled. Now fixed in presets file.
+- *** Upstream changelog (trimmed) ***
+- - CA-362922: Outdated Ciphers used by Openssh when host is updated from hotfix
+- - CA-366439: Silence critical warning from fcoeadm -i
+- - CA-366439: Handle fipvlan failures properly
+- - CP-39330 Provide signing pubkey
+- - CP-38336: Remove elxocmcore trigger scripts
+- - CA-362930: Replace space to underscore for provides
+
 * Tue Feb 15 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-5
 - Rebuild for updated branding-xcp-ng
 - Sets "copyright" year to 2022
