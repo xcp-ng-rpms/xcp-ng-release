@@ -39,7 +39,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        1
+Release:        2
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -88,6 +88,8 @@ Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_T
 BuildRequires:  systemd branding-xcp-ng
 BuildRequires:  python2-rpm-macros
 URL:            https://github.com/xcp-ng/xcp-ng-release
+# Before the tag of the final release, archives are exported this way from the source repository:
+# export VER=8.3.0; git archive --format tgz master . --prefix xcp-ng-release-$VER/ -o /path/to/SOURCES/xcp-ng-release-$VER.tar.gz
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
 Source1: RPM-GPG-KEY-Citrix-Hypervisor
 Source2: sshd_config
@@ -704,6 +706,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Fri Nov 04 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-2
+- Replace host web page with a simple page that loads XO Lite
+
 * Mon Sep 05 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-1
 - Update to xcp-ng-release 8.3.0
 - Sync with xenserver-release 8.3.0
