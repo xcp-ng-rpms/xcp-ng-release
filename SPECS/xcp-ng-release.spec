@@ -39,7 +39,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        2
+Release:        3
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -706,6 +706,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Mon Nov 14 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-3
+- Update shell prompt (PS1) colors to match XCP-ng's new logo
+
 * Fri Nov 04 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-2
 - Replace host web page with a simple page that loads XO Lite
 
