@@ -90,7 +90,7 @@ URL:            https://github.com/xcp-ng/xcp-ng-release
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
 
 # Patches generated with git format-patch v8.2.1
-# (None at the moment)
+Patch1: 0001-Sync-with-hotfix-XS82ECU1018.patch
 
 %description
 XCP-ng release files
@@ -795,6 +795,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* next
+- Fix spurious fcoe-related error messages
+
 * Tue Feb 15 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-5
 - Rebuild for updated branding-xcp-ng
 - Sets "copyright" year to 2022

@@ -1,0 +1,45 @@
+From 6f352181d194b4e493719aa6c148b1214aed77e0 Mon Sep 17 00:00:00 2001
+From: Samuel Verschelde <stormi-xcp@ylix.fr>
+Date: Mon, 21 Nov 2022 16:19:21 +0100
+Subject: [PATCH] Sync with hotfix XS82ECU1018
+
+Fixes spurious fcoe-related errors/warnings.
+
+Signed-off-by: Samuel Verschelde <stormi-xcp@ylix.fr>
+---
+ src/common/opt/xensource/libexec/fcoe_driver | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/src/common/opt/xensource/libexec/fcoe_driver b/src/common/opt/xensource/libexec/fcoe_driver
+index 65b7156..8c30dab 100644
+--- a/src/common/opt/xensource/libexec/fcoe_driver
++++ b/src/common/opt/xensource/libexec/fcoe_driver
+@@ -70,7 +70,7 @@ def get_backend_type():
+ 
+ def get_all_ether_interface_of_fcoe_instance():
+     interfaces = []
+-    output = execute(['fcoeadm', '-i'])
++    output = execute(['fcoeadm', '-i'], quiet=True)
+     if output is not None:
+         for line in output.split('\n'):
+             line = line.strip()
+@@ -136,7 +136,15 @@ def fcoe_init():
+ 
+             if intf not in bfs_interfaces:
+                 logger.info('Executing fipvlan on %s' % intf)
+-                execute(['fipvlan', '-c', '-s', intf])
++                p = subprocess.Popen(['fipvlan', '-c', '-s', intf],
++                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
++                out, err = p.communicate()
++
++                if p.returncode == errno.ENODEV:
++                    logger.info('%s: No fibre channel forwarders found', intf)
++                elif p.returncode != 0:
++                    logger.error('fipvlan on %s returned %d out: %s err: %s',
++                                 intf, p.returncode, out, err)
+         else:
+             fcoemon_needed = True
+             shutil.copyfile('/etc/fcoe/cfg-ethx', '/etc/fcoe/cfg-' + intf)
+-- 
+2.30.2
+
