@@ -9,6 +9,7 @@
 %define upstream_rel_long 7.5-8
 %define upstream_rel 7.5
 %define centos_rel 5.1804
+%define private_config_path /opt/xensource/config
 #define beta Beta
 %define dist .el%{dist_release_version}.centos
 
@@ -16,7 +17,7 @@
 
 Name:           xenserver-release
 Version:        8.2.1
-Release:        8
+Release:        10
 Summary:        XenServer release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -77,17 +78,19 @@ Provides:       product-version-text-short = %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xenserver
 
-Source0: https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.2.1-8&format=tar.gz&prefix=xenserver-release-8.2.1#/xenserver-release.tar.gz
+Source0: xenserver-release.tar.gz
+Source2: SOURCES/xenserver-release/sshd_config
+Source3: SOURCES/xenserver-release/ssh_config
 
 
-Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.2.1-8&format=tar.gz&prefix=xenserver-release-8.2.1#/xenserver-release.tar.gz) = 73f7d7e6d5461d70dba35a302e9ad91e769883be
+Provides: gitsha(ssh://git@code.citrite.net/XS/xenserver-release.git) = 466ed56020e223321ae117cc6c99ceb0cb4a034e
 
 
 %description
 XenServer release files
 
 %package        presets
-Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.2.1-8&format=tar.gz&prefix=xenserver-release-8.2.1#/xenserver-release.tar.gz) = 73f7d7e6d5461d70dba35a302e9ad91e769883be
+Provides: gitsha(ssh://git@code.citrite.net/XS/xenserver-release.git) = 466ed56020e223321ae117cc6c99ceb0cb4a034e
 Summary:        XenServer presets file
 Group:          System Environment/Base
 Provides:       xs-presets = 1.3
@@ -97,7 +100,7 @@ Requires(posttrans): systemd
 XenServer preset file.
 
 %package        config
-Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/xenserver-release/archive?at=v8.2.1-8&format=tar.gz&prefix=xenserver-release-8.2.1#/xenserver-release.tar.gz) = 73f7d7e6d5461d70dba35a302e9ad91e769883be
+Provides: gitsha(ssh://git@code.citrite.net/XS/xenserver-release.git) = 466ed56020e223321ae117cc6c99ceb0cb4a034e
 Summary:        XenServer configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
@@ -164,6 +167,10 @@ ln -s centos-release %{buildroot}/%{_datadir}/redhat-release
 # use unbranded docdir
 install -d -m 755 %{buildroot}/%{_docdir}/centos-release
 ln -s centos-release %{buildroot}/%{_docdir}/redhat-release
+
+# install dom0 configurations
+install -D -m 600 %{SOURCE2} %{buildroot}/%{private_config_path}/sshd_config
+install -D -m 644 %{SOURCE3} %{buildroot}/%{private_config_path}/ssh_config
 
 # Prevent spawning gettys on tty1 and tty2
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/system
@@ -258,48 +265,14 @@ EOF
 EOF
 
 %triggerin config -- openssh-server
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/ssh/sshd_config	2010-03-31 10:24:13.000000000 +0100
-+++ /etc/ssh/sshd_config	2010-09-03 16:08:27.000000000 +0100
-@@ -24,7 +24,12 @@
- HostKey /etc/ssh/ssh_host_ecdsa_key
- HostKey /etc/ssh/ssh_host_ed25519_key
-
--# Ciphers and keying
-+# Ciphers, MACs, KEX Algorithms & HostKeyAlgorithms
-+Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
-+MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
-+HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
-+
- #RekeyLimit default none
-
- # Logging
-@@ -90,7 +90,7 @@
- #KerberosUseKuserok yes
-
- # GSSAPI options
--GSSAPIAuthentication yes
-+GSSAPIAuthentication no
- GSSAPICleanupCredentials no
- #GSSAPIStrictAcceptorCheck yes
- #GSSAPIKeyExchange no
-EOF
+# Replace openssh-server config as openssh package mark it as noreplace as follows
+# attr(0600,root,root) config(noreplace) {_sysconfdir}/ssh/sshd_config
+install -D -m 600 %{private_config_path}/sshd_config /etc/ssh/
 
 %triggerin config -- openssh-clients
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/ssh/ssh_config	2019-10-28 13:56:16.791811367 +0000
-+++ /etc/ssh/ssh_config	2019-10-28 13:26:42.374146454 +0000
-@@ -66,3 +66,8 @@
- 	SendEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
- 	SendEnv LC_IDENTIFICATION LC_ALL LANGUAGE
- 	SendEnv XMODIFIERS
-+
-+	Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
-+	MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+	KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
-+	HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
-EOF
+# Replace openssh-clients config as openssh package mark it as noreplace as follows
+# attr(0644,root,root) config(noreplace) {_sysconfdir}/ssh/ssh_config
+install -D -m 644 %{private_config_path}/ssh_config /etc/ssh/
 
 %triggerin config -- net-snmp
 grep -qs '^OPTIONS' %{_sysconfdir}/sysconfig/snmpd || echo 'OPTIONS="-c %{_sysconfdir}/snmp/snmpd.xs.conf"' >>%{_sysconfdir}/sysconfig/snmpd
@@ -593,6 +566,7 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_sysconfdir}/systemd/system/*
 %{_unitdir}/*
 /opt/xensource/www/*
+%{private_config_path}/*
 %attr(0755,-,-) /sbin/update-issue
 %attr(0755,-,-) /opt/xensource/libexec/xen-cmdline
 %attr(0755,-,-) /opt/xensource/libexec/ibft-to-ignore
@@ -614,6 +588,12 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Thu Sep 22 2022 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.1-10
+- CA-366439: Silence warnings and improve error handling in fcoe_driver
+
+* Wed Jul 6 2022 Lin Liu <lin.liu@citrix.com> - 8.2.1-9
+- CA-362922: Outdated Ciphers used by Openssh when host is updated from hotfix
+
 * Tue Oct 26 2021 Igor Druzhinin <igor.druzhinin@citrix.com> - 8.2.1-8
 - CP-37372: Obsolete XS82E034 hotfix
 
