@@ -1,12 +1,12 @@
-%global package_speccommit 7482cca9b579d29c2e5e3d9e6072fc4aaaba2505
+%global package_speccommit 120260c3bf70ffaff54677e44443d3e5546e4a21
 %global usver 8.3.0
-%global xsver 3
+%global xsver 6
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.3.0-1
+%global package_srccommit v8.3.0-2
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -98,6 +98,7 @@ XenServer preset file.
 Summary:        XenServer configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
+Requires:       kernel-livepatch xen-livepatch
 Requires(post): systemd xs-presets >= 1.4
 Requires(preun): systemd xs-presets >= 1.4
 Requires(postun): systemd xs-presets >= 1.4
@@ -581,6 +582,15 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Fri Oct 28 2022 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.3.0-6
+- CP-40640: Prefer PRODUCT_VERSION_TEXT over PRODUCT_VERSION
+
+* Mon Aug 22 2022 Lin Liu <lin.liu@citrix.com> - 8.3.0-5
+- CP-40419: Remove CBC from openssh ciphers
+
+* Wed Jul 20 2022 Ming Lu <ming.lu@citrix.com> - 8.3.0-4
+- CP-40176: Add dependencies on xen-livepatch and kernel-livepatch
+
 * Mon Jul 11 2022 Lin Liu <lin.liu@citrix.com> - 8.3.0-3
 - CA-362922: Outdated Ciphers used by Openssh when host is updated from hotfix
 
