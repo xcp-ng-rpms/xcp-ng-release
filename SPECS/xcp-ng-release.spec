@@ -4,9 +4,9 @@
 %define PRODUCT_VERSION_TEXT 8.3
 %define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
 %define PLATFORM_VERSION 3.3.0
-
-
 %define BUILD_NUMBER release/yangtze/master/58
+
+
 %global package_speccommit 7482cca9b579d29c2e5e3d9e6072fc4aaaba2505
 %global usver 8.3.0
 %global xsver 3
