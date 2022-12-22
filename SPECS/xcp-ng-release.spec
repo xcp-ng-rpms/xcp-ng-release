@@ -39,7 +39,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        4
+Release:        5
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -466,15 +466,16 @@ EOF
 %triggerin config -- tzdata
 ln -f %{_datadir}/zoneinfo/Asia/Shanghai %{_datadir}/zoneinfo/Asia/Beijing
 
+# XCP-ng: since 8.3beta, undo this modification made in previous releases
 %triggerin config -- shadow-utils
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
 --- /etc/login.defs.orig    2016-02-26 11:11:20.000000000 +0000
 +++ /etc/login.defs 2016-02-26 11:11:57.000000000 +0000
-@@ -70,3 +70,4 @@
+@@ -70,4 +70,3 @@
  # Use SHA512 to encrypt password.
  ENCRYPT_METHOD SHA512
 
-+MOTD_FILE /etc/motd.xs
+-MOTD_FILE /etc/motd.xs
 EOF
 
 %triggerin config -- yum
@@ -707,6 +708,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Thu Dec 22 2022 Yann Dirson <yann.dirson@vates.fr> - 8.3.0-5
+- Stop using /etc/motd.xs and modifying /etc/login.defs; try undo modification on upgrade
+
 * Fri Dec 09 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-4
 - Sync with xenserver-release-8.3.0-6
 - *** Upstream changelog ***
