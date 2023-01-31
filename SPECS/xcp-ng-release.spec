@@ -17,6 +17,7 @@
 %define upstream_rel_long 7.5-8
 %define upstream_rel 7.5
 %define centos_rel 5.1804
+%define private_config_path /opt/xensource/config
 #define beta Beta
 %define dist .xcpng%{PRODUCT_VERSION_TEXT_SHORT}
 
@@ -24,7 +25,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        5
+Release:        6
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -87,7 +88,10 @@ Provides:       product-version-text-short = %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xcp-ng
 URL:            https://github.com/xcp-ng/xcp-ng-release
+
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
+Source2:        sshd_config
+Source3:        ssh_config
 
 # Patches generated with git format-patch v8.2.1
 Patch1: 0001-Sync-with-hotfix-XS82ECU1018.patch
@@ -177,6 +181,10 @@ ln -s centos-release %{buildroot}/%{_datadir}/redhat-release
 # use unbranded docdir
 install -d -m 755 %{buildroot}/%{_docdir}/centos-release
 ln -s centos-release %{buildroot}/%{_docdir}/redhat-release
+
+# install dom0 configurations
+install -D -m 600 %{SOURCE2} %{buildroot}/%{private_config_path}/sshd_config
+install -D -m 644 %{SOURCE3} %{buildroot}/%{private_config_path}/ssh_config
 
 # Prevent spawning gettys on tty1 and tty2
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/system
@@ -274,6 +282,14 @@ EOF
 EOF
 
 %triggerin config -- openssh-server
+# XCP-ng, 2023-01-31
+# We diverged here from xenserver-release-8.2.1-10: they chose to fully replace the sshd and ssh configuration each time either xenserver-release-config or openssh-server is updated.
+# We would like not to overwrite user configurations this way, so keeping the patches for XCP-ng 8.2.x
+
+# # Replace openssh-server config as openssh package mark it as noreplace as follows
+# # attr(0600,root,root) config(noreplace) {_sysconfdir}/ssh/sshd_config
+# install -D -m 600 %%{private_config_path}/sshd_config /etc/ssh/
+
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
 --- /etc/ssh/sshd_config	2010-03-31 10:24:13.000000000 +0100
 +++ /etc/ssh/sshd_config	2010-09-03 16:08:27.000000000 +0100
@@ -335,6 +351,14 @@ if ! echo "$SSHD_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
 fi
 
 %triggerin config -- openssh-clients
+# XCP-ng, 2023-01-31
+# We diverged here from xenserver-release-8.2.1-10: they chose to fully replace the sshd and ssh configuration each time either xenserver-release-config or openssh-client is updated.
+# We would like not to overwrite user configurations this way, so keeping the patches for XCP-ng 8.2.x
+
+# # Replace openssh-clients config as openssh package mark it as noreplace as follows
+# # attr(0644,root,root) config(noreplace) {_sysconfdir}/ssh/ssh_config
+# install -D -m 644 %%{private_config_path}/ssh_config /etc/ssh/
+
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
 --- /etc/ssh/ssh_config	2019-10-28 13:56:16.791811367 +0000
 +++ /etc/ssh/ssh_config	2019-10-28 13:26:42.374146454 +0000
@@ -773,6 +797,7 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_sysconfdir}/systemd/system/*
 %{_unitdir}/*
 /opt/xensource/www/*
+%{private_config_path}/*
 %attr(0755,-,-) /sbin/update-issue
 %attr(0755,-,-) /opt/xensource/libexec/xen-cmdline
 %attr(0755,-,-) /opt/xensource/libexec/ibft-to-ignore
@@ -795,8 +820,11 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* next
+* Tue Jan 31 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-6
+- Partially sync with hotfix XS82ECU1018 (xenserver-release-8.2.1-10)
 - Fix spurious fcoe-related error messages
+- Install ssh_config and sshd_config configuration files into /opt/xensource/config/
+- But don't overwrite user configuration like the hotfix does. Keep using patches for now.
 
 * Tue Feb 15 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-5
 - Rebuild for updated branding-xcp-ng
