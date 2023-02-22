@@ -39,7 +39,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        6
+Release:        7
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -86,7 +86,7 @@ Provides:       product-version-text = %replace_spaces %{PRODUCT_VERSION_TEXT}
 Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xcp-ng
-BuildRequires:  python2-rpm-macros
+BuildRequires:  python3-rpm-macros
 URL:            https://github.com/xcp-ng/xcp-ng-release
 # Before the tag of the final release, archives are exported this way from the source repository:
 # export VER=8.3.0; git archive --format tgz master . --prefix xcp-ng-release-$VER/ -o /path/to/SOURCES/xcp-ng-release-$VER.tar.gz
@@ -141,8 +141,8 @@ install -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-
 
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/common %{buildroot}
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/xenserver %{buildroot}
-install -d -m 755 %{buildroot}%{python2_sitelib}/xcp
-%{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python2_sitelib}/xcp/branding.py
+install -d -m 755 %{buildroot}%{python3_sitelib}/xcp
+%{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python3_sitelib}/xcp/branding.py
 
 install -m 644 %{_usrsrc}/branding/EULA %{buildroot}/
 
@@ -663,7 +663,8 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_datadir}/centos-release
 %{_prefix}/lib/systemd/system-preset/90-default.preset
 /EULA
-%{python2_sitelib}/xcp/branding.py*
+%{python3_sitelib}/xcp/branding.py
+%{python3_sitelib}/xcp/__pycache__
 
 %files presets
 %{_prefix}/lib/systemd/system-preset/89-default.preset
@@ -707,6 +708,11 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Wed Feb 22 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-7
+- Rebuild for updated branding-xcp-ng: COMPANY_NAME and COPYRIGHT_YEARS updated
+- Update packaging for branding-xcp-ng's switch to python3
+- Update /etc/motd.xs
+
 * Thu Jan 05 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-6
 - Revert previous change: we'll fix the contents of the file instead
 
