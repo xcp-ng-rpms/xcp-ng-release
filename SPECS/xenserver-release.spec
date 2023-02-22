@@ -1,12 +1,12 @@
-%global package_speccommit 120260c3bf70ffaff54677e44443d3e5546e4a21
+%global package_speccommit 52d38f2760cb284ab7a600a9e873177010aa0643
 %global usver 8.3.0
-%global xsver 6
+%global xsver 9
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.3.0-2
+%global package_srccommit v8.3.0-9
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -582,6 +582,15 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Wed Feb 01 2023 Alex Brett <alex.brett@cloud.com> - 8.3.0-9
+- CP-41817: Correct console text in issue file
+
+* Thu Jan 26 2023 Alex Brett <alex.brett@cloud.com> - 8.3.0-8
+- CP-41789: Rebuild to pick up further branding changes
+
+* Fri Dec 02 2022 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.3.0-7
+- CP-41365: Rebuild to pick up branding changes
+
 * Fri Oct 28 2022 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.3.0-6
 - CP-40640: Prefer PRODUCT_VERSION_TEXT over PRODUCT_VERSION
 
