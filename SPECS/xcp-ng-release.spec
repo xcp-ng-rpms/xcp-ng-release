@@ -39,7 +39,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        7
+Release:        8
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -86,6 +86,8 @@ Provides:       product-version-text = %replace_spaces %{PRODUCT_VERSION_TEXT}
 Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xcp-ng
+BuildRequires:  python2-rpm-macros
+BuildRequires:  python2
 BuildRequires:  python3-rpm-macros
 URL:            https://github.com/xcp-ng/xcp-ng-release
 # Before the tag of the final release, archives are exported this way from the source repository:
@@ -141,6 +143,8 @@ install -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-
 
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/common %{buildroot}
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/xenserver %{buildroot}
+install -d -m 755 %{buildroot}%{python2_sitelib}/xcp
+%{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python2_sitelib}/xcp/branding.py
 install -d -m 755 %{buildroot}%{python3_sitelib}/xcp
 %{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python3_sitelib}/xcp/branding.py
 
@@ -663,6 +667,7 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_datadir}/centos-release
 %{_prefix}/lib/systemd/system-preset/90-default.preset
 /EULA
+%{python2_sitelib}/xcp/branding.py*
 %{python3_sitelib}/xcp/branding.py
 %{python3_sitelib}/xcp/__pycache__
 
@@ -708,6 +713,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Thu Mar 09 2023 Yann Dirson <yann.dirson@vates.fr> - 8.3.0-8
+- Restore python2 support in addition to python3
+
 * Wed Feb 22 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-7
 - Rebuild for updated branding-xcp-ng: COMPANY_NAME and COPYRIGHT_YEARS updated
 - Update packaging for branding-xcp-ng's switch to python3
