@@ -1,0 +1,27 @@
+From 426d4aebabe3af3f1d231a33624d528af1336ab4 Mon Sep 17 00:00:00 2001
+From: Pierre Donias <pierre.donias@gmail.com>
+Date: Thu, 2 Mar 2023 14:14:13 +0100
+Subject: [PATCH 3/4] feat(XOA deploy): hyperlink to new XOA with HTTPS instead
+ of HTTP
+
+Signed-off-by: Pierre Donias <pierre.donias@gmail.com>
+---
+ src/xenserver/opt/xensource/www/asset/deploy.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/xenserver/opt/xensource/www/asset/deploy.js b/src/xenserver/opt/xensource/www/asset/deploy.js
+index b31bc34..fb95ec3 100644
+--- a/src/xenserver/opt/xensource/www/asset/deploy.js
++++ b/src/xenserver/opt/xensource/www/asset/deploy.js
+@@ -237,7 +237,7 @@ function deploy() {
+     .then(() => {
+       status("XOA is ready! Redirecting…");
+       setTimeout(() => {
+-        window.location = `http://${$("#ip").val() || vmIp}`;
++        window.location = `https://${$("#ip").val() || vmIp}`;
+       }, 3e3);
+     })
+     .catch((err) => {
+-- 
+2.30.2
+

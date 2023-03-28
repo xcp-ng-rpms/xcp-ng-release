@@ -25,7 +25,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        6
+Release:        7
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -87,6 +87,7 @@ Provides:       product-version-text = %{PRODUCT_VERSION_TEXT}
 Provides:       product-version-text-short = %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xcp-ng
+BuildRequires:  git
 URL:            https://github.com/xcp-ng/xcp-ng-release
 
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
@@ -95,6 +96,9 @@ Source3:        ssh_config
 
 # Patches generated with git format-patch v8.2.1
 Patch1: 0001-Sync-with-hotfix-XS82ECU1018.patch
+Patch2: 0002-www-prettify-XCP-ng-index.html-deploy.js.patch
+Patch3: 0003-feat-XOA-deploy-hyperlink-to-new-XOA-with-HTTPS-inst.patch
+Patch4: 0004-www-Refactor-and-clean-of-deploy-page.patch
 
 %description
 XCP-ng release files
@@ -123,7 +127,7 @@ Additional utilities and configuration for XCP-ng.
 
 
 %prep
-%autosetup -p1
+%autosetup -p1 -S git
 # XCP-ng: copy LICENSES from branding package
 cp %{_usrsrc}/branding/LICENSES .
 
@@ -820,6 +824,12 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Tue Mar 28 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-7
+- Update HTML page
+- HTTPS by default for XOA quick deploy
+- Webpage clean-up: remove FA fonts, references to unused fonts, jquery...
+- BuildRequires git for %autosetup -S git
+
 * Tue Jan 31 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-6
 - Partially sync with hotfix XS82ECU1018 (xenserver-release-8.2.1-10)
 - Fix spurious fcoe-related error messages
