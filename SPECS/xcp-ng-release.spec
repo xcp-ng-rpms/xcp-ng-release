@@ -25,7 +25,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        7
+Release:        8
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -824,11 +824,11 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Mar 28 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-7
+* Fri Apr 14 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-8
 - Update HTML page
 - HTTPS by default for XOA quick deploy
 - Webpage clean-up: remove FA fonts, references to unused fonts, jquery...
-- BuildRequires git for %autosetup -S git
+- BuildRequires git for %%autosetup -S git
 
 * Tue Jan 31 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-6
 - Partially sync with hotfix XS82ECU1018 (xenserver-release-8.2.1-10)
