@@ -39,7 +39,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        8
+Release:        9
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -713,6 +713,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Wed May 10 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-9
+- Update xcpng.repo for new repository structure
+
 * Thu Mar 09 2023 Yann Dirson <yann.dirson@vates.fr> - 8.3.0-8
 - Restore python2 support in addition to python3
 
