@@ -1,7 +1,7 @@
 From 63db554a546be1ed51d1ef0a1f45bdac4a716990 Mon Sep 17 00:00:00 2001
 From: Arnaud Gueras <arnaudgs@gmail.com>
 Date: Tue, 7 Mar 2023 16:41:49 +0100
-Subject: [PATCH 4/4] www: Refactor and clean of deploy page
+Subject: [PATCH 4/5] www: Refactor and clean of deploy page
 
 - Remove all useless font
 - Replace fontawesome by open source custom icons-font

@@ -25,7 +25,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        8
+Release:        9
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -99,6 +99,7 @@ Patch1: 0001-Sync-with-hotfix-XS82ECU1018.patch
 Patch2: 0002-www-prettify-XCP-ng-index.html-deploy.js.patch
 Patch3: 0003-feat-XOA-deploy-hyperlink-to-new-XOA-with-HTTPS-inst.patch
 Patch4: 0004-www-Refactor-and-clean-of-deploy-page.patch
+Patch5: 0005-Update-xcp-ng.repo-for-the-new-repository-structure.patch
 
 %description
 XCP-ng release files
@@ -824,6 +825,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Wed May 10 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-9
+- Update xcp-ng.repo for the new repository structure
+
 * Fri Apr 14 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-8
 - Update HTML page
 - HTTPS by default for XOA quick deploy
