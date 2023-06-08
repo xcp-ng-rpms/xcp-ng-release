@@ -39,7 +39,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        9
+Release:        10
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -518,29 +518,6 @@ if ! echo "$FM_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
     fi
 fi
 
-# XCP-ng: change depmod global configuration to give priority to 'override' modules dir
-%triggerin config -- kmod
-DEPMOD_PATCH=$(cat <<'EOF'
---- /etc/depmod.d/dist.conf.orig        2019-04-23 11:31:19.107096410 +0200
-+++ /etc/depmod.d/dist.conf     2019-04-23 11:31:30.533088996 +0200
-@@ -3,4 +3,4 @@
- #
-
- # override default search ordering for kmod packaging
--search updates extra built-in weak-updates
-+search override updates extra built-in weak-updates
-EOF
-)
-# Do not apply patch if it was already applied
-if ! echo "$DEPMOD_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
-    # Apply patch. Output NOT redirected to /dev/null so that error messages are displayed
-    if ! echo "$DEPMOD_PATCH" | patch -tsN -r - -d / -p1; then
-        echo "Error: failed to apply patch:"
-        echo "$DEPMOD_PATCH"
-    fi
-fi
-
-
 # XCP-ng: chrony
 %triggerin config -- chrony
 if [ -f /etc/systemd/system/chrony-wait.service ]; then
@@ -670,6 +647,7 @@ systemctl preset-all --preset-mode=enable-only || :
 %{python2_sitelib}/xcp/branding.py*
 %{python3_sitelib}/xcp/branding.py
 %{python3_sitelib}/xcp/__pycache__
+%{_sysconfdir}/depmod.d/00-xcpng-override.conf
 
 %files presets
 %{_prefix}/lib/systemd/system-preset/89-default.preset
@@ -713,6 +691,10 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Thu Jun 08 2023 Yann Dirson <yann.dirson@vates.fr> - 8.3.0-10
+- Create file /etc/depmod.d/00-xcpng-override.conf instead of
+  modifying /etc/depmod.d/dist.conf
+
 * Wed May 10 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-9
 - Update xcpng.repo for new repository structure
 
