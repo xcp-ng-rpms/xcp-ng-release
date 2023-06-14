@@ -39,7 +39,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        10
+Release:        11
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -589,6 +589,11 @@ then
     systemctl reenable rsyslog.service
 fi
 
+# We are shipping a file in depmod.d/, ensure it is used.
+# Note: if depmod is not present yet, no cache was created before we add
+# our config file, other packages will create it later, now with proper config.
+if [ -x /sbin/depmod ]; then /sbin/depmod -a; fi
+
 
 %preun config
 %systemd_preun move-kernel-messages.service
@@ -691,6 +696,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Wed Jun 14 2023 Yann Dirson <yann.dirson@vates.fr> - 8.3.0-11
+- make sure depmod is run after touching depmod.d
+
 * Thu Jun 08 2023 Yann Dirson <yann.dirson@vates.fr> - 8.3.0-10
 - Create file /etc/depmod.d/00-xcpng-override.conf instead of
   modifying /etc/depmod.d/dist.conf
