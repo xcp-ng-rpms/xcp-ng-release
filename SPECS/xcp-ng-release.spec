@@ -4,7 +4,7 @@
 %define PRODUCT_VERSION_TEXT 8.3
 %define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
 %define PLATFORM_VERSION 3.3.0
-%define BUILD_NUMBER release/yangtze/master/58
+%define BUILD_NUMBER cloud
 
 
 %global package_speccommit 120260c3bf70ffaff54677e44443d3e5546e4a21
@@ -39,7 +39,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        11
+Release:        12
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -696,6 +696,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Thu Jun 15 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-12
+- update BUILD_NUMBER
+
 * Wed Jun 14 2023 Yann Dirson <yann.dirson@vates.fr> - 8.3.0-11
 - make sure depmod is run after touching depmod.d
 
