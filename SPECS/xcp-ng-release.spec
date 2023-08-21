@@ -39,7 +39,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        13
+Release:        14
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -204,8 +204,6 @@ ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/getty@tty1.service
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/getty@tty2.service
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty1.service
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty2.service
-
-ln -s XCP-ng-index.html %{buildroot}/opt/xensource/www/index.html
 
 %posttrans
 # XCP-ng 8.1: running this in posttrans instead of post because xcp-ng-release may be installed after
@@ -678,7 +676,6 @@ systemctl preset-all --preset-mode=enable-only || :
 # If more useful files were added since in xapi.conf.d, re-enable this.
 #%%{_sysconfdir}/xapi.conf.d/*.conf
 %{_unitdir}/*
-/opt/xensource/www/*
 %{private_config_path}/*
 %attr(0755,-,-) /sbin/update-issue
 %attr(0755,-,-) /opt/xensource/libexec/xen-cmdline
@@ -702,6 +699,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Tue Sep 21 2023 Thierry Escande <thierry.escande@vates.tech> - 8.3.0-14
+- Remove web server index files
+
 * Wed Sep 20 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-13
 - Update platform number to 3.4.0 for XenServer 8 to XCP-ng 8.3 migration
 - Remove useless Obsoletes towards xenserver-release and xenserver-config-release
@@ -745,8 +745,9 @@ systemctl preset-all --preset-mode=enable-only || :
 - - CP-41789: Rebuild to pick up further branding changes
 - * Fri Dec 02 2022 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.3.0-7
 - - CP-41365: Rebuild to pick up branding changes
-- * Thu Jun 15 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-12
-- - update BUILD_NUMBER
+
+* Thu Jun 15 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-12
+- update BUILD_NUMBER
 
 * Wed Jun 14 2023 Yann Dirson <yann.dirson@vates.fr> - 8.3.0-11
 - make sure depmod is run after touching depmod.d
