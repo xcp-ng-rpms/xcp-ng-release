@@ -3,19 +3,19 @@
 %define PRODUCT_VERSION 8.3.0
 %define PRODUCT_VERSION_TEXT 8.3
 %define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
-%define PLATFORM_VERSION 3.3.0
-%define BUILD_NUMBER cloud
+%define PLATFORM_VERSION 3.4.0
+%define BUILD_NUMBER 8.3.0
 
-
-%global package_speccommit 120260c3bf70ffaff54677e44443d3e5546e4a21
-%global usver 8.3.0
-%global xsver 6
+# XCP-ng: the globals below are not used. We only keep them as a reference
+# from the last xenserver-release we (loosely) synced with
+%global package_speccommit 7fbd2de17d79849d7dcd1742ab9709f9a9bff165
+%global usver 8.3.60
+%global xsver 3
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.3.0-2
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -39,12 +39,13 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        12
+Release:        13
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
 Requires(post): coreutils, grep
 Requires:       %{name}-presets
+Requires:       system-config
 Provides:       centos-release = %{base_release_version}
 Provides:       centos-release(upstream) = %{upstream_rel}
 Provides:       redhat-release = %{upstream_rel_long}
@@ -52,7 +53,6 @@ Provides:       system-release = %{upstream_rel_long}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      centos-release
 Obsoletes:      epel-release
-Obsoletes:      xenserver-release <= %{version}
 
 #Obsolete CH80 hotfixes
 Obsoletes:      update-XS80E001 control-XS80E001
@@ -86,6 +86,7 @@ Provides:       product-version-text = %replace_spaces %{PRODUCT_VERSION_TEXT}
 Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xcp-ng
+# XCP-ng: python dependencies for building branding files
 BuildRequires:  python2-rpm-macros
 BuildRequires:  python2
 BuildRequires:  python3-rpm-macros
@@ -121,7 +122,6 @@ Requires(post): systemd xs-presets >= 1.4
 Requires(preun): systemd xs-presets >= 1.4
 Requires(postun): systemd xs-presets >= 1.4
 Requires(post): sed
-Obsoletes:      xenserver-release-config <= %{version}
 
 %description    config
 Additional utilities and configuration for XCP-ng.
@@ -139,7 +139,7 @@ cp %{_usrsrc}/branding/LICENSES .
 rm -rf %{buildroot}
 
 ## Ensure the Hypervisor key is present
-install -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-Citrix-Hypervisor
+install -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-XenServer
 
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/common %{buildroot}
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/xenserver %{buildroot}
@@ -402,6 +402,9 @@ EOF
 +-A RH-Firewall-1-INPUT -j REJECT --reject-with icmp-host-prohibited
  COMMIT
 EOF
+# XCP-ng: disabled for now. Will enable the change if/when we add the feature.
+#grep -q '^-A .* 5666 .*' /etc/sysconfig/iptables || sed -i '/^-A .* 443 .*/a # nrpe\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 5666 -j ACCEPT' /etc/sysconfig/iptables
+#systemctl try-restart iptables
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
 --- /etc/sysconfig/ip6tables    2014-06-10 06:02:35.000000000 +0100
 +++ /etc/sysconfig/ip6tables    2015-05-15 11:25:34.416370193 +0100
@@ -435,6 +438,8 @@ EOF
 +-A RH-Firewall-1-INPUT -j REJECT --reject-with icmp6-port-unreachable
  COMMIT
 EOF
+# XCP-ng: disabled for now, will enable this change if/when we add the feature.
+#grep -q '^-A .* 5666 .*' /etc/sysconfig/ip6tables || sed -i '/^-A .* 443 .*/a # nrpe\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 5666 -j ACCEPT' /etc/sysconfig/ip6tables
 
 # CA-38350
 %triggerin config -- dhclient
@@ -570,6 +575,7 @@ if [ -f %{_sysconfdir}/xensource-inventory ]; then
         -e "s@^\(PRODUCT_VERSION_TEXT_SHORT=\).*@\1'%{PRODUCT_VERSION_TEXT_SHORT}'@" \
         -e "s@^\(BUILD_NUMBER=\).*@\1'%{BUILD_NUMBER}'@" \
         %{_sysconfdir}/xensource-inventory
+    /sbin/update-issue || :
 fi
 
 # Add myhostname to the hosts line of nsswitch.conf if it is not there already.
@@ -668,7 +674,7 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_sysconfdir}/logrotate.d/*
 %{_sysconfdir}/udev/rules.d/*.rules
 %{_sysconfdir}/systemd/system/*
-# XCP-ng 8.3: we don't ship the citrix-hypervisor.conf file
+# XCP-ng 8.3: we don't ship the xenserver.conf file
 # If more useful files were added since in xapi.conf.d, re-enable this.
 #%%{_sysconfdir}/xapi.conf.d/*.conf
 %{_unitdir}/*
@@ -696,8 +702,51 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Thu Jun 15 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-12
-- update BUILD_NUMBER
+* Wed Sep 20 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-13
+- Update platform number to 3.4.0 for XenServer 8 to XCP-ng 8.3 migration
+- Remove useless Obsoletes towards xenserver-release and xenserver-config-release
+- Update BUILD_NUMBER to 8.3.0. The previous value, "cloud", doesn't mean anything anymore.
+- Loosely sync with xenserver-release-8.3.60-3
+- Don't require xenserver-config-packages. We have xcp-ng-deps already
+- Keep CentOS, EPEL and XCP-ng yum repofiles
+- Given the above, no useful changes in tarball, so it is unchanged
+- Don't modify the iptables configuration for nrpe yet.
+- *** Upstream changelog ***
+- - * Fri Aug 18 2023 Alex Brett <alex.brett@cloud.com> - 8.3.60-3
+- - CA-381674: Updates for launch of xenserver.com
+- * Wed Aug 02 2023 Alex Brett <alex.brett@cloud.com> - 8.3.60-2
+- - CP-44357: Update branding text
+- * Wed Jul 26 2023 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.3.60-1
+- - CP-42460: Update product and platform versions
+- * Wed May 10 2023 Alex Brett <alex.brett@cloud.com> - 8.3.50-5
+- - CP-43112: Update xapi configuration file for new GPG key and CDN domain
+- - Remove redundant CentOS GPG keys
+- * Tue May 09 2023 Sola Zhang <Sola.Zhang@cloud.com> - 8.3.50-4
+- - CP-41889: Accept NRPE port 5666 in iptables
+- * Wed May 03 2023 Deli Zhang <dzhang@tibco.com> - 8.3.50-3
+- - CP-42642: Xapi: update config for sharing server certificate file to group users
+- * Wed May 03 2023 Alex Brett <alex.brett@cloud.com> - 8.3.50-2
+- - CP-41761: Replace CH GPG key with XS key
+- - CA-377018: Require xenserver-config-packages for real installs
+- * Fri Apr 28 2023 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.3.50-1
+- - CP-42458: Update product and platform versions
+- * Mon Apr 17 2023 Ming Lu <ming.lu@cloud.com> - 8.3.0-13
+- - CP-41576: Enable xs-telemetry.timer and xs-telemetry.service
+- * Wed Apr 05 2023 Tim Smith <tim.smith@citrix.com> - 8.3.0-12
+- - CP-42031 Add dependency on system-config
+- - Remove out of date yum repository definitions
+- * Thu Mar 23 2023 Alex Brett <alex.brett@cloud.com> - 8.3.0-11
+- - CP-42588: Rebuild to pick up new EUA
+- * Thu Mar 09 2023 Gerald Elder-Vass <gerald.elder-vass@citrix.com> - 8.3.0-10
+- - CP-42319: Rebuild to pick up further branding changes
+- * Wed Feb 01 2023 Alex Brett <alex.brett@cloud.com> - 8.3.0-9
+- - CP-41817: Correct console text in issue file
+- * Thu Jan 26 2023 Alex Brett <alex.brett@cloud.com> - 8.3.0-8
+- - CP-41789: Rebuild to pick up further branding changes
+- * Fri Dec 02 2022 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.3.0-7
+- - CP-41365: Rebuild to pick up branding changes
+- * Thu Jun 15 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-12
+- - update BUILD_NUMBER
 
 * Wed Jun 14 2023 Yann Dirson <yann.dirson@vates.fr> - 8.3.0-11
 - make sure depmod is run after touching depmod.d
