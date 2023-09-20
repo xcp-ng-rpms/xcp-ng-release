@@ -1,12 +1,12 @@
-%global package_speccommit 52d38f2760cb284ab7a600a9e873177010aa0643
-%global usver 8.3.0
-%global xsver 9
+%global package_speccommit 7fbd2de17d79849d7dcd1742ab9709f9a9bff165
+%global usver 8.3.60
+%global xsver 3
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.3.0-9
+%global package_srccommit v8.3.60-3
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -31,13 +31,14 @@
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xenserver-release
-Version: 8.3.0
+Version: 8.3.60
 Release: %{?xsrel}%{?dist}
 Summary:        XenServer release file
 Group:          System Environment/Base
 License:        GPLv2
 Requires(post): coreutils, grep
 Requires:       %{name}-presets
+Requires:       system-config
 Provides:       centos-release = %{base_release_version}
 Provides:       centos-release(upstream) = %{upstream_rel}
 Provides:       redhat-release = %{upstream_rel_long}
@@ -77,8 +78,8 @@ Provides:       product-version-text = %replace_spaces %{PRODUCT_VERSION_TEXT}
 Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xenserver
-Source0: xenserver-release-8.3.0.tar.gz
-Source1: RPM-GPG-KEY-Citrix-Hypervisor
+Source0: xenserver-release-8.3.60.tar.gz
+Source1: RPM-GPG-KEY-XenServer
 Source2: sshd_config
 Source3: ssh_config
 
@@ -99,6 +100,9 @@ Summary:        XenServer configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
 Requires:       kernel-livepatch xen-livepatch
+## This gets xenserver-config-packages included only in a real install, because
+## xenserver-release-config is only included in real installs
+Requires:	xenserver-config-packages
 Requires(post): systemd xs-presets >= 1.4
 Requires(preun): systemd xs-presets >= 1.4
 Requires(postun): systemd xs-presets >= 1.4
@@ -117,7 +121,7 @@ Additional utilities and configuration for XenServer.
 rm -rf %{buildroot}
 
 ## Ensure the Hypervisor key is present
-install -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-Citrix-Hypervisor
+install -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-XenServer
 
 %{_usrsrc}/branding/brand-directory.py src/common %{buildroot}
 %{_usrsrc}/branding/brand-directory.py src/xenserver %{buildroot}
@@ -137,14 +141,6 @@ ln -s centos-release %{buildroot}%{_sysconfdir}/redhat-release
 cp %{buildroot}%{_sysconfdir}/issue.net %{buildroot}%{_sysconfdir}/issue
 echo >> %{buildroot}%{_sysconfdir}/issue
 touch -r %{buildroot}%{_sysconfdir}/issue.net %{buildroot}%{_sysconfdir}/issue
-
-# copy yum repos
-install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
-# Use the production yum repos
-install -m 644 CentOS-Base-production.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
-#install -m 644 CentOS-Base-devel.repo %%{buildroot}%%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
-install -m 644 CentOS-Debuginfo.repo %{buildroot}%{_sysconfdir}/yum.repos.d
-install -m 644 CentOS-Sources.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 
 # set up the dist tag macros
 install -d -m 755 %{buildroot}%{_sysconfdir}/rpm
@@ -178,7 +174,7 @@ ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/getty@tty2.service
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty1.service
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty2.service
 
-ln -s Citrix-index.html %{buildroot}/opt/xensource/www/index.html
+ln -s XenServer-index.html %{buildroot}/opt/xensource/www/index.html
 
 %posttrans
 /usr/bin/uname -m | grep -q 'x86_64'  && echo 'centos' >/etc/yum/vars/contentdir || echo 'altarch' > /etc/yum/vars/contentdir
@@ -370,6 +366,8 @@ EOF
 +-A RH-Firewall-1-INPUT -j REJECT --reject-with icmp-host-prohibited
  COMMIT
 EOF
+grep -q '^-A .* 5666 .*' /etc/sysconfig/iptables || sed -i '/^-A .* 443 .*/a # nrpe\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 5666 -j ACCEPT' /etc/sysconfig/iptables
+systemctl try-restart iptables
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
 --- /etc/sysconfig/ip6tables    2014-06-10 06:02:35.000000000 +0100
 +++ /etc/sysconfig/ip6tables    2015-05-15 11:25:34.416370193 +0100
@@ -403,6 +401,7 @@ EOF
 +-A RH-Firewall-1-INPUT -j REJECT --reject-with icmp6-port-unreachable
  COMMIT
 EOF
+grep -q '^-A .* 5666 .*' /etc/sysconfig/ip6tables || sed -i '/^-A .* 443 .*/a # nrpe\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 5666 -j ACCEPT' /etc/sysconfig/ip6tables
 
 # CA-38350
 %triggerin config -- dhclient
@@ -487,7 +486,9 @@ if [ "$1" -gt "1" -a -f %{_sysconfdir}/xensource-inventory ]; then
         -e "s@^\(PLATFORM_VERSION=\).*@\1'%{PLATFORM_VERSION}'@" \
         -e "s@^\(PRODUCT_VERSION_TEXT=\).*@\1'%{PRODUCT_VERSION_TEXT}'@" \
         -e "s@^\(PRODUCT_VERSION_TEXT_SHORT=\).*@\1'%{PRODUCT_VERSION_TEXT_SHORT}'@" \
+        -e "s@^\(BRAND_CONSOLE_URL=\).*@\1'%{BRAND_CONSOLE_URL}'@" \
         %{_sysconfdir}/xensource-inventory
+    /sbin/update-issue || :
 fi
 
 # Add myhostname to the hosts line of nsswitch.conf if it is not there already.
@@ -531,7 +532,6 @@ systemctl preset-all --preset-mode=enable-only || :
 %config(noreplace) %{_sysconfdir}/issue
 %config(noreplace) %{_sysconfdir}/issue.net
 %{_sysconfdir}/pki/rpm-gpg/
-%config(noreplace) %{_sysconfdir}/yum.repos.d/*
 %config(noreplace) %{_sysconfdir}/yum/vars/*
 %{_sysconfdir}/rpm/macros.dist
 %{_docdir}/redhat-release
@@ -582,6 +582,45 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Fri Aug 18 2023 Alex Brett <alex.brett@cloud.com> - 8.3.60-3
+- CA-381674: Updates for launch of xenserver.com
+
+* Wed Aug 02 2023 Alex Brett <alex.brett@cloud.com> - 8.3.60-2
+- CP-44357: Update branding text
+
+* Wed Jul 26 2023 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.3.60-1
+- CP-42460: Update product and platform versions
+
+* Wed May 10 2023 Alex Brett <alex.brett@cloud.com> - 8.3.50-5
+- CP-43112: Update xapi configuration file for new GPG key and CDN domain
+- Remove redundant CentOS GPG keys
+
+* Tue May 09 2023 Sola Zhang <Sola.Zhang@cloud.com> - 8.3.50-4
+- CP-41889: Accept NRPE port 5666 in iptables
+
+* Wed May 03 2023 Deli Zhang <dzhang@tibco.com> - 8.3.50-3
+- CP-42642: Xapi: update config for sharing server certificate file to group users
+
+* Wed May 03 2023 Alex Brett <alex.brett@cloud.com> - 8.3.50-2
+- CP-41761: Replace CH GPG key with XS key
+- CA-377018: Require xenserver-config-packages for real installs
+
+* Fri Apr 28 2023 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.3.50-1
+- CP-42458: Update product and platform versions
+
+* Mon Apr 17 2023 Ming Lu <ming.lu@cloud.com> - 8.3.0-13
+- CP-41576: Enable xs-telemetry.timer and xs-telemetry.service
+
+* Wed Apr 05 2023 Tim Smith <tim.smith@citrix.com> - 8.3.0-12
+- CP-42031 Add dependency on system-config
+- Remove out of date yum repository definitions
+
+* Thu Mar 23 2023 Alex Brett <alex.brett@cloud.com> - 8.3.0-11
+- CP-42588: Rebuild to pick up new EUA
+
+* Thu Mar 09 2023 Gerald Elder-Vass <gerald.elder-vass@citrix.com> - 8.3.0-10
+- CP-42319: Rebuild to pick up further branding changes
+
 * Wed Feb 01 2023 Alex Brett <alex.brett@cloud.com> - 8.3.0-9
 - CP-41817: Correct console text in issue file
 
