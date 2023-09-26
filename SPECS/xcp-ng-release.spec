@@ -699,7 +699,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Sep 21 2023 Thierry Escande <thierry.escande@vates.tech> - 8.3.0-14
+* Thu Sep 21 2023 Thierry Escande <thierry.escande@vates.tech> - 8.3.0-14
 - Remove web server index files
 
 * Wed Sep 20 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-13
