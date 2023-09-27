@@ -39,13 +39,15 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        14
+Release:        15
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
 Requires(post): coreutils, grep
 Requires:       %{name}-presets
-Requires:       system-config
+# XCP-ng: do not require system-config for now:
+# it pulls a useless empty xenserver-config everywhere
+#Requires:       system-config
 Provides:       centos-release = %{base_release_version}
 Provides:       centos-release(upstream) = %{upstream_rel}
 Provides:       redhat-release = %{upstream_rel_long}
@@ -699,6 +701,10 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Wed Sep 27 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-15
+- Remove dependency to system-config, added by XenServer and unneeded for now
+- It just pulls an empty xenserver-config package everywhere
+
 * Thu Sep 21 2023 Thierry Escande <thierry.escande@vates.tech> - 8.3.0-14
 - Remove web server index files
 
