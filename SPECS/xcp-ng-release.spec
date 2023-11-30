@@ -25,7 +25,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        9
+Release:        10
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -825,6 +825,10 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Thu Nov 30 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-10
+- Rebuild for updated branding-xcp-ng
+- Sets "copyright" year to 2023
+
 * Wed May 10 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-9
 - Update xcp-ng.repo for the new repository structure
 
