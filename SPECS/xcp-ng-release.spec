@@ -39,7 +39,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        15
+Release:        16
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -96,7 +96,6 @@ URL:            https://github.com/xcp-ng/xcp-ng-release
 # Before the tag of the final release, archives are exported this way from the source repository:
 # export VER=8.3.0; git archive --format tgz master . --prefix xcp-ng-release-$VER/ -o /path/to/SOURCES/xcp-ng-release-$VER.tar.gz
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
-Source1: RPM-GPG-KEY-XenServer
 Source2: sshd_config
 Source3: ssh_config
 
@@ -139,9 +138,6 @@ cp %{_usrsrc}/branding/LICENSES .
 
 %install
 rm -rf %{buildroot}
-
-## Ensure the Hypervisor key is present
-install -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-XenServer
 
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/common %{buildroot}
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/xenserver %{buildroot}
@@ -701,6 +697,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Fri Dec 08 2023 Yann Dirson <yann.dirson@vates.fr> - 8.3.0-16
+- Remove unused RPM-GPG-KEY-XenServer
+
 * Wed Sep 27 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-15
 - Remove dependency to system-config, added by XenServer and unneeded for now
 - It just pulls an empty xenserver-config package everywhere
