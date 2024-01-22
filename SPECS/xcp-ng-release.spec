@@ -5,6 +5,8 @@
 %define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
 %define PLATFORM_VERSION 3.4.0
 %define BUILD_NUMBER 8.3.0
+# XCP-ng: macro tested by some spec files inherited from XenServer
+%define xenserver_major 8
 
 # XCP-ng: the globals below are not used. We only keep them as a reference
 # from the last xenserver-release we (loosely) synced with
@@ -39,7 +41,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        16
+Release:        17
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -181,6 +183,7 @@ cat >> %{buildroot}%{_sysconfdir}/rpm/macros.dist << EOF
 %%rhel %{base_release_version}
 %%dist %dist
 %%el%{base_release_version} 1
+%%xenserver %{xenserver_major}
 EOF
 
 # use unbranded datadir
@@ -697,6 +700,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Mon Jan 22 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-17
+- Define xenserver macro in /etc/rpm/macros.dist. Some spec files use it.
+
 * Fri Dec 08 2023 Yann Dirson <yann.dirson@vates.fr> - 8.3.0-16
 - Remove unused RPM-GPG-KEY-XenServer
 
