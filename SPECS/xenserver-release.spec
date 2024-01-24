@@ -1,12 +1,12 @@
-%global package_speccommit 7fbd2de17d79849d7dcd1742ab9709f9a9bff165
+%global package_speccommit f959c3a04b9d9cd0b88a752809fb7d5ce001a212
 %global usver 8.3.60
-%global xsver 3
+%global xsver 10
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.3.60-3
+%global package_srccommit v8.3.60-10
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -22,6 +22,12 @@
 %define private_config_path /opt/xensource/config/
 
 %define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
+
+%if 0%{?xenserver} < 9
+%bcond_without build_py2
+%else
+%bcond_with build_py2
+%endif
 
 #define beta Beta
 ## Do not redefine dist. Pass on whatever the
@@ -77,7 +83,7 @@ Provides:       platform-version = %{PLATFORM_VERSION}
 Provides:       product-version-text = %replace_spaces %{PRODUCT_VERSION_TEXT}
 Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_TEXT_SHORT}
 
-BuildRequires:  systemd branding-xenserver
+BuildRequires:  systemd branding-xenserver python3-devel
 Source0: xenserver-release-8.3.60.tar.gz
 Source1: RPM-GPG-KEY-XenServer
 Source2: sshd_config
@@ -103,6 +109,7 @@ Requires:       kernel-livepatch xen-livepatch
 ## This gets xenserver-config-packages included only in a real install, because
 ## xenserver-release-config is only included in real installs
 Requires:	xenserver-config-packages
+Requires:	python3-xcp-libs
 Requires(post): systemd xs-presets >= 1.4
 Requires(preun): systemd xs-presets >= 1.4
 Requires(postun): systemd xs-presets >= 1.4
@@ -125,8 +132,14 @@ install -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-
 
 %{_usrsrc}/branding/brand-directory.py src/common %{buildroot}
 %{_usrsrc}/branding/brand-directory.py src/xenserver %{buildroot}
+
+%if %{with build_py2}
 install -d -m 755 %{buildroot}%{python2_sitelib}/xcp
 %{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python2_sitelib}/xcp/branding.py
+%endif
+
+install -d -m 755 %{buildroot}%{python3_sitelib}/xcp
+%{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python3_sitelib}/xcp/branding.py
 
 install -m 644 %{_usrsrc}/branding/xenserver/EULA %{buildroot}/
 install -D -m 644 \
@@ -268,6 +281,10 @@ install -D -m 600 %{private_config_path}/sshd_config /etc/ssh/
 # Replace openssh-clients config as openssh package mark it as noreplace as follows
 # attr(0644,root,root) config(noreplace) {_sysconfdir}/ssh/ssh_config
 install -D -m 644 %{private_config_path}/ssh_config /etc/ssh/
+
+%triggerin config -- setup
+# Replace /etc/motd with our branded version
+install -D -m 644 %{_sysconfdir}/motd.xs %{_sysconfdir}/motd
 
 %triggerin config -- net-snmp
 grep -qs '^OPTIONS' %{_sysconfdir}/sysconfig/snmpd || echo 'OPTIONS="-c %{_sysconfdir}/snmp/snmpd.xs.conf"' >>%{_sysconfdir}/sysconfig/snmpd
@@ -541,7 +558,11 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_prefix}/lib/systemd/system-preset/90-default.preset
 /EULA
 %{_docdir}/XenServer/LICENSES
+%if %{with build_py2}
 %{python2_sitelib}/xcp/branding.py*
+%endif
+%{python3_sitelib}/xcp/branding.py*
+%{python3_sitelib}/xcp/__pycache__/*
 
 %files presets
 %{_prefix}/lib/systemd/system-preset/89-default.preset
@@ -582,6 +603,27 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Thu Dec 14 2023 Alex Brett <alex.brett@cloud.com> - 8.3.60-10
+- Revert of fcoe changes in 8.3.60-8 pending further testing
+
+* Wed Dec 13 2023 Alex Brett <alex.brett@cloud.com> - 8.3.60-9
+- CA-386077: Fixup filter and map diff between python2&3
+- CA-386658: Fix line wrapping of motd following rebranding
+- CP-46994: Install motd as /etc/motd
+
+* Mon Nov 27 2023 Lin Liu <lin.liu@cloud.com> - 8.3.60-8
+- CA-385236: Re-direct critical logs to /dev/hvc0
+- CP-46168: Some py2->py3 update and requires python3-xcp-libs
+
+* Thu Oct 26 2023 Lin Liu <lin.liu@cloud.com> - 8.3.60-6
+- CP-45918: XS9 does not build python2 site-packages
+
+* Wed Oct 25 2023 Alex Brett <alex.brett@cloud.com> - 8.3.60-5
+- CP-45884: Minor tweaks to /etc/issue text
+
+* Tue Oct 03 2023 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.3.60-4
+- CP-41302: Python 2&3 compatible versions of branding.py
+
 * Fri Aug 18 2023 Alex Brett <alex.brett@cloud.com> - 8.3.60-3
 - CA-381674: Updates for launch of xenserver.com
 
