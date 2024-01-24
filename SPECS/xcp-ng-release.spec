@@ -10,14 +10,14 @@
 
 # XCP-ng: the globals below are not used. We only keep them as a reference
 # from the last xenserver-release we (loosely) synced with
-%global package_speccommit 7fbd2de17d79849d7dcd1742ab9709f9a9bff165
 %global usver 8.3.60
-%global xsver 3
+%global xsver 10
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
+%global package_srccommit v8.3.60-10
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -34,6 +34,12 @@
 
 %define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
 
+%if 0%{?xenserver} < 9
+%bcond_without build_py2
+%else
+%bcond_with build_py2
+%endif
+
 #define beta Beta
 %define dist .xcpng%{PRODUCT_VERSION_TEXT_SHORT}
 
@@ -41,7 +47,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        17
+Release:        18
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -89,7 +95,7 @@ Provides:       platform-version = %{PLATFORM_VERSION}
 Provides:       product-version-text = %replace_spaces %{PRODUCT_VERSION_TEXT}
 Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_TEXT_SHORT}
 
-BuildRequires:  systemd branding-xcp-ng
+BuildRequires:  systemd branding-xcp-ng python3-devel
 # XCP-ng: python dependencies for building branding files
 BuildRequires:  python2-rpm-macros
 BuildRequires:  python2
@@ -121,6 +127,11 @@ Summary:        XCP-ng configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
 Requires:       kernel-livepatch xen-livepatch
+# XCP-ng: don't require xenserver-config-packages
+### This gets xenserver-config-packages included only in a real install, because
+### xenserver-release-config is only included in real installs
+#Requires:	xenserver-config-packages
+Requires:	python3-xcp-libs
 Requires(post): systemd xs-presets >= 1.4
 Requires(preun): systemd xs-presets >= 1.4
 Requires(postun): systemd xs-presets >= 1.4
@@ -143,8 +154,12 @@ rm -rf %{buildroot}
 
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/common %{buildroot}
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/xenserver %{buildroot}
+
+%if %{with build_py2}
 install -d -m 755 %{buildroot}%{python2_sitelib}/xcp
 %{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python2_sitelib}/xcp/branding.py
+%endif
+
 install -d -m 755 %{buildroot}%{python3_sitelib}/xcp
 %{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python3_sitelib}/xcp/branding.py
 
@@ -301,6 +316,10 @@ install -D -m 600 %{private_config_path}/sshd_config /etc/ssh/
 # Replace openssh-clients config as openssh package mark it as noreplace as follows
 # attr(0644,root,root) config(noreplace) {_sysconfdir}/ssh/ssh_config
 install -D -m 644 %{private_config_path}/ssh_config /etc/ssh/
+
+%triggerin config -- setup
+# Replace /etc/motd with our branded version
+install -D -m 644 %{_sysconfdir}/motd.xs %{_sysconfdir}/motd
 
 %triggerin config -- net-snmp
 grep -qs '^OPTIONS' %{_sysconfdir}/sysconfig/snmpd || echo 'OPTIONS="-c %{_sysconfdir}/snmp/snmpd.xs.conf"' >>%{_sysconfdir}/sysconfig/snmpd
@@ -654,7 +673,9 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_datadir}/centos-release
 %{_prefix}/lib/systemd/system-preset/90-default.preset
 /EULA
+%if %{with build_py2}
 %{python2_sitelib}/xcp/branding.py*
+%endif
 %{python3_sitelib}/xcp/branding.py
 %{python3_sitelib}/xcp/__pycache__
 %{_sysconfdir}/depmod.d/00-xcpng-override.conf
@@ -700,6 +721,25 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Wed Jan 24 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-18
+- Loosely sync with xenserver-release-8.3.60-10
+- *** Upstream changelog ***
+- * Thu Dec 14 2023 Alex Brett <alex.brett@cloud.com> - 8.3.60-10
+- - Revert of fcoe changes in 8.3.60-8 pending further testing
+- * Wed Dec 13 2023 Alex Brett <alex.brett@cloud.com> - 8.3.60-9
+- - CA-386077: Fixup filter and map diff between python2&3
+- - CA-386658: Fix line wrapping of motd following rebranding
+- - CP-46994: Install motd as /etc/motd
+- * Mon Nov 27 2023 Lin Liu <lin.liu@cloud.com> - 8.3.60-8
+- - CA-385236: Re-direct critical logs to /dev/hvc0
+- - CP-46168: Some py2->py3 update and requires python3-xcp-libs
+- * Thu Oct 26 2023 Lin Liu <lin.liu@cloud.com> - 8.3.60-6
+- - CP-45918: XS9 does not build python2 site-packages
+- * Wed Oct 25 2023 Alex Brett <alex.brett@cloud.com> - 8.3.60-5
+- - CP-45884: Minor tweaks to /etc/issue text
+- * Tue Oct 03 2023 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.3.60-4
+- - CP-41302: Python 2&3 compatible versions of branding.py
+
 * Mon Jan 22 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-17
 - Define xenserver macro in /etc/rpm/macros.dist. Some spec files use it.
 
