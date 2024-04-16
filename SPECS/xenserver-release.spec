@@ -1,12 +1,12 @@
-%global package_speccommit f959c3a04b9d9cd0b88a752809fb7d5ce001a212
-%global usver 8.3.60
-%global xsver 10
+%global package_speccommit bb51120c8e8c9475fe35521fc4a78d62087ba20d
+%global usver 8.4.0
+%global xsver 3
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.3.60-10
+%global package_srccommit v8.4.0-3
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -25,8 +25,10 @@
 
 %if 0%{?xenserver} < 9
 %bcond_without build_py2
+%bcond_without update_config
 %else
 %bcond_with build_py2
+%bcond_with update_config
 %endif
 
 #define beta Beta
@@ -37,7 +39,7 @@
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xenserver-release
-Version: 8.3.60
+Version: 8.4.0
 Release: %{?xsrel}%{?dist}
 Summary:        XenServer release file
 Group:          System Environment/Base
@@ -84,7 +86,7 @@ Provides:       product-version-text = %replace_spaces %{PRODUCT_VERSION_TEXT}
 Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xenserver python3-devel
-Source0: xenserver-release-8.3.60.tar.gz
+Source0: xenserver-release-8.4.0.tar.gz
 Source1: RPM-GPG-KEY-XenServer
 Source2: sshd_config
 Source3: ssh_config
@@ -175,10 +177,11 @@ ln -s centos-release %{buildroot}/%{_datadir}/redhat-release
 install -d -m 755 %{buildroot}/%{_docdir}/centos-release
 ln -s centos-release %{buildroot}/%{_docdir}/redhat-release
 
+%if %{with update_config}
 # install dom0 configurations
-
 install -D -m 600 %{SOURCE2} %{buildroot}/%{private_config_path}/sshd_config
 install -D -m 644 %{SOURCE3} %{buildroot}/%{private_config_path}/ssh_config
+%endif
 
 # Prevent spawning gettys on tty1 and tty2
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/system
@@ -272,6 +275,7 @@ EOF
  #### RULES ####
 EOF
 
+%if %{with update_config}
 %triggerin config -- openssh-server
 # Replace openssh-server config as openssh package mark it as noreplace as follows
 # attr(0600,root,root) config(noreplace) {_sysconfdir}/ssh/sshd_config
@@ -281,20 +285,11 @@ install -D -m 600 %{private_config_path}/sshd_config /etc/ssh/
 # Replace openssh-clients config as openssh package mark it as noreplace as follows
 # attr(0644,root,root) config(noreplace) {_sysconfdir}/ssh/ssh_config
 install -D -m 644 %{private_config_path}/ssh_config /etc/ssh/
+%endif
 
 %triggerin config -- setup
 # Replace /etc/motd with our branded version
 install -D -m 644 %{_sysconfdir}/motd.xs %{_sysconfdir}/motd
-
-%triggerin config -- net-snmp
-grep -qs '^OPTIONS' %{_sysconfdir}/sysconfig/snmpd || echo 'OPTIONS="-c %{_sysconfdir}/snmp/snmpd.xs.conf"' >>%{_sysconfdir}/sysconfig/snmpd
-
-%triggerun config -- net-snmp
-if [ $1 -eq 0 ]; then
-  if [ -e %{_sysconfdir}/sysconfig/snmpd ]; then
-    sed -i -e '\#%{_sysconfdir}/snmp/snmpd.xs.conf# d' %{_sysconfdir}/sysconfig/snmpd
-  fi
-fi
 
 %triggerin config -- logrotate
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
@@ -384,6 +379,7 @@ EOF
  COMMIT
 EOF
 grep -q '^-A .* 5666 .*' /etc/sysconfig/iptables || sed -i '/^-A .* 443 .*/a # nrpe\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 5666 -j ACCEPT' /etc/sysconfig/iptables
+grep -q '^-A .* 161 .*' /etc/sysconfig/iptables || sed -i '/^-A .* 443 .*/a # snmp\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m udp -p udp --dport 161 -j ACCEPT' /etc/sysconfig/iptables
 systemctl try-restart iptables
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
 --- /etc/sysconfig/ip6tables    2014-06-10 06:02:35.000000000 +0100
@@ -419,6 +415,7 @@ systemctl try-restart iptables
  COMMIT
 EOF
 grep -q '^-A .* 5666 .*' /etc/sysconfig/ip6tables || sed -i '/^-A .* 443 .*/a # nrpe\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 5666 -j ACCEPT' /etc/sysconfig/ip6tables
+grep -q '^-A .* 161 .*' /etc/sysconfig/ip6tables || sed -i '/^-A .* 443 .*/a # snmp\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m udp -p udp --dport 161 -j ACCEPT' /etc/sysconfig/ip6tables
 
 # CA-38350
 %triggerin config -- dhclient
@@ -573,7 +570,6 @@ systemctl preset-all --preset-mode=enable-only || :
 %config(noreplace) %{_sysconfdir}/motd.xs
 %config(noreplace) %{_sysconfdir}/profile.d/*.sh
 %config(noreplace) %{_sysconfdir}/sysctl.d/*.conf
-%config(noreplace) %{_sysconfdir}/snmp/snmpd.xs.conf
 %{_sysconfdir}/rsyslog.d/xenserver.conf
 %{_sysconfdir}/logrotate.d/*
 %{_sysconfdir}/udev/rules.d/*.rules
@@ -581,18 +577,15 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_sysconfdir}/xapi.conf.d/*.conf
 %{_unitdir}/*
 /opt/xensource/www/*
+%if %{with update_config}
 %{private_config_path}/*
+%endif
 %attr(0755,-,-) /sbin/update-issue
 %attr(0755,-,-) /opt/xensource/libexec/xen-cmdline
 %attr(0755,-,-) /opt/xensource/libexec/ibft-to-ignore
 %attr(0755,-,-) /opt/xensource/libexec/bfs-interfaces
 %attr(0755,-,-) /opt/xensource/libexec/fcoe_driver
 %attr(0755,-,-) %{_sysconfdir}/dhcp/dhclient.d/xs.sh
-
-# custom log rotation, only enabled for legacy partition layout
-/etc/cron.d/logrotate.cron.rpmsave
-/etc/logrotate-xenserver.conf
-%attr(0755,-,-) /opt/xensource/bin/logrotate-xenserver
 
 # kernel logging to VT2
 %attr(0755,-,-) /opt/xensource/libexec/move-kernel-messages
@@ -603,6 +596,23 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Mon Feb 26 2024 Gerald Elder-Vass <Gerald.Elder-Vass@cloud.com> - 8.4.0-3
+- CP-47543: Increase pid max
+
+* Tue Jan 30 2024 Deli Zhang <deli.zhang@cloud.com> - 8.4.0-2
+- CP-44429: Move snmpd.xs.conf to net-snmp.spec
+- CP-44429: iptable: Accept snmp port 161
+
+* Tue Jan 09 2024 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.4.0-1
+- CP-44059: Update Product & Platform versions ahead of XenServer 8 GA
+
+* Fri Jan 05 2024 Lin Liu <lin.liu@cloud.com> - 8.3.60-12
+- In XS9, sshd manages the config itself, so remove config update from xenserver-release
+
+* Wed Jan 03 2024 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.3.60-11
+- CP-37929: Remove legacy logrotate mechanism
+- CA-385315: print both SHA1 and SHA256 fingerprints
+
 * Thu Dec 14 2023 Alex Brett <alex.brett@cloud.com> - 8.3.60-10
 - Revert of fcoe changes in 8.3.60-8 pending further testing
 
