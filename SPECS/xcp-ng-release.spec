@@ -49,7 +49,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        19
+Release:        20
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -714,6 +714,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Fri Apr 26 2024 Yann Dirson <yann.dirson@vates.fr> - 8.3.0-20
+- xapi.service: do not pull qemuback.service unconditionally
+
 * Tue Apr 16 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-19
 - Loosely sync with xenserver-release-8.4.0-3
 - *** Upstream changelog ***
