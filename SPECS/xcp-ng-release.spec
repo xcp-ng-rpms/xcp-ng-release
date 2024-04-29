@@ -30,16 +30,12 @@
 %define upstream_rel 7.5
 %define centos_rel 5.1804
 
-%define private_config_path /opt/xensource/config/
-
 %define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
 
 %if 0%{?xenserver} < 9
 %bcond_without build_py2
-%bcond_without update_config
 %else
 %bcond_with build_py2
-%bcond_with update_config
 %endif
 
 #define beta Beta
@@ -49,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        20
+Release:        21
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -106,8 +102,6 @@ URL:            https://github.com/xcp-ng/xcp-ng-release
 # Before the tag of the final release, archives are exported this way from the source repository:
 # export VER=8.3.0; git archive --format tgz master . --prefix xcp-ng-release-$VER/ -o /path/to/SOURCES/xcp-ng-release-$VER.tar.gz
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
-Source2: sshd_config
-Source3: ssh_config
 
 # XCP-ng Patches generated during maintenance period with `git format-patch v8.3`
 # (None at the moment)
@@ -211,12 +205,6 @@ ln -s centos-release %{buildroot}/%{_datadir}/redhat-release
 install -d -m 755 %{buildroot}/%{_docdir}/centos-release
 ln -s centos-release %{buildroot}/%{_docdir}/redhat-release
 
-%if %{with update_config}
-# install dom0 configurations
-install -D -m 600 %{SOURCE2} %{buildroot}/%{private_config_path}/sshd_config
-install -D -m 644 %{SOURCE3} %{buildroot}/%{private_config_path}/ssh_config
-%endif
-
 # Prevent spawning gettys on tty1 and tty2
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/system
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/getty@tty1.service
@@ -309,18 +297,6 @@ EOF
 
  #### RULES ####
 EOF
-
-%if %{with update_config}
-%triggerin config -- openssh-server
-# Replace openssh-server config as openssh package mark it as noreplace as follows
-# attr(0600,root,root) config(noreplace) {_sysconfdir}/ssh/sshd_config
-install -D -m 600 %{private_config_path}/sshd_config /etc/ssh/
-
-%triggerin config -- openssh-clients
-# Replace openssh-clients config as openssh package mark it as noreplace as follows
-# attr(0644,root,root) config(noreplace) {_sysconfdir}/ssh/ssh_config
-install -D -m 644 %{private_config_path}/ssh_config /etc/ssh/
-%endif
 
 %triggerin config -- setup
 # Replace /etc/motd with our branded version
@@ -694,9 +670,6 @@ systemctl preset-all --preset-mode=enable-only || :
 # If more useful files were added since in xapi.conf.d, re-enable this.
 #%%{_sysconfdir}/xapi.conf.d/*.conf
 %{_unitdir}/*
-%if %{with update_config}
-%{private_config_path}/*
-%endif
 %attr(0755,-,-) /sbin/update-issue
 %attr(0755,-,-) /opt/xensource/libexec/xen-cmdline
 %attr(0755,-,-) /opt/xensource/libexec/ibft-to-ignore
@@ -714,6 +687,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Mon Apr 29 2024 Thierry Escande <thierry.escande@vates.fr> - 8.3.0-21
+- Remove sshd_config and ssh_config installation and triggers
+
 * Fri Apr 26 2024 Yann Dirson <yann.dirson@vates.fr> - 8.3.0-20
 - xapi.service: do not pull qemuback.service unconditionally
 
