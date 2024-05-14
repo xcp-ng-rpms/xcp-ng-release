@@ -25,7 +25,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        10
+Release:        11
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -286,64 +286,57 @@ EOF
  #### RULES ####
 EOF
 
-%triggerin config -- openssh-server
-# XCP-ng, 2023-01-31
-# We diverged here from xenserver-release-8.2.1-10: they chose to fully replace the sshd and ssh configuration each time either xenserver-release-config or openssh-server is updated.
-# We would like not to overwrite user configurations this way, so keeping the patches for XCP-ng 8.2.x
+%triggerin config -- openssh-server >= 7.4p1-23.2.1
+# XCP-ng, 2024-05-13
+# Starting from openssh 7.4p1-23.2.1, the default ciphers, MACs, KexAlgorithms,
+# and HostKeyAlgorithms are now compiled in openssh code. This triggerin is used
+# to remove them from sshd_config. This is easier to do it through this package
+# rather than from the openssh-server one to avoid conflicting triggers (ordering
+# issue) between an old xcp-ng-release-config and a newer openssh-server package.
 
 # # Replace openssh-server config as openssh package mark it as noreplace as follows
 # # attr(0600,root,root) config(noreplace) {_sysconfdir}/ssh/sshd_config
 # install -D -m 600 %%{private_config_path}/sshd_config /etc/ssh/
 
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/ssh/sshd_config	2010-03-31 10:24:13.000000000 +0100
-+++ /etc/ssh/sshd_config	2010-09-03 16:08:27.000000000 +0100
-@@ -24,7 +24,12 @@
+--- /etc/ssh/sshd_config
++++ /etc/ssh/sshd_config
+@@ -24,12 +24,7 @@ HostKey /etc/ssh/ssh_host_rsa_key
  HostKey /etc/ssh/ssh_host_ecdsa_key
  HostKey /etc/ssh/ssh_host_ed25519_key
-
--# Ciphers and keying
-+# Ciphers, MACs, KEX Algorithms & HostKeyAlgorithms
-+Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
-+MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
-+HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
-+
+ 
+-# Ciphers, MACs, KEX Algorithms & HostKeyAlgorithms
+-Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
+-MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
+-KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
+-HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
+-
++# Ciphers and keying
  #RekeyLimit default none
-
+ 
  # Logging
-@@ -90,7 +90,7 @@
- #KerberosUseKuserok yes
-
- # GSSAPI options
--GSSAPIAuthentication yes
-+GSSAPIAuthentication no
- GSSAPICleanupCredentials no
- #GSSAPIStrictAcceptorCheck yes
- #GSSAPIKeyExchange no
 EOF
 
-# XCP-ng 8.2.1: When updating the ciphers for 8.2 CU1, Citrix forgot to handle the case when
-# users already had the previous list of ciphers, in which case the patch above doesn't apply.
+# Depending on the version you're upgrading from, the ciphers list might be an
+# old one that differs from the one removed by the above patch.
 # Despite how ugly this solution is, add another patch to handle this case.
 SSHD_PATCH=$(cat <<'EOF'
---- /etc/ssh/sshd_config	2022-02-01 11:57:02.376507807 +0100
-+++ /etc/ssh/sshd_config	2022-02-01 11:56:04.074367389 +0100
-@@ -25,10 +25,10 @@
+--- /etc/ssh/sshd_config
++++ /etc/ssh/sshd_config
+@@ -24,12 +24,7 @@ HostKey /etc/ssh/ssh_host_rsa_key
+ HostKey /etc/ssh/ssh_host_ecdsa_key
  HostKey /etc/ssh/ssh_host_ed25519_key
  
- # Ciphers, MACs, KEX Algorithms & HostKeyAlgorithms
+-# Ciphers, MACs, KEX Algorithms & HostKeyAlgorithms
 -Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
 -MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
 -KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
 -HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
-+Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
-+MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
-+HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
- 
+-
++# Ciphers and keying
  #RekeyLimit default none
  
+ # Logging
 EOF
 )
 # Do not apply patch if it was already applied
@@ -355,47 +348,47 @@ if ! echo "$SSHD_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
     fi
 fi
 
-%triggerin config -- openssh-clients
-# XCP-ng, 2023-01-31
-# We diverged here from xenserver-release-8.2.1-10: they chose to fully replace the sshd and ssh configuration each time either xenserver-release-config or openssh-client is updated.
-# We would like not to overwrite user configurations this way, so keeping the patches for XCP-ng 8.2.x
+%triggerin config -- openssh-clients >= 7.4p1-23.2.1
+# XCP-ng, 2024-05-13
+# Starting from openssh 7.4p1-23.2.1, the default ciphers, MACs, KexAlgorithms,
+# and HostKeyAlgorithms are now compiled in openssh code. This triggerin is used
+# to remove them from ssh_config. This is easier to do it through this package
+# rather than from the openssh-clients one to avoid conflicting triggers (ordering
+# issue) between an old xcp-ng-release-config and a newer openssh-clients package.
 
 # # Replace openssh-clients config as openssh package mark it as noreplace as follows
 # # attr(0644,root,root) config(noreplace) {_sysconfdir}/ssh/ssh_config
 # install -D -m 644 %%{private_config_path}/ssh_config /etc/ssh/
 
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/ssh/ssh_config	2019-10-28 13:56:16.791811367 +0000
-+++ /etc/ssh/ssh_config	2019-10-28 13:26:42.374146454 +0000
-@@ -66,3 +66,8 @@
+--- /etc/ssh/ssh_config
++++ /etc/ssh/ssh_config
+@@ -66,8 +66,3 @@ Host *
  	SendEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
  	SendEnv LC_IDENTIFICATION LC_ALL LANGUAGE
  	SendEnv XMODIFIERS
-+
-+	Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
-+	MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+	KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
-+	HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
+-
+-	Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
+-	MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
+-	KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
+-	HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
 EOF
 
-# XCP-ng 8.2.1: When updating the ciphers for 8.2 CU1, Citrix forgot to handle the case when
-# users already had the previous list of ciphers, in which case the patch above doesn't apply.
+# Depending on the version you're upgrading from, the ciphers list might be an
+# old one that differs from the one removed by the above patch.
 # Despite how ugly this solution is, add another patch to handle this case.
 SSH_PATCH=$(cat <<'EOF'
---- /etc/ssh/ssh_config	2022-02-01 11:56:56.157492828 +0100
-+++ /etc/ssh/ssh_config	2022-02-01 11:56:14.355392151 +0100
-@@ -67,7 +67,7 @@
+--- /etc/ssh/ssh_config
++++ /etc/ssh/ssh_config
+@@ -66,8 +66,3 @@ Host *
+ 	SendEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
  	SendEnv LC_IDENTIFICATION LC_ALL LANGUAGE
  	SendEnv XMODIFIERS
- 
+-
 -	Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc
 -	MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
 -	KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1
 -	HostKeyAlgorithms ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
-+	Ciphers aes128-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes256-cbc
-+	MACs hmac-sha2-256,hmac-sha2-512,hmac-sha1
-+	KexAlgorithms curve25519-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1
-+	HostKeyAlgorithms ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,ssh-rsa
 EOF
 )
 # Do not apply patch if it was already applied
@@ -825,6 +818,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Tue May 13 2024 Thierry Escande <thierry.escande@vates.tech> - 8.2.1-11
+- Update sshd_config and ssh_config file triggers
+
 * Thu Nov 30 2023 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-10
 - Rebuild for updated branding-xcp-ng
 - Sets "copyright" year to 2023
