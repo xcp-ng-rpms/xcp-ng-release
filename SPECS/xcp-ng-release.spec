@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        21
+Release:        22
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -687,6 +687,10 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Wed Jun 12 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-22
+- Rebuild for updated branding-xcp-ng
+- Copyright year updated to 2024
+
 * Mon Apr 29 2024 Thierry Escande <thierry.escande@vates.fr> - 8.3.0-21
 - Remove sshd_config and ssh_config installation and triggers
 
