@@ -11,13 +11,13 @@
 # XCP-ng: the globals below are not used. We only keep them as a reference
 # from the last xenserver-release we (loosely) synced with
 %global usver 8.4.0
-%global xsver 3
+%global xsver 5
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.4.0-3
+%global package_srccommit v8.4.0-5
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        22
+Release:        23
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -687,6 +687,14 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Wed Jun 19 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-23
+- Loosely sync with xenserver-release-8.4.0-5
+- *** Upstream changelog ***
+- * Mon Apr 08 2024 Stephen Cheng <stephen.cheng@cloud.com> - 8.4.0-5
+- - CP-47599: Update set-printk-console to Python3
+- * Thu Mar 07 2024 Alex Brett <alex.brett@cloud.com> - 8.4.0-4
+- - CA-389583: Update curlrc cipher specification to openssl format
+
 * Wed Jun 12 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-22
 - Rebuild for updated branding-xcp-ng
 - Copyright year updated to 2024
