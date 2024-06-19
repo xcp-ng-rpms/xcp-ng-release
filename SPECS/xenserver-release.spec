@@ -1,12 +1,12 @@
-%global package_speccommit bb51120c8e8c9475fe35521fc4a78d62087ba20d
+%global package_speccommit 12d279e7fa9f5b352da04bb1a1728832f48ffc47
 %global usver 8.4.0
-%global xsver 3
+%global xsver 5
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.4.0-3
+%global package_srccommit v8.4.0-5
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -596,6 +596,12 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Mon Apr 08 2024 Stephen Cheng <stephen.cheng@cloud.com> - 8.4.0-5
+- CP-47599: Update set-printk-console to Python3
+
+* Thu Mar 07 2024 Alex Brett <alex.brett@cloud.com> - 8.4.0-4
+- CA-389583: Update curlrc cipher specification to openssl format
+
 * Mon Feb 26 2024 Gerald Elder-Vass <Gerald.Elder-Vass@cloud.com> - 8.4.0-3
 - CP-47543: Increase pid max
 
