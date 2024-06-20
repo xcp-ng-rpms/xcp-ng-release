@@ -1,12 +1,12 @@
-%global package_speccommit 12d279e7fa9f5b352da04bb1a1728832f48ffc47
+%global package_speccommit f457296803579598258c40dfa3b188c38252d745
 %global usver 8.4.0
-%global xsver 5
+%global xsver 10
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.4.0-5
+%global package_srccommit v8.4.0-10
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -291,40 +291,6 @@ install -D -m 644 %{private_config_path}/ssh_config /etc/ssh/
 # Replace /etc/motd with our branded version
 install -D -m 644 %{_sysconfdir}/motd.xs %{_sysconfdir}/motd
 
-%triggerin config -- logrotate
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/logrotate.conf   2013-07-31 12:46:23.000000000 +0100
-+++ /etc/logrotate.conf   2015-08-06 11:47:36.000000000 +0100
-@@ -1,18 +1,19 @@
- # see "man logrotate" for details
--# rotate log files weekly
--weekly
-+# rotate log files daily
-+daily
-
--# keep 4 weeks worth of backlogs
--rotate 4
-+# keep one months worth of backlogs
-+rotate 31
-
- # create new (empty) log files after rotating old ones
- create
-
--# use date as a suffix of the rotated file
--dateext
-+# rotate if log reaches 100 MiB
-+maxsize 104857600
-
--# uncomment this if you want your log files compressed
--#compress
-+# compress log files
-+compress
-+delaycompress
-
- # RPM packages drop log rotation information into this directory
- include /etc/logrotate.d
-EOF
-
 %triggerin config -- iscsi-initiator-utils
 /usr/bin/systemctl -q disable iscsi.service
 /usr/bin/systemctl -q disable iscsid.socket
@@ -582,8 +548,8 @@ systemctl preset-all --preset-mode=enable-only || :
 %endif
 %attr(0755,-,-) /sbin/update-issue
 %attr(0755,-,-) /opt/xensource/libexec/xen-cmdline
-%attr(0755,-,-) /opt/xensource/libexec/ibft-to-ignore
 %attr(0755,-,-) /opt/xensource/libexec/bfs-interfaces
+%attr(0755,-,-) /opt/xensource/libexec/iscsi-bfs-dhcp
 %attr(0755,-,-) /opt/xensource/libexec/fcoe_driver
 %attr(0755,-,-) %{_sysconfdir}/dhcp/dhclient.d/xs.sh
 
@@ -596,6 +562,21 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Wed May 22 2024 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.4.0-10
+- CA-392433: Start dhclient on iSCSI BFS interfaces
+
+* Thu May 16 2024 Bernhard Kaindl <bernhard.kaindl@cloud.com> - 8.4.0-9
+- CA-392412: Disable the bpf syscall for unprivileged tasks (not used)
+
+* Sat May 11 2024 Deli Zhang <deli.zhang@cloud.com> - 8.4.0-8
+- CP-46084: Revert and move gnu-free-sans-fonts obsoletion to xs-obsolete-packages
+
+* Fri May 10 2024 Deli Zhang <deli.zhang@cloud.com> - 8.4.0-7
+- CP-46084: Obsolete unused package gnu-free-sans-fonts
+
+* Tue May 07 2024 Frediano Ziglio <frediano.ziglio@cloud.com> - 8.4.0-6
+- CP-49083: Do not patch logrotate configuration
+
 * Mon Apr 08 2024 Stephen Cheng <stephen.cheng@cloud.com> - 8.4.0-5
 - CP-47599: Update set-printk-console to Python3
 
