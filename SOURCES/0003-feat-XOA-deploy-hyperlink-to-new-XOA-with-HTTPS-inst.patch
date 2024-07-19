@@ -1,7 +1,7 @@
 From 426d4aebabe3af3f1d231a33624d528af1336ab4 Mon Sep 17 00:00:00 2001
 From: Pierre Donias <pierre.donias@gmail.com>
 Date: Thu, 2 Mar 2023 14:14:13 +0100
-Subject: [PATCH 3/5] feat(XOA deploy): hyperlink to new XOA with HTTPS instead
+Subject: [PATCH 3/6] feat(XOA deploy): hyperlink to new XOA with HTTPS instead
  of HTTP
 
 Signed-off-by: Pierre Donias <pierre.donias@gmail.com>
@@ -23,5 +23,5 @@ index b31bc34..fb95ec3 100644
      })
      .catch((err) => {
 -- 
-2.30.2
+2.45.2
 
