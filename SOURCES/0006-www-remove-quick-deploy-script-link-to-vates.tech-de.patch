@@ -1,0 +1,568 @@
+From 8a30b1fdc89f2be6e298728b3211cff589ff7bed Mon Sep 17 00:00:00 2001
+From: Pierre Donias <pierre.donias@gmail.com>
+Date: Thu, 18 Jul 2024 16:26:39 +0200
+Subject: [PATCH 6/6] www: remove quick deploy script & link to
+ vates.tech/deploy instead
+
+Signed-off-by: Pierre Donias <pierre.donias@gmail.com>
+---
+ .../opt/xensource/www/XCP-ng-index.html       | 132 +-------
+ .../opt/xensource/www/asset/deploy.js         | 290 ------------------
+ .../opt/xensource/www/asset/style.css         |  82 -----
+ 3 files changed, 3 insertions(+), 501 deletions(-)
+ delete mode 100644 src/xenserver/opt/xensource/www/asset/deploy.js
+
+diff --git a/src/xenserver/opt/xensource/www/XCP-ng-index.html b/src/xenserver/opt/xensource/www/XCP-ng-index.html
+index c130ea0..7154b1f 100644
+--- a/src/xenserver/opt/xensource/www/XCP-ng-index.html
++++ b/src/xenserver/opt/xensource/www/XCP-ng-index.html
+@@ -8,7 +8,6 @@
+   <meta charset="utf-8">
+   <title>Welcome to XCP-ng @PRODUCT_VERSION@</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+-  <script src="asset/deploy.js"></script>
+   <link rel="stylesheet" href="asset/flexboxgrid.min.css" type="text/css" />
+   <link rel="stylesheet" href="asset/icons-font/icons.css" />
+   <link rel="icon" type="image/png" href="asset/favicon.png" />
+@@ -37,7 +36,7 @@
+         <div class="col-md">
+           <div class="box">
+             <h4>Xen Orchestra</h4>
+-            <a href="#ex1" rel="modal:open"><img class="preview" src="./asset/xoa.jpg" alt="Xen Orchestra" /></a>
++            <a href="https://vates.tech/deploy"><img class="preview" src="./asset/xoa.jpg" alt="Xen Orchestra" /></a>
+             <p class="options">
+               <span class="tooltip">
+                 <a href="https://xen-orchestra.com/#!/xo-features/webinterface?pk_campaign=xcp-ng-html"
+@@ -65,7 +64,7 @@
+               directly from your web browser.
+             </p>
+             <p>
+-              <a href="#ex1" class="btn" rel="modal:open">Quick deploy</a>
++              <a href="https://vates.tech/deploy" class="btn">Quick deploy</a>
+             </p>
+           </div>
+         </div>
+@@ -150,132 +149,7 @@
+         <a href="https://xcp-ng.org/forum" class="btn">Community forum</a>
+       </p>
+     </div>
+-    <!-- Modalcontent -->
+-    <div id="ex1" class="modal">
+-      <h3 class="subtitle">Xen Orchestra quick deploy</h3>
+-      <p style="font-size: small;">This will download and deploy a new virtual machine on your host, called "XOA" (Xen
+-        Orchestra virtual Appliance).</p>
+-      <form id="connect" onsubmit="event.preventDefault(); connect()">
+-        <fieldset>
+-          <p>
+-            <label>
+-              Host username<br />
+-              <input type="text" disabled value="root" />
+-            </label>
+-          </p>
+-          <p>
+-            <label>
+-              Host password<br />
+-              <input type="password" id="pwd" />
+-            </label>
+-          </p>
+-          <p>
+-            <em><i class="fas fa-info-circle"></i> This host's root
+-              credentials</em>
+-          </p>
+-          <p><button class="btn" type="submit">Connect</button></p>
+-        </fieldset>
+-      </form>
+-      <form id="config" onsubmit="event.preventDefault(); submitConfig()" style="display: none">
+-        <fieldset>
+-          <p>
+-            <label>
+-              Select a storage<br />
+-              <select id="srs"></select>
+-            </label>
+-          </p>
+-          <p>
+-            <label>
+-              Select a network<br />
+-              <select id="networks"></select>
+-            </label>
+-          </p>
+-          <p id="ip-error" style="display: none">
+-            <em class="danger"><i class="fas fa-exclamation-triangle"></i>
+-              <span>You entered the same IP address as your host. Please choose a
+-                different one for your XOA:</span></em>
+-          </p>
+-          <p>
+-            <label>
+-              XOA VM IP address<br />
+-              <input type="text" id="ip" />
+-            </label>
+-          </p>
+-          <p>
+-            <label>
+-              Netmask<br />
+-              <input type="text" placeholder="255.255.255.0" id="netmask" />
+-            </label>
+-          </p>
+-          <p>
+-            <label>
+-              Gateway<br />
+-              <input type="text" id="gateway" />
+-            </label>
+-          </p>
+-          <p>
+-            <label>
+-              DNS<br />
+-              <input type="text" placeholder="8.8.8.8" id="dns" />
+-            </label>
+-          </p>
+-          <p>
+-            <em><i class="fas fa-info-circle"></i> Leave everything empty to
+-              use DHCP. Provide all the information otherwise.</em>
+-          </p>
+-          <p><button class="btn" type="submit">Next</button></p>
+-        </fieldset>
+-      </form>
+-      <form id="accounts" onsubmit="event.preventDefault(); deploy()" style="display: none">
+-        <fieldset>
+-          <h4>Create an Admin account on your XOA</h4>
+-          <p>
+-            <label>
+-              Username<br />
+-              <input type="text" placeholder="admin@admin.net" id="adminEmail" /> </label><br />
+-            <label>
+-              Password<br />
+-              <input type="password" placeholder="admin" id="adminPwd" />
+-            </label>
+-          </p>
+-          <h4>Register your XOA</h4>
+-          <p>
+-            <a href="https://xen-orchestra.com/#!/signup" target="_blank">Create an account</a>
+-          </p>
+-          <p>
+-            <label>
+-              xen-orchestra.com username<br />
+-              <input type="text" id="updaterEmail" /> </label><br />
+-            <label>
+-              xen-orchestra.com password<br />
+-              <input type="password" id="updaterPwd" />
+-            </label>
+-          </p>
+-          <h4>Set the XOA machine password</h4>
+-          <p>
+-            <label>
+-              Login<br />
+-              <input type="text" disabled value="xoa" /> </label><br />
+-            <label>
+-              Password<br />
+-              <input type="password" placeholder="Account disabled if empty" id="xoaPwd" />
+-            </label>
+-          </p>
+-          <p>
+-            <em><i class="fas fa-info-circle"></i> You can do this later</em>
+-          </p>
+-          <p>
+-            <button class="btn" type="submit">
+-              <i class="spinner" style="display: none;"></i>
+-              <span id="deploy">Deploy</span>
+-            </button>
+-          </p>
+-        </fieldset>
+-      </form>
+-      <br />
+-      <a href="#" rel="modal:close">Close</a>
+-    </div>
+   </div>
+ </body>
+ 
+-</html>
+\ No newline at end of file
++</html>
+diff --git a/src/xenserver/opt/xensource/www/asset/deploy.js b/src/xenserver/opt/xensource/www/asset/deploy.js
+deleted file mode 100644
+index b248ad1..0000000
+--- a/src/xenserver/opt/xensource/www/asset/deploy.js
++++ /dev/null
+@@ -1,290 +0,0 @@
+-let call,
+-  vmRef,
+-  vmIp,
+-  host = window.location.host;
+-
+-function _handleUserError(error) {
+-  alert(typeof error === "object" && !(error instanceof Error) ? JSON.stringify(error, null, 2) : (error && error.message) || error);
+-}
+-
+-function setStep(previousStep, nextStep) {
+-  document.querySelector(`#${previousStep}`).style.display = "none";
+-  document.querySelector(`#${nextStep}`).style.display = "block";
+-}
+-
+-function _jsonRpcCall(url, method, params) {
+-  console.log(`-> ${method}(${JSON.stringify(params)})`);
+-  return window
+-    .fetch(url, {
+-      body: JSON.stringify({
+-        id: 0,
+-        jsonrpc: "2.0",
+-        method,
+-        params,
+-      }),
+-      method: "POST",
+-      headers: new Headers({
+-        Accept: "application/json",
+-        "Content-Type": "application/json",
+-      }),
+-    })
+-    .then((res) => {
+-      if (!res.ok) {
+-        throw res.status;
+-      }
+-      return res.json().then((json) => {
+-        if (json.result !== undefined) {
+-          console.log(`<- ${JSON.stringify(json.result)}`);
+-          return json.result;
+-        }
+-        console.error(`<x ${JSON.stringify(json.error)}`);
+-        throw json.error;
+-      });
+-    });
+-}
+-function _call(method, params) {
+-  return _jsonRpcCall(`//${host}/jsonrpc`, method, params).catch((error) => {
+-    if (error && error.message === "HOST_IS_SLAVE") {
+-      console.log("Host is slave, changing host to master", error.data[0]);
+-      host = error.data[0];
+-      return _call(method, params);
+-    }
+-    throw error;
+-  });
+-}
+-
+-function connect() {
+-  document.querySelector("#connect fieldset").setAttribute("disabled", true);
+-  _call("session.login_with_password", ["root", document.querySelector("#pwd").value, "2.3", "XOA deploy"])
+-    .then((sessionRef) => {
+-      call = (method, ...params) => _call(method, [sessionRef].concat(params));
+-    })
+-    .then(() => Promise.all([call("SR.get_all_records"), call("pool.get_all_records"), call("network.get_all_records"), call("PIF.get_all_records")]))
+-    .then(([srs, pools, networks, pifs]) => {
+-      setStep("connect", "config");
+-      const selectSr = document.querySelector("#srs");
+-      let sr;
+-
+-      Object.keys(srs).forEach((srRef) => {
+-        sr = srs[srRef];
+-        if (sr.content_type !== "iso" && sr.physical_size > 0) {
+-          let option = document.createElement("option");
+-          option.value = srRef;
+-          option.textContent = `${sr.name_label} - ${Math.round((sr.physical_size - sr.physical_utilisation) / Math.pow(1024, 3))} GiB left`;
+-          selectSr.append(option);
+-        }
+-      });
+-      const { default_SR } = pools[Object.keys(pools)[0]];
+-
+-      if (default_SR !== undefined) {
+-        selectSr.value = default_SR;
+-      }
+-      const selectNetwork = document.querySelector("#networks");
+-      Object.keys(networks).forEach((networkRef) => {
+-        let network = networks[networkRef];
+-        const option = document.createElement("option");
+-        option.value = networkRef;
+-        option.dataset.mtu = network.MTU;
+-        option.textContent = network.name_label;
+-        selectNetwork.append(option);
+-      });
+-      const managementPif = Object.values(pifs).find((pif) => pif.management);
+-      if (managementPif && managementPif.network !== undefined) {
+-        selectNetwork.value = managementPif.network;
+-      }
+-    })
+-    .catch((err) => {
+-      document.querySelector("#connect fieldset").removeAttribute("disabled");
+-      this._handleUserError(err);
+-    });
+-}
+-
+-function submitConfig() {
+-  const ipError = document.querySelector("#ip-error");
+-  ipError.style.display = "none";
+-  const ip = document.querySelector("#ip").value;
+-  if (ip === window.location.hostname) {
+-    ipError.style.display = "block";
+-    return;
+-  }
+-  setStep("config", "accounts");
+-}
+-
+-function deploy() {
+-  const status = (text) => (document.querySelector("#deploy").innerText = text);
+-  document.querySelector(".spinner").style.display = "inherit";
+-  const srRef = document.querySelector("#srs").value;
+-  status("Deploying XOA…");
+-  document.querySelector("#accounts fieldset").setAttribute("disabled", true);
+-  let registrationToken;
+-  const updaterEmail = document.querySelector("#updaterEmail").value;
+-  const updaterPwd = document.querySelector("#updaterPwd").value;
+-  Promise.resolve()
+-    .then(() => {
+-      if (updaterEmail && updaterPwd) {
+-        return _jsonRpcCall("https://xen-orchestra.com/api", "registerXoa", {
+-          email: updaterEmail,
+-          password: updaterPwd,
+-        }).then((_registrationToken) => {
+-          registrationToken = _registrationToken;
+-        });
+-      }
+-    })
+-    .then(() =>
+-      call(
+-        "VM.import",
+-        "http://xoa.io:8888/",
+-        srRef,
+-        false, // full_restore
+-        false // force
+-      )
+-    )
+-    .then(([_vmRef]) => {
+-      vmRef = _vmRef;
+-      status("Configuring XOA…");
+-      const promises = [];
+-      const ip = document.querySelector("#ip").value;
+-      if (ip) {
+-        promises.push(
+-          call("VM.add_to_xenstore_data", vmRef, "vm-data/ip", ip),
+-          call("VM.add_to_xenstore_data", vmRef, "vm-data/netmask", document.querySelector("#netmask")?.value || "255.255.255.0"),
+-          call("VM.add_to_xenstore_data", vmRef, "vm-data/gateway", document.querySelector("#gateway")?.value || ""),
+-          call("VM.add_to_xenstore_data", vmRef, "vm-data/dns", document.querySelector("#dns").value || "8.8.8.8")
+-        );
+-      }
+-      const email = document.querySelector("#adminEmail").value;
+-      const password = document.querySelector("#adminPwd").value;
+-      if (email && password) {
+-        promises.push(call("VM.add_to_xenstore_data", vmRef, "vm-data/admin-account", JSON.stringify({ email, password })));
+-      }
+-      if (registrationToken) {
+-        promises.push(call("VM.add_to_xenstore_data", vmRef, "vm-data/xoa-updater-credentials", JSON.stringify({ email: updaterEmail, registrationToken })));
+-      }
+-      const xoaPwd = document.querySelector("#xoaPwd").value;
+-      if (xoaPwd) {
+-        promises.push(call("VM.add_to_xenstore_data", vmRef, "vm-data/system-account-xoa-password", xoaPwd));
+-      }
+-      promises.push(
+-        call(
+-          "VM.add_to_xenstore_data",
+-          vmRef,
+-          "vm-data/xen-servers",
+-          JSON.stringify([
+-            {
+-              allowUnauthorized: true,
+-              host,
+-              password: document.querySelector("#pwd").value,
+-              username: "root",
+-            },
+-          ])
+-        )
+-      );
+-
+-      const network = document.querySelector("#networks").value;
+-      const MTU = document.querySelector("#networks option:checked").dataset.mtu;
+-      promises.push(
+-        call("VM.get_VIFs", vmRef)
+-          .then(([vifRef]) => call("VIF.destroy", vifRef))
+-          .then(() => call("VM.get_allowed_VIF_devices", vmRef))
+-          .then((devices) =>
+-            call("VIF.create", {
+-              device: devices[0],
+-              MAC: "",
+-              MTU,
+-              network,
+-              other_config: {},
+-              qos_algorithm_params: {},
+-              qos_algorithm_type: "",
+-              VM: vmRef,
+-            })
+-          )
+-      );
+-
+-      return Promise.all(promises);
+-    })
+-    .then(() => {
+-      status("Starting XOA…");
+-      return call(
+-        "VM.start",
+-        vmRef,
+-        false, // start_paused
+-        false // force
+-      );
+-    })
+-    .then(() => call("VM.get_guest_metrics", vmRef))
+-    .then((metricsRef) => {
+-      status("Almost there…");
+-      let attempts = 120;
+-      const waitForIp = () => {
+-        return call("VM_guest_metrics.get_networks", metricsRef).then((networks) => {
+-          if (networks && networks["0/ip"] !== undefined) {
+-            return networks["0/ip"];
+-          }
+-          if (attempts-- === 0) {
+-            throw "XOA not responding";
+-          }
+-          return new Promise((resolve, reject) => setTimeout(() => waitForIp().then(resolve, reject), 1e3));
+-        });
+-      };
+-      return waitForIp();
+-    })
+-    .then((ip) => {
+-      vmIp = ip;
+-      return Promise.all(
+-        ["admin-account", "dns", "gateway", "ip", "netmask", "xen-servers", "xoa-updater-credentials"].map((key) =>
+-          call("VM.remove_from_xenstore_data", vmRef, `vm-data/${key}`).catch((error) => {
+-            console.warn("VM.remove_from_xenstore_data", key, error);
+-          })
+-        )
+-      );
+-    })
+-    .then(() => {
+-      status("XOA is ready! Redirecting…");
+-      setTimeout(() => {
+-        window.location = `https://${document.querySelector("#ip").value || vmIp}`;
+-      }, 3e3);
+-    })
+-    .catch((err) => {
+-      document.querySelector("#accounts fieldset").removeAttribute("disabled");
+-      document.querySelector(".spinner").style.display = "none";
+-      status("Deploy");
+-      this._handleUserError(err);
+-    });
+-}
+-
+-// Replacement for jquery modal
+-
+-window.addEventListener("DOMContentLoaded", () => {
+-  [...document.querySelectorAll("[rel='modal:open']")].forEach((modalTrigger) => {
+-    modalTrigger.addEventListener("click", (e) => {
+-      e.preventDefault();
+-
+-      document.documentElement.style.overflow = "hidden";
+-      const modal = document.querySelector(modalTrigger.getAttribute("href"));
+-      const modalContainer = document.createElement("div");
+-      modalContainer.className = "modal-container blocker current";
+-      modalContainer.append(modal);
+-      modal.style.display = "block";
+-      document.body.append(modalContainer);
+-      // close button
+-      const closeButton = document.createElement("a");
+-      closeButton.setAttribute("href", "#close-modal");
+-      closeButton.setAttribute("rel", "modal:close");
+-      closeButton.setAttribute("class", "close-modal");
+-      closeButton.title = "Close modal";
+-      modal.append(closeButton);
+-
+-      const close = (e) => {
+-        e.preventDefault();
+-        modal.style.display = "none";
+-        document.body.appendChild(modal);
+-        modalContainer.remove();
+-        closeButton.remove();
+-        document.documentElement.style.overflow = "";
+-      };
+-      [...modalContainer.querySelectorAll("[rel='modal:close']")].forEach((button) => {
+-        button.addEventListener("click", close);
+-      });
+-    });
+-  });
+-});
+diff --git a/src/xenserver/opt/xensource/www/asset/style.css b/src/xenserver/opt/xensource/www/asset/style.css
+index 8f74b9c..b1ffcc4 100644
+--- a/src/xenserver/opt/xensource/www/asset/style.css
++++ b/src/xenserver/opt/xensource/www/asset/style.css
+@@ -221,85 +221,3 @@ p.description {
+ .support p {
+   font-weight: 600;
+ }
+-
+-/** spinner **/
+-
+-.spinner {
+-  --color: 255 255 255;
+-  font-size: 0.4em;
+-  width: 0.88em;
+-  height: 0.88em;
+-  border-radius: 0.88em;
+-  box-shadow: 2.2em 0px 0 0 rgb(var(--color) / 20%), 1.78em 1.3em 0 0 rgb(var(--color) / 40%), 0.682em 2.09em 0 0 rgb(var(--color) / 60%),
+-    -0.682em 2.09em 0 0 rgb(var(--color) / 80%), -1.78em 1.3em 0 0 rgb(var(--color) / 100%);
+-  animation: spinner-b87k6z 1s infinite linear;
+-  margin: 0 2.4em 0 0.9em;
+-  position: relative;
+-  top: -0.5em;
+-}
+-
+-@keyframes spinner-b87k6z {
+-  to {
+-    transform: rotate(360deg);
+-  }
+-}
+-
+-.blocker {
+-  position: fixed;
+-  top: 0;
+-  right: 0;
+-  bottom: 0;
+-  left: 0;
+-  overflow: auto;
+-  z-index: 1;
+-  padding: 20px;
+-  display: flex;
+-  flex-direction: row;
+-  align-items: center;
+-  justify-content: center;
+-  background-color: rgba(0, 0, 0, 0.75);
+-  text-align: center;
+-  padding: 1em;
+-}
+-
+-.blocker.behind {
+-  background-color: transparent;
+-}
+-
+-.modal {
+-  display: none;
+-  vertical-align: middle;
+-  position: relative;
+-  z-index: 2;
+-  max-width: 500px;
+-  box-sizing: border-box;
+-  width: 90%;
+-  background: #fff;
+-  padding: 15px 30px;
+-  margin-top: auto;
+-  margin-bottom: auto;
+-  border-radius: 8px;
+-  box-shadow: 0 0 10px #000;
+-  text-align: left;
+-}
+-
+-.modal a.close-modal:before {
+-  content: "\00D7";
+-}
+-
+-.modal a.close-modal {
+-  font-size: 1.1em;
+-  position: absolute;
+-  text-decoration: none;
+-  top: -12.5px;
+-  right: -12.5px;
+-  display: block;
+-  text-align: center;
+-  width: 1.5em;
+-  line-height: 1.5em;
+-  height: 1.5em;
+-  /* text-indent: -9999px; */
+-  background: rgba(0, 0, 0, 0.85);
+-  color: #fff;
+-  border-radius: 2em;
+-}
+-- 
+2.45.2
+

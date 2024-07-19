@@ -25,7 +25,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        11
+Release:        12
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -100,6 +100,7 @@ Patch2: 0002-www-prettify-XCP-ng-index.html-deploy.js.patch
 Patch3: 0003-feat-XOA-deploy-hyperlink-to-new-XOA-with-HTTPS-inst.patch
 Patch4: 0004-www-Refactor-and-clean-of-deploy-page.patch
 Patch5: 0005-Update-xcp-ng.repo-for-the-new-repository-structure.patch
+Patch6: 0006-www-remove-quick-deploy-script-link-to-vates.tech-de.patch
 
 %description
 XCP-ng release files
@@ -818,6 +819,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Fri Jul 19 2024 Benjamin Reis <benjamin.reis@vates.tech> - 8.2.1-12
+- Update XOA deploy link on landing page to unified path
+
 * Tue May 13 2024 Thierry Escande <thierry.escande@vates.tech> - 8.2.1-11
 - Update sshd_config and ssh_config file triggers
 

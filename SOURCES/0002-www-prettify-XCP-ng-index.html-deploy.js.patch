@@ -1,7 +1,7 @@
 From 0a3bd1f685b40eca399a998f2540158aee2a053f Mon Sep 17 00:00:00 2001
 From: Arnaud Gueras <arnaudgs@gmail.com>
 Date: Mon, 27 Feb 2023 07:59:19 +0100
-Subject: [PATCH 2/5] www: prettify XCP-ng-index.html deploy.js
+Subject: [PATCH 2/6] www: prettify XCP-ng-index.html deploy.js
 
 Signed-off-by: Arnaud Gueras <arnaudgs@gmail.com>
 ---
@@ -1631,5 +1631,5 @@ index 081fd88..b31bc34 100644
 +    });
  }
 -- 
-2.30.2
+2.45.2
 
