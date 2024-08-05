@@ -552,6 +552,7 @@ then
     systemctl reenable rsyslog.service
 fi
 
+%posttrans config
 # We are shipping a file in depmod.d/, ensure it is used.
 # Note: if depmod is not present yet, no cache was created before we add
 # our config file, other packages will create it later, now with proper config.
