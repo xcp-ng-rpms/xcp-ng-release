@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        24
+Release:        25
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -654,6 +654,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Fri Aug 02 2024 Thierry Escande <thierry.escande@vates.fr> - 8.3.0-25
+- Move depmod call to posttrans to avoid ordering issues
+
 * Thu Jun 20 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-24
 - Loosely sync with xenserver-release-8.4.0-10
 - *** Upstream changelog ***
