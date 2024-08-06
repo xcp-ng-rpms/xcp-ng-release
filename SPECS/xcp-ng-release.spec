@@ -122,6 +122,9 @@ XCP-ng presets file.
 Summary:        XCP-ng configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
+# XCP-ng: requires rsyslog to be installed, in %%post,
+# (would have to be fixed in xenserver-config too)
+Requires(post): rsyslog systemd
 # XCP-ng: no support for live patching yet
 #Requires:       kernel-livepatch xen-livepatch
 Obsoletes:      kernel-livepatch < 1.0.3-1.1
@@ -658,8 +661,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Aug 06 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - WIP - 8.3.0-26
+* Tue Aug 06 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-26
 - Don't require the empty kernel-livepatch and xen-livepatch packages
+- Ensure rsyslog and systemd are installed in xcp-ng-release-config's %%post
 
 * Fri Aug 02 2024 Thierry Escande <thierry.escande@vates.fr> - 8.3.0-25
 - Move depmod call to posttrans to avoid ordering issues
