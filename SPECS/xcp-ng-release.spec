@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        25
+Release:        26
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -122,7 +122,11 @@ XCP-ng presets file.
 Summary:        XCP-ng configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
-Requires:       kernel-livepatch xen-livepatch
+# XCP-ng: no support for live patching yet
+#Requires:       kernel-livepatch xen-livepatch
+Obsoletes:      kernel-livepatch < 1.0.3-1.1
+Obsoletes:      xen-livepatch < 2.0-1.1
+
 # XCP-ng: don't require xenserver-config-packages
 ### This gets xenserver-config-packages included only in a real install, because
 ### xenserver-release-config is only included in real installs
@@ -654,6 +658,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Tue Aug 06 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - WIP - 8.3.0-26
+- Don't require the empty kernel-livepatch and xen-livepatch packages
+
 * Fri Aug 02 2024 Thierry Escande <thierry.escande@vates.fr> - 8.3.0-25
 - Move depmod call to posttrans to avoid ordering issues
 
