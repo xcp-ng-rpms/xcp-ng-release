@@ -1,12 +1,12 @@
-%global package_speccommit f457296803579598258c40dfa3b188c38252d745
+%global package_speccommit 12fac58da1bbe95c7bdb3c6bdf76593cf4f8e319
 %global usver 8.4.0
-%global xsver 10
+%global xsver 11
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.4.0-10
+%global package_srccommit v8.4.0-11
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -86,7 +86,7 @@ Provides:       product-version-text = %replace_spaces %{PRODUCT_VERSION_TEXT}
 Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xenserver python3-devel
-Source0: xenserver-release-8.4.0.tar.gz
+Source0: xenserver-release-v8.4.0-11.tar.gz
 Source1: RPM-GPG-KEY-XenServer
 Source2: sshd_config
 Source3: ssh_config
@@ -197,53 +197,6 @@ ln -s XenServer-index.html %{buildroot}/opt/xensource/www/index.html
 
 %clean
 rm -rf %{buildroot}
-
-%triggerin config -- mcelog
-
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/mcelog/mcelog.conf    2014-01-22 00:03:35.000000000 +0000
-+++ /etc/mcelog/mcelog.conf    2014-11-13 13:49:57.152247000 +0000
-@@ -22,7 +22,7 @@
-
- [dimm]
- # Enable DIMM-tracking
--dimm-tracking-enabled = yes
-+dimm-tracking-enabled = no
- # Disable DIMM DMI pre-population unless supported on your system
- dmi-prepopulate = no
-
-@@ -35,23 +35,23 @@
-
- [socket]
- # Memory error accounting per socket
--socket-tracing-enabled = yes
-+socket-tracing-enabled = no
- mem-uc-error-threshold = 100 / 24h
--mem-ce-error-trigger = socket-memory-error-trigger
--mem-ce-error-threshold = 100 / 24h
--mem-ce-error-log = yes
-+#mem-ce-error-trigger = socket-memory-error-trigger
-+#mem-ce-error-threshold = 100 / 24h
-+#mem-ce-error-log = yes
-
- [cache]
- # Attempt to off-line CPUs causing cache errors
--cache-threshold-trigger = cache-error-trigger
--cache-threshold-log = yes
-+#cache-threshold-trigger = cache-error-trigger
-+#cache-threshold-log = yes
-
- [page]
- # Try to soft-offline a 4K page if it exceeds the threshold
- memory-ce-threshold = 10 / 24h
- memory-ce-trigger = page-error-trigger
- memory-ce-log = yes
--memory-ce-action = soft
-+memory-ce-action = account
-
- [trigger]
- # Maximum number of running triggers
-EOF
 
 %triggerin config -- rsyslog
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
@@ -562,6 +515,9 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Tue Jun 18 2024 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.4.0-11
+- CP-47026: Move mcelog config changes to mcelog.spec
+
 * Wed May 22 2024 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.4.0-10
 - CA-392433: Start dhclient on iSCSI BFS interfaces
 
