@@ -11,13 +11,13 @@
 # XCP-ng: the globals below are not used. We only keep them as a reference
 # from the last xenserver-release we (loosely) synced with
 %global usver 8.4.0
-%global xsver 10
+%global xsver 11
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.4.0-10
+%global package_srccommit v8.4.0-11
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        26
+Release:        27
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -227,53 +227,6 @@ ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty2.service
 
 %clean
 rm -rf %{buildroot}
-
-%triggerin config -- mcelog
-
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/mcelog/mcelog.conf    2014-01-22 00:03:35.000000000 +0000
-+++ /etc/mcelog/mcelog.conf    2014-11-13 13:49:57.152247000 +0000
-@@ -22,7 +22,7 @@
-
- [dimm]
- # Enable DIMM-tracking
--dimm-tracking-enabled = yes
-+dimm-tracking-enabled = no
- # Disable DIMM DMI pre-population unless supported on your system
- dmi-prepopulate = no
-
-@@ -35,23 +35,23 @@
-
- [socket]
- # Memory error accounting per socket
--socket-tracing-enabled = yes
-+socket-tracing-enabled = no
- mem-uc-error-threshold = 100 / 24h
--mem-ce-error-trigger = socket-memory-error-trigger
--mem-ce-error-threshold = 100 / 24h
--mem-ce-error-log = yes
-+#mem-ce-error-trigger = socket-memory-error-trigger
-+#mem-ce-error-threshold = 100 / 24h
-+#mem-ce-error-log = yes
-
- [cache]
- # Attempt to off-line CPUs causing cache errors
--cache-threshold-trigger = cache-error-trigger
--cache-threshold-log = yes
-+#cache-threshold-trigger = cache-error-trigger
-+#cache-threshold-log = yes
-
- [page]
- # Try to soft-offline a 4K page if it exceeds the threshold
- memory-ce-threshold = 10 / 24h
- memory-ce-trigger = page-error-trigger
- memory-ce-log = yes
--memory-ce-action = soft
-+memory-ce-action = account
-
- [trigger]
- # Maximum number of running triggers
-EOF
 
 %triggerin config -- rsyslog
 ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
@@ -661,6 +614,12 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Tue Aug 13 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-27
+- Loosely sync with xenserver-release-8.4.0-11
+- *** Upstream changelog ***
+- * Tue Jun 18 2024 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.4.0-11
+- - CP-47026: Move mcelog config changes to mcelog.spec
+
 * Tue Aug 06 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-26
 - Don't require the empty kernel-livepatch and xen-livepatch packages
 - Ensure rsyslog and systemd are installed in xcp-ng-release-config's %%post
