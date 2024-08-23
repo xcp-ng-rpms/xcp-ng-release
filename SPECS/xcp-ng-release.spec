@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        27
+Release:        28
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -179,15 +179,11 @@ touch -r %{buildroot}%{_sysconfdir}/issue.net %{buildroot}%{_sysconfdir}/issue
 
 # copy yum repos
 install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
-# Use the production yum repos
-install -m 644 CentOS-Base-production.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
-#install -m 644 CentOS-Base-devel.repo %%{buildroot}%%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
-install -m 644 CentOS-Debuginfo.repo %{buildroot}%{_sysconfdir}/yum.repos.d
+install -m 644 CentOS-Base.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
 install -m 644 CentOS-Sources.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 # XCP-ng: add epel and xcp-ng repos
 # install epel repos (disabled by default)
 install -m 644 epel.repo %{buildroot}%{_sysconfdir}/yum.repos.d
-install -m 644 epel-testing.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 # install the xcp-ng repo
 install -m 644 xcp-ng.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 
@@ -614,6 +610,12 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Fri Aug 23 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-28
+- Update repo files for CentOS and EPEL
+- Point at repo.vates.tech for CentOS since mirrorlist.centos.org was cut
+- Add "(EOL)" to repo descriptions for EOL repos
+- Drop unused repos
+
 * Tue Aug 13 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-27
 - Loosely sync with xenserver-release-8.4.0-11
 - *** Upstream changelog ***
