@@ -1,0 +1,284 @@
+From c34b0ebccfea9d6fbc05681c10a8691cd00f630d Mon Sep 17 00:00:00 2001
+From: Samuel Verschelde <stormi-xcp@ylix.fr>
+Date: Wed, 21 Aug 2024 17:44:50 +0200
+Subject: [PATCH 7/7] Update CentOS and EPEL repo files
+
+- Point at repo.vates.tech directly.
+- Change repo descriptions to make it clear they are EOL repos.
+- Drop centosplus repo, that has never been useful in XCP-ng.
+- Drop CentOS-Debuginfo.repo.
+- Drop epel-testing.repo.
+- Rename CentOS-Base-production.repo to CentOS-Base.repo.
+- Update link to XCP-ng doc.
+
+Signed-off-by: Samuel Verschelde <stormi-xcp@ylix.fr>
+---
+ CentOS-Base-production.repo | 61 -------------------------------------
+ CentOS-Base.repo            | 39 ++++++++++++++++++++++++
+ CentOS-Debuginfo.repo       | 21 -------------
+ CentOS-Sources.repo         | 20 ++++--------
+ epel-testing.repo           | 35 ---------------------
+ epel.repo                   |  6 ++--
+ 6 files changed, 48 insertions(+), 134 deletions(-)
+ delete mode 100644 CentOS-Base-production.repo
+ create mode 100644 CentOS-Base.repo
+ delete mode 100644 CentOS-Debuginfo.repo
+ delete mode 100644 epel-testing.repo
+
+diff --git a/CentOS-Base-production.repo b/CentOS-Base-production.repo
+deleted file mode 100644
+index 21350bc..0000000
+--- a/CentOS-Base-production.repo
++++ /dev/null
+@@ -1,61 +0,0 @@
+-# CentOS-Base.repo
+-#
+-# The mirror system uses the connecting IP address of the client and the
+-# update status of each mirror to pick mirrors that are updated to and
+-# geographically close to the client.  You should use this for CentOS updates
+-# unless you are manually picking other mirrors.
+-#
+-# If the mirrorlist= does not work for you, as a fall back you can try the 
+-# remarked out baseurl= line instead.
+-#
+-
+-# ***     XCP-ng warning    ***
+-# Do NOT enable the repositories below.
+-# If you really need to install something from those, you can do it with the
+-# --enablerepo parameter to the yum command. At your own risks.
+-#
+-# Example:     yum install somepackage --enablerepo=base
+-# Another one: yum install somepackage --enablerepo=base,updates
+-#
+-# See https://xcp-ng.org/docs/additionalpackages.html
+-#
+-# *** end of XCP-ng warning ***
+-
+-[base]
+-name=CentOS-$releasever - Base
+-mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os&infra=$infra
+-#baseurl=http://mirror.centos.org/centos/$releasever/os/$basearch/
+-enabled=0
+-exclude=kernel kernel-abi-whitelists kernel-debug kernel-debug-devel kernel-devel kernel-doc kernel-tools kernel-tools-libs kernel-tools-libs-devel linux-firmware biosdevname centos-release systemd* stunnel kexec-tools ocaml*
+-gpgcheck=1
+-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+-
+-#released updates 
+-[updates]
+-name=CentOS-$releasever - Updates
+-mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates&infra=$infra
+-#baseurl=http://mirror.centos.org/centos/$releasever/updates/$basearch/
+-enabled=0
+-exclude=kernel kernel-abi-whitelists kernel-debug kernel-debug-devel kernel-devel kernel-doc kernel-tools kernel-tools-libs kernel-tools-libs-devel linux-firmware biosdevname centos-release systemd* stunnel kexec-tools ocaml*
+-gpgcheck=1
+-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+-
+-#additional packages that may be useful
+-[extras]
+-name=CentOS-$releasever - Extras
+-mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=extras&infra=$infra
+-#baseurl=http://mirror.centos.org/centos/$releasever/extras/$basearch/
+-enabled=0
+-exclude=ocaml*
+-gpgcheck=1
+-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+-
+-#additional packages that extend functionality of existing packages
+-[centosplus]
+-name=CentOS-$releasever - Plus
+-mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=centosplus&infra=$infra
+-#baseurl=http://mirror.centos.org/centos/$releasever/centosplus/$basearch/
+-gpgcheck=1
+-enabled=0
+-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+-
+diff --git a/CentOS-Base.repo b/CentOS-Base.repo
+new file mode 100644
+index 0000000..bec1a4c
+--- /dev/null
++++ b/CentOS-Base.repo
+@@ -0,0 +1,39 @@
++# CentOS-Base.repo
++#
++# ***     XCP-ng warning    ***
++# Do NOT enable the repositories below.
++# If you really need to install something from those, you can do it with the
++# --enablerepo parameter to the yum command. At your own risks.
++#
++# Example:     yum install somepackage --enablerepo=base
++# Another one: yum install somepackage --enablerepo=base,updates
++#
++# See https://docs.xcp-ng.org/management/additional-packages/
++#
++# *** end of XCP-ng warning ***
++
++[base]
++name=CentOS-$releasever - Base (EOL)
++baseurl=https://repo.vates.tech/centos/$releasever/os/$basearch/
++enabled=0
++exclude=kernel kernel-abi-whitelists kernel-debug kernel-debug-devel kernel-devel kernel-doc kernel-tools kernel-tools-libs kernel-tools-libs-devel linux-firmware biosdevname centos-release systemd* stunnel kexec-tools ocaml*
++gpgcheck=1
++gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
++
++#released updates 
++[updates]
++name=CentOS-$releasever - Updates (EOL)
++baseurl=https://repo.vates.tech/centos/$releasever/updates/$basearch/
++enabled=0
++exclude=kernel kernel-abi-whitelists kernel-debug kernel-debug-devel kernel-devel kernel-doc kernel-tools kernel-tools-libs kernel-tools-libs-devel linux-firmware biosdevname centos-release systemd* stunnel kexec-tools ocaml*
++gpgcheck=1
++gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
++
++#additional packages that may be useful
++[extras]
++name=CentOS-$releasever - Extras (EOL)
++baseurl=https://repo.vates.tech/centos/$releasever/extras/$basearch/
++enabled=0
++exclude=ocaml*
++gpgcheck=1
++gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+diff --git a/CentOS-Debuginfo.repo b/CentOS-Debuginfo.repo
+deleted file mode 100644
+index ca526ad..0000000
+--- a/CentOS-Debuginfo.repo
++++ /dev/null
+@@ -1,21 +0,0 @@
+-# CentOS-Debug.repo
+-#
+-# The mirror system uses the connecting IP address of the client and the
+-# update status of each mirror to pick mirrors that are updated to and
+-# geographically close to the client.  You should use this for CentOS updates
+-# unless you are manually picking other mirrors.
+-#
+-
+-# All debug packages from all the various CentOS-7 releases
+-# are merged into a single repo, split by BaseArch
+-#
+-# Note: packages in the debuginfo repo are currently not signed
+-#
+-
+-[base-debuginfo]
+-name=CentOS-7 - Debuginfo
+-baseurl=http://debuginfo.centos.org/7/$basearch/
+-gpgcheck=1
+-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-Debug-7
+-enabled=0
+-#
+diff --git a/CentOS-Sources.repo b/CentOS-Sources.repo
+index 7484071..f7afe32 100644
+--- a/CentOS-Sources.repo
++++ b/CentOS-Sources.repo
+@@ -11,32 +11,24 @@
+ #
+ 
+ [base-source]
+-name=CentOS-$releasever - Base Sources
+-baseurl=http://vault.centos.org/centos/$releasever/os/Source/
++name=CentOS-$releasever - Base Sources (EOL)
++baseurl=https://repo.vates.tech/centos/$releasever/os/Source/
+ gpgcheck=1
+ enabled=0
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+ 
+ #released updates 
+ [updates-source]
+-name=CentOS-$releasever - Updates Sources
+-baseurl=http://vault.centos.org/centos/$releasever/updates/Source/
++name=CentOS-$releasever - Updates Sources (EOL)
++baseurl=https://repo.vates.tech/centos/$releasever/updates/Source/
+ gpgcheck=1
+ enabled=0
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+ 
+ #additional packages that may be useful
+ [extras-source]
+-name=CentOS-$releasever - Extras Sources
+-baseurl=http://vault.centos.org/centos/$releasever/extras/Source/
+-gpgcheck=1
+-enabled=0
+-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+-
+-#additional packages that extend functionality of existing packages
+-[centosplus-source]
+-name=CentOS-$releasever - Plus Sources
+-baseurl=http://vault.centos.org/centos/$releasever/centosplus/Source/
++name=CentOS-$releasever - Extras Sources (EOL)
++baseurl=https://repo.vates.tech/centos/$releasever/extras/Source/
+ gpgcheck=1
+ enabled=0
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+diff --git a/epel-testing.repo b/epel-testing.repo
+deleted file mode 100644
+index de76140..0000000
+--- a/epel-testing.repo
++++ /dev/null
+@@ -1,35 +0,0 @@
+-# ***     XCP-ng warning    ***
+-# Do NOT enable the repositories below.
+-# If you really need to install something from those, you can do it with the
+-# --enablerepo parameter to the yum command. At your own risks.
+-#
+-# Example:     yum install somepackage --enablerepo=epel-testing
+-#
+-# *** end of XCP-ng warning ***
+-
+-[epel-testing]
+-name=Extra Packages for Enterprise Linux 7 - Testing - $basearch
+-#baseurl=http://download.fedoraproject.org/pub/epel/testing/7/$basearch
+-metalink=https://mirrors.fedoraproject.org/metalink?repo=testing-epel7&arch=$basearch
+-failovermethod=priority
+-enabled=0
+-gpgcheck=1
+-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+-
+-[epel-testing-debuginfo]
+-name=Extra Packages for Enterprise Linux 7 - Testing - $basearch - Debug
+-#baseurl=http://download.fedoraproject.org/pub/epel/testing/7/$basearch/debug
+-metalink=https://mirrors.fedoraproject.org/metalink?repo=testing-debug-epel7&arch=$basearch
+-failovermethod=priority
+-enabled=0
+-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+-gpgcheck=1
+-
+-[epel-testing-source]
+-name=Extra Packages for Enterprise Linux 7 - Testing - $basearch - Source
+-#baseurl=http://download.fedoraproject.org/pub/epel/testing/7/SRPMS
+-metalink=https://mirrors.fedoraproject.org/metalink?repo=testing-source-epel7&arch=$basearch
+-failovermethod=priority
+-enabled=0
+-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+-gpgcheck=1
+diff --git a/epel.repo b/epel.repo
+index e58ff97..fca0aa7 100644
+--- a/epel.repo
++++ b/epel.repo
+@@ -8,7 +8,7 @@
+ # *** end of XCP-ng warning ***
+ 
+ [epel]
+-name=Extra Packages for Enterprise Linux 7 - $basearch
++name=Extra Packages for Enterprise Linux 7 - $basearch (EOL)
+ #baseurl=http://download.fedoraproject.org/pub/epel/7/$basearch
+ metalink=https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch
+ failovermethod=priority
+@@ -17,7 +17,7 @@ gpgcheck=1
+ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+ 
+ [epel-debuginfo]
+-name=Extra Packages for Enterprise Linux 7 - $basearch - Debug
++name=Extra Packages for Enterprise Linux 7 - $basearch - Debug (EOL)
+ #baseurl=http://download.fedoraproject.org/pub/epel/7/$basearch/debug
+ metalink=https://mirrors.fedoraproject.org/metalink?repo=epel-debug-7&arch=$basearch
+ failovermethod=priority
+@@ -26,7 +26,7 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+ gpgcheck=1
+ 
+ [epel-source]
+-name=Extra Packages for Enterprise Linux 7 - $basearch - Source
++name=Extra Packages for Enterprise Linux 7 - $basearch - Source (EOL)
+ #baseurl=http://download.fedoraproject.org/pub/epel/7/SRPMS
+ metalink=https://mirrors.fedoraproject.org/metalink?repo=epel-source-7&arch=$basearch
+ failovermethod=priority
+-- 
+2.30.2
+

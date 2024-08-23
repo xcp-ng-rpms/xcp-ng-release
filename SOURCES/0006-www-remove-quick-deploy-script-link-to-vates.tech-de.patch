@@ -1,7 +1,7 @@
 From 8a30b1fdc89f2be6e298728b3211cff589ff7bed Mon Sep 17 00:00:00 2001
 From: Pierre Donias <pierre.donias@gmail.com>
 Date: Thu, 18 Jul 2024 16:26:39 +0200
-Subject: [PATCH 6/6] www: remove quick deploy script & link to
+Subject: [PATCH 6/7] www: remove quick deploy script & link to
  vates.tech/deploy instead
 
 Signed-off-by: Pierre Donias <pierre.donias@gmail.com>
@@ -564,5 +564,5 @@ index 8f74b9c..b1ffcc4 100644
 -  border-radius: 2em;
 -}
 -- 
-2.45.2
+2.30.2
 

@@ -25,7 +25,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        12
+Release:        13
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -101,6 +101,7 @@ Patch3: 0003-feat-XOA-deploy-hyperlink-to-new-XOA-with-HTTPS-inst.patch
 Patch4: 0004-www-Refactor-and-clean-of-deploy-page.patch
 Patch5: 0005-Update-xcp-ng.repo-for-the-new-repository-structure.patch
 Patch6: 0006-www-remove-quick-deploy-script-link-to-vates.tech-de.patch
+Patch7: 0007-Update-CentOS-and-EPEL-repo-files.patch
 
 %description
 XCP-ng release files
@@ -156,15 +157,11 @@ touch -r %{buildroot}%{_sysconfdir}/issue.net %{buildroot}%{_sysconfdir}/issue
 
 # copy yum repos
 install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
-# Use the production yum repos
-install -m 644 CentOS-Base-production.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
-#install -m 644 CentOS-Base-devel.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
-install -m 644 CentOS-Debuginfo.repo %{buildroot}%{_sysconfdir}/yum.repos.d
+install -m 644 CentOS-Base.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
 install -m 644 CentOS-Sources.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 # XCP-ng: add epel and xcp-ng repos
 # install epel repos (disabled by default)
 install -m 644 epel.repo %{buildroot}%{_sysconfdir}/yum.repos.d
-install -m 644 epel-testing.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 # install the xcp-ng repo
 install -m 644 xcp-ng.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 
@@ -819,6 +816,12 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Fri Aug 23 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-13
+- Update repo files for CentOS and EPEL
+- Point at repo.vates.tech for CentOS since mirrorlist.centos.org was cut
+- Add "(EOL)" to repo descriptions for EOL repos
+- Drop unused repos
+
 * Fri Jul 19 2024 Benjamin Reis <benjamin.reis@vates.tech> - 8.2.1-12
 - Update XOA deploy link on landing page to unified path
 
