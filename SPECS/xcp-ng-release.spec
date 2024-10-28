@@ -94,8 +94,6 @@ Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_T
 
 BuildRequires:  systemd branding-xcp-ng python3-devel
 # XCP-ng: python dependencies for building branding files
-BuildRequires:  python2-rpm-macros
-BuildRequires:  python2
 BuildRequires:  python3-rpm-macros
 URL:            https://github.com/xcp-ng/xcp-ng-release
 # Before the tag of the final release, archives are exported this way from the source repository:
@@ -613,6 +611,9 @@ systemctl preset-all --preset-mode=enable-only || :
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
+
+* Mon Oct 28 2024 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-29
+- Remove now-useless python2 build-deps
 
 * Fri Aug 23 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-28
 - Update repo files for CentOS and EPEL
