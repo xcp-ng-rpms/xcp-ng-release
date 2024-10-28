@@ -164,16 +164,6 @@ cp %{buildroot}%{_sysconfdir}/issue.net %{buildroot}%{_sysconfdir}/issue
 echo >> %{buildroot}%{_sysconfdir}/issue
 touch -r %{buildroot}%{_sysconfdir}/issue.net %{buildroot}%{_sysconfdir}/issue
 
-# copy yum repos
-install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
-install -m 644 CentOS-Base.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
-install -m 644 CentOS-Sources.repo %{buildroot}%{_sysconfdir}/yum.repos.d
-# XCP-ng: add epel and xcp-ng repos
-# install epel repos (disabled by default)
-install -m 644 epel.repo %{buildroot}%{_sysconfdir}/yum.repos.d
-# install the xcp-ng repo
-install -m 644 xcp-ng.repo %{buildroot}%{_sysconfdir}/yum.repos.d
-
 # set up the dist tag macros
 install -d -m 755 %{buildroot}%{_sysconfdir}/rpm
 cat >> %{buildroot}%{_sysconfdir}/rpm/macros.dist << EOF
@@ -545,7 +535,7 @@ if [ -x /sbin/depmod ]; then /sbin/depmod -a; fi
 systemctl preset-all --preset-mode=enable-only || :
 
 %files
-%doc xcp-ng.repo LICENSES
+%doc LICENSES
 %defattr(0644,root,root,0755)
 %{_sysconfdir}/redhat-release
 %{_sysconfdir}/system-release
@@ -554,7 +544,6 @@ systemctl preset-all --preset-mode=enable-only || :
 %config(noreplace) %{_sysconfdir}/issue
 %config(noreplace) %{_sysconfdir}/issue.net
 %{_sysconfdir}/pki/rpm-gpg/
-%config(noreplace) %{_sysconfdir}/yum.repos.d/*
 %config(noreplace) %{_sysconfdir}/yum/vars/*
 %{_sysconfdir}/rpm/macros.dist
 %{_docdir}/redhat-release
@@ -612,6 +601,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Pick macros.x86_64_v2 from almalinux-release-10.0-32.el10
 - Commented out all triggers
 - Remove now-useless python2 build-deps
+- Do not install 8.3 yum repo definitions (anyway moving to xcp-ng-config)
 
 * Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
 - Realign upstream to prompt patch from RPM
