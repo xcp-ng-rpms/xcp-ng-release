@@ -13,16 +13,9 @@
 # repo, only the release should be changed, not the version.
 
 %define debug_package %{nil}
-%define product_family CentOS Linux
-%define variant_titlecase Server
-%define variant_lowercase server
-%define release_name Core
-%define base_release_version 7
-%define full_release_version 7
-%define dist_release_version 7
-%define upstream_rel_long 7.5-8
-%define upstream_rel 7.5
-%define centos_rel 5.1804
+%define base_release_version 9
+%define upstream_rel_long 9.4-1.el9
+%define upstream_rel 9.4-1.el9
 
 %define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
 
@@ -39,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.1
+Release:        0.2
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -51,11 +44,13 @@ Requires:       %{name}-presets
 %if 0%{?xenserver} < 9
 Requires:       xcp-python-libs-compat
 %endif
+Provides:       almalinux-release = %{upstream_rel_long}
+Provides:       almalinux-release(x86-64) = %{upstream_rel_long}
 Provides:       centos-release = %{base_release_version}
-Provides:       centos-release(upstream) = %{upstream_rel}
 Provides:       redhat-release = %{upstream_rel_long}
 Provides:       system-release = %{upstream_rel_long}
 Provides:       system-release(releasever) = %{base_release_version}
+Obsoletes:      almalinux-release
 Obsoletes:      centos-release
 Obsoletes:      epel-release
 
@@ -604,10 +599,11 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.1
+* Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.2
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
+- provides/obsolete 9.x rpms
 
 * Mon Oct 28 2024 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
