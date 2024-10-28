@@ -20,12 +20,6 @@
 
 %define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
 
-%if 0%{?xenserver} < 9
-%bcond_without build_py2
-%else
-%bcond_with build_py2
-%endif
-
 #define beta Beta
 %define dist .xcpng%{PRODUCT_VERSION_TEXT_SHORT}
 
@@ -88,8 +82,6 @@ Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_T
 
 BuildRequires:  systemd branding-xcp-ng python3-devel
 # XCP-ng: python dependencies for building branding files
-BuildRequires:  python2-rpm-macros
-BuildRequires:  python2
 BuildRequires:  python3-rpm-macros
 URL:            https://github.com/xcp-ng/xcp-ng-release
 # Before the tag of the final release, archives are exported this way from the source repository:
@@ -157,11 +149,6 @@ rm -rf %{buildroot}
 
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/common %{buildroot}
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/xenserver %{buildroot}
-
-%if %{with build_py2}
-install -d -m 755 %{buildroot}%{python2_sitelib}/xcp
-%{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python2_sitelib}/xcp/branding.py
-%endif
 
 install -d -m 755 %{buildroot}%{python3_sitelib}/xcp
 %{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python3_sitelib}/xcp/branding.py
@@ -576,9 +563,6 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_datadir}/centos-release
 %{_prefix}/lib/systemd/system-preset/90-default.preset
 /EULA
-%if %{with build_py2}
-%{python2_sitelib}/xcp/branding.py*
-%endif
 %{python3_sitelib}/xcp/branding.py
 %{python3_sitelib}/xcp/__pycache__
 %{_sysconfdir}/depmod.d/00-xcpng-override.conf
@@ -627,6 +611,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - provides/obsolete 9.x rpms
 - Pick macros.x86_64_v2 from almalinux-release-10.0-32.el10
 - Commented out all triggers
+- Remove now-useless python2 build-deps
 
 * Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
 - Realign upstream to prompt patch from RPM
