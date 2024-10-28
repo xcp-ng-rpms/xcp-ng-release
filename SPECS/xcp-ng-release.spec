@@ -1,23 +1,17 @@
 # XCP-ng: TO BE UPDATED FOR EACH NEW RELEASE
 # TODO: use data from branding file instead
-%define PRODUCT_VERSION 8.3.0
-%define PRODUCT_VERSION_TEXT 8.3
+%define PRODUCT_VERSION 8.99.0
+%define PRODUCT_VERSION_TEXT 8.99
 %define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
 %define PLATFORM_VERSION 3.4.0
-%define BUILD_NUMBER 8.3.0
+%define BUILD_NUMBER 8.99.0
 # XCP-ng: macro tested by some spec files inherited from XenServer
-%define xenserver_major 8
+%define xenserver_major 9
 
-# XCP-ng: the globals below are not used. We only keep them as a reference
-# from the last xenserver-release we (loosely) synced with
-%global usver 8.4.0
-%global xsver 15
-%global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.4.0-15
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -44,8 +38,8 @@
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xcp-ng-release
-Version:        8.3.0
-Release:        32
+Version:        8.99.0
+Release:        0.1
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -103,8 +97,8 @@ BuildRequires:  python2
 BuildRequires:  python3-rpm-macros
 URL:            https://github.com/xcp-ng/xcp-ng-release
 # Before the tag of the final release, archives are exported this way from the source repository:
-# export VER=8.3.0; git archive --format tgz master . --prefix xcp-ng-release-$VER/ -o /path/to/SOURCES/xcp-ng-release-$VER.tar.gz
-Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
+# export VER=8.99.0; git archive --format tgz master . --prefix xcp-ng-release-$VER/ -o /path/to/SOURCES/xcp-ng-release-$VER.tar.gz
+Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-8.3.0.tar.gz
 
 # XCP-ng Patches generated during maintenance period with `git format-patch v8.3.0`
 Patch1001: 0001-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
@@ -150,7 +144,7 @@ Additional utilities and configuration for XCP-ng.
 
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n %{name}-8.3.0
 
 # XCP-ng: copy LICENSES from branding package
 cp %{_usrsrc}/branding/LICENSES .
@@ -229,249 +223,249 @@ ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty2.service
 %clean
 rm -rf %{buildroot}
 
-%triggerin config -- rsyslog
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/rsyslog.conf    2014-11-12 13:55:42.000000000 +0000
-+++ /etc/rsyslog.conf    2014-11-12 13:56:01.000000000 +0000
-@@ -7,8 +7,8 @@
+# %triggerin config -- rsyslog
+# ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
+# --- /etc/rsyslog.conf    2014-11-12 13:55:42.000000000 +0000
+# +++ /etc/rsyslog.conf    2014-11-12 13:56:01.000000000 +0000
+# @@ -7,8 +7,8 @@
 
- # The imjournal module bellow is now used as a message source instead of imuxsock.
- $ModLoad imuxsock # provides support for local system logging (e.g. via logger command)
--$ModLoad imjournal # provides access to the systemd journal
--#$ModLoad imklog # reads kernel messages (the same are read from journald)
-+#$ModLoad imjournal # provides access to the systemd journal
-+$ModLoad imklog # reads kernel messages (the same are read from journald)
- #$ModLoad immark  # provides --MARK-- message capability
+#  # The imjournal module bellow is now used as a message source instead of imuxsock.
+#  $ModLoad imuxsock # provides support for local system logging (e.g. via logger command)
+# -$ModLoad imjournal # provides access to the systemd journal
+# -#$ModLoad imklog # reads kernel messages (the same are read from journald)
+# +#$ModLoad imjournal # provides access to the systemd journal
+# +$ModLoad imklog # reads kernel messages (the same are read from journald)
+#  #$ModLoad immark  # provides --MARK-- message capability
 
- # Provides UDP syslog reception
-@@ -37,10 +37,10 @@
+#  # Provides UDP syslog reception
+# @@ -37,10 +37,10 @@
 
- # Turn off message reception via local log socket;
- # local messages are retrieved through imjournal now.
--$OmitLocalLogging on
-+#$OmitLocalLogging on
+#  # Turn off message reception via local log socket;
+#  # local messages are retrieved through imjournal now.
+# -$OmitLocalLogging on
+# +#$OmitLocalLogging on
 
- # File to store the position in the journal
--$IMJournalStateFile imjournal.state
-+#$IMJournalStateFile imjournal.state
-
-
- #### RULES ####
-EOF
-
-%triggerin config -- setup
-# Replace /etc/motd with our branded version
-install -D -m 644 %{_sysconfdir}/motd.xs %{_sysconfdir}/motd
-
-%triggerin config -- iscsi-initiator-utils
-/usr/bin/systemctl -q disable iscsi.service
-/usr/bin/systemctl -q disable iscsid.socket
-
-%triggerin config -- iscsi-initiator-utils-iscsiuio
-/usr/bin/systemctl -q disable iscsiuio.socket
-
-%triggerin config -- xcp-networkd
-/sbin/chkconfig network off
-
-%triggerin config -- lvm2
-/usr/bin/systemctl -q mask lvm2-activation.service
-/usr/bin/systemctl -q mask lvm2-activation-early.service
-/usr/bin/systemctl -q mask lvm2-activation-net.service
-/usr/bin/systemctl -q disable lvm2-monitor.service
-
-%triggerin config -- device-mapper-event
-/usr/bin/systemctl -q disable dm-event.socket
-
-# default firewall rules, to be replaced by dynamic rule addition/removal
-# /!\ XCP-ng: if the following is updated, make sure to also adapt the rules
-# in the netdata package, because they depend on this
-%triggerin config -- iptables-services
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/sysconfig/iptables    2014-06-10 06:02:35.000000000 +0100
-+++ /etc/sysconfig/iptables    2015-05-15 11:24:23.712024801 +0100
-@@ -5,10 +5,21 @@
- :INPUT ACCEPT [0:0]
- :FORWARD ACCEPT [0:0]
- :OUTPUT ACCEPT [0:0]
---A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
---A INPUT -p icmp -j ACCEPT
---A INPUT -i lo -j ACCEPT
---A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
---A INPUT -j REJECT --reject-with icmp-host-prohibited
---A FORWARD -j REJECT --reject-with icmp-host-prohibited
-+:RH-Firewall-1-INPUT - [0:0]
-+-A INPUT -j RH-Firewall-1-INPUT
-+-A FORWARD -j RH-Firewall-1-INPUT
-+-A RH-Firewall-1-INPUT -i lo -j ACCEPT
-+-A RH-Firewall-1-INPUT -p icmp --icmp-type any -j ACCEPT
-+# DHCP for host internal networks (CA-6996)
-+-A RH-Firewall-1-INPUT -p udp -m udp --dport 67 --in-interface xenapi -j ACCEPT
-+-A RH-Firewall-1-INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-+# Linux HA hearbeat (CA-9394)
-+-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m udp -p udp --dport 694 -j ACCEPT
-+-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 22 -j ACCEPT
-+-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 80 -j ACCEPT
-+-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 443 -j ACCEPT
-+# dlm
-+-A RH-Firewall-1-INPUT -p tcp -m tcp --dport 21064 -j ACCEPT
-+-A RH-Firewall-1-INPUT -p udp -m multiport --dports 5404,5405 -j ACCEPT
-+-A RH-Firewall-1-INPUT -j REJECT --reject-with icmp-host-prohibited
- COMMIT
-EOF
-# XCP-ng: disabled for now. Will enable the change if/when we add the feature.
-#grep -q '^-A .* 5666 .*' /etc/sysconfig/iptables || sed -i '/^-A .* 443 .*/a # nrpe\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 5666 -j ACCEPT' /etc/sysconfig/iptables
-#grep -q '^-A .* 161 .*' /etc/sysconfig/iptables || sed -i '/^-A .* 443 .*/a # snmp\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m udp -p udp --dport 161 -j ACCEPT' /etc/sysconfig/iptables
-#systemctl try-restart iptables
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/sysconfig/ip6tables    2014-06-10 06:02:35.000000000 +0100
-+++ /etc/sysconfig/ip6tables    2015-05-15 11:25:34.416370193 +0100
-@@ -5,11 +5,21 @@
- :INPUT ACCEPT [0:0]
- :FORWARD ACCEPT [0:0]
- :OUTPUT ACCEPT [0:0]
---A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
---A INPUT -p ipv6-icmp -j ACCEPT
---A INPUT -i lo -j ACCEPT
---A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
---A INPUT -d fe80::/64 -p udp -m udp --dport 546 -m state --state NEW -j ACCEPT
---A INPUT -j REJECT --reject-with icmp6-adm-prohibited
---A FORWARD -j REJECT --reject-with icmp6-adm-prohibited
-+:RH-Firewall-1-INPUT - [0:0]
-+-A INPUT -j RH-Firewall-1-INPUT
-+-A FORWARD -j RH-Firewall-1-INPUT
-+-A RH-Firewall-1-INPUT -i lo -j ACCEPT
-+-A RH-Firewall-1-INPUT -p icmpv6 -j ACCEPT
-+# DHCP for host internal networks (CA-6996)
-+-A RH-Firewall-1-INPUT -p udp -m udp --dport 67 --in-interface xenapi -j ACCEPT
-+-A RH-Firewall-1-INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
-+# Linux HA hearbeat (CA-9394)
-+-A RH-Firewall-1-INPUT -m state --state NEW -m udp -p udp --dport 694 -j ACCEPT
-+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
-+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
-+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
-+# dlm
-+-A RH-Firewall-1-INPUT -p tcp -m tcp --dport 21064 -j ACCEPT
-+-A RH-Firewall-1-INPUT -p udp -m multiport --dports 5404,5405 -j ACCEPT
-+-A RH-Firewall-1-INPUT -j REJECT --reject-with icmp6-port-unreachable
- COMMIT
-EOF
-# XCP-ng: disabled for now, will enable this change if/when we add the feature.
-#grep -q '^-A .* 5666 .*' /etc/sysconfig/ip6tables || sed -i '/^-A .* 443 .*/a # nrpe\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 5666 -j ACCEPT' /etc/sysconfig/ip6tables
-#grep -q '^-A .* 161 .*' /etc/sysconfig/ip6tables || sed -i '/^-A .* 443 .*/a # snmp\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m udp -p udp --dport 161 -j ACCEPT' /etc/sysconfig/ip6tables
-
-# CA-38350
-%triggerin config -- dhclient
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /usr/sbin/dhclient-script    2015-11-19 21:28:36.000000000 +0000
-+++ /usr/sbin/dhclient-script    2016-01-22 17:15:09.000000000 +0000
-@@ -790,6 +790,8 @@
-             fi
-
-             flush_dev ${interface}
-+            # Remove IP address but leave up so that subsequent DHCPDISCOVERs are not dropped
-+            ip link set $interface up
-             exit_with_hooks 1
-         else
-             exit_with_hooks 1
-EOF
-
-%triggerin config -- smartmontools
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/smartmontools/smartd.conf.orig    2015-09-24 09:13:05.000000000 +0100
-+++ /etc/smartmontools/smartd.conf    2015-09-24 09:12:19.000000000 +0100
-@@ -20,7 +20,7 @@
- # Directives listed below, which will be applied to all devices that
- # are found.  Most users should comment out DEVICESCAN and explicitly
- # list the devices that they wish to monitor.
--DEVICESCAN -H -m root -M exec /usr/libexec/smartmontools/smartdnotify -n standby,10,q
-+DEVICESCAN -H -n standby,10,q
-
- # Alternative setting to ignore temperature and power-on hours reports
- # in syslog.
-EOF
-
-%triggerin config -- tzdata
-ln -f %{_datadir}/zoneinfo/Asia/Shanghai %{_datadir}/zoneinfo/Asia/Beijing
-
-%triggerin config -- shadow-utils
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/login.defs.orig    2016-02-26 11:11:20.000000000 +0000
-+++ /etc/login.defs 2016-02-26 11:11:57.000000000 +0000
-@@ -70,3 +70,4 @@
- # Use SHA512 to encrypt password.
- ENCRYPT_METHOD SHA512
-
-+MOTD_FILE /etc/motd.xs
-EOF
-
-%triggerin config -- yum
-( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
---- /etc/yum.conf.orig  2016-11-07 09:39:42.594325044 +0000
-+++ /etc/yum.conf   2016-11-07 09:39:58.478743042 +0000
-@@ -7,6 +7,7 @@
- obsoletes=1
- gpgcheck=1
- plugins=1
-+installonlypkgs=
- installonly_limit=5
- bugtracker_url=http://bugs.centos.org/set_project.php?project_id=23&ref=http://bugs.centos.org/bug_report_page.php?category=yum
- distroverpkg=centos-release
-EOF
-
-# XCP-ng: exclude fallback mirror from fastestmirror
-%triggerin config -- yum-plugin-fastestmirror
-FM_PATCH=$(cat <<'EOF'
---- /etc/yum/pluginconf.d/fastestmirror.conf.orig     2019-07-10 18:51:55.253695553 +0200
-+++ /etc/yum/pluginconf.d/fastestmirror.conf  2019-07-10 18:52:57.774059664 +0200
-@@ -10,3 +10,6 @@
- maxthreads=15
- #exclude=.gov, facebook
- #include_only=.nl,.de,.uk,.ie
-+
-+# Exclude fallback mirror so that it's used as last resort
-+exclude=updates.xcp-ng.org
-EOF
-)
-# Do not apply patch if it was already applied
-if ! echo "$FM_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
-    # Apply patch. Output NOT redirected to /dev/null so that error messages are displayed
-    if ! echo "$FM_PATCH" | patch -tsN -r - -d / -p1; then
-        echo "Error: failed to apply patch:"
-        echo "$FM_PATCH"
-    fi
-fi
-
-# XCP-ng: chrony
-%triggerin config -- chrony
-if [ -f /etc/systemd/system/chrony-wait.service ]; then
-    # Since 8.2.1: remove our overriding service file
-    # Now chrony-wait's timeout is overriden through an override.conf
-    rm -f /etc/systemd/system/chrony-wait.service
-fi
-
-# XCP-ng 8.2.1: we switched back to using the official service file
-# instead of our replacement file in /etc/systemd/system/chrony-wait.service,
-# as we now use an override.conf to set the timeout to 120s.
-# In order to make the /etc/systemd/system/multi-user.target.wants/chrony-wait.service
-# symlink point to the right target (the official service /usr/lib/systemd/system/chrony-wait.service),
-# we disable then reenable the service.
-# TODO: remove in a future major release when update using yum from 8.2 or lower is not supported anymore.
-#       (but still enable the services if they need to be, or fix the preset file)
-systemctl disable chrony-wait >/dev/null 2>&1 || :
-systemctl enable chrony-wait >/dev/null 2>&1 || :
+#  # File to store the position in the journal
+# -$IMJournalStateFile imjournal.state
+# +#$IMJournalStateFile imjournal.state
 
 
-# Hide previous 8.0 hotfixes from xapi
-%triggerun config -- %{name}-config = 8.0.0, %{name}-config = 8.1.0
-if [ -d /var/update/applied ]; then
-    shopt -s nullglob
-    for sfile in /var/update/applied/*; do
-        label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
-        if [[ "$label" =~ ^XS8[01](E[0-9]{3}$|$) ]]; then
-            rm -f $sfile
-        fi
-    done
-fi
+#  #### RULES ####
+# EOF
+
+# %triggerin config -- setup
+# # Replace /etc/motd with our branded version
+# install -D -m 644 %{_sysconfdir}/motd.xs %{_sysconfdir}/motd
+
+# %triggerin config -- iscsi-initiator-utils
+# /usr/bin/systemctl -q disable iscsi.service
+# /usr/bin/systemctl -q disable iscsid.socket
+
+# %triggerin config -- iscsi-initiator-utils-iscsiuio
+# /usr/bin/systemctl -q disable iscsiuio.socket
+
+# %triggerin config -- xcp-networkd
+# /sbin/chkconfig network off
+
+# %triggerin config -- lvm2
+# /usr/bin/systemctl -q mask lvm2-activation.service
+# /usr/bin/systemctl -q mask lvm2-activation-early.service
+# /usr/bin/systemctl -q mask lvm2-activation-net.service
+# /usr/bin/systemctl -q disable lvm2-monitor.service
+
+# %triggerin config -- device-mapper-event
+# /usr/bin/systemctl -q disable dm-event.socket
+
+# # default firewall rules, to be replaced by dynamic rule addition/removal
+# # /!\ XCP-ng: if the following is updated, make sure to also adapt the rules
+# # in the netdata package, because they depend on this
+# %triggerin config -- iptables-services
+# ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
+# --- /etc/sysconfig/iptables    2014-06-10 06:02:35.000000000 +0100
+# +++ /etc/sysconfig/iptables    2015-05-15 11:24:23.712024801 +0100
+# @@ -5,10 +5,21 @@
+#  :INPUT ACCEPT [0:0]
+#  :FORWARD ACCEPT [0:0]
+#  :OUTPUT ACCEPT [0:0]
+# --A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+# --A INPUT -p icmp -j ACCEPT
+# --A INPUT -i lo -j ACCEPT
+# --A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
+# --A INPUT -j REJECT --reject-with icmp-host-prohibited
+# --A FORWARD -j REJECT --reject-with icmp-host-prohibited
+# +:RH-Firewall-1-INPUT - [0:0]
+# +-A INPUT -j RH-Firewall-1-INPUT
+# +-A FORWARD -j RH-Firewall-1-INPUT
+# +-A RH-Firewall-1-INPUT -i lo -j ACCEPT
+# +-A RH-Firewall-1-INPUT -p icmp --icmp-type any -j ACCEPT
+# +# DHCP for host internal networks (CA-6996)
+# +-A RH-Firewall-1-INPUT -p udp -m udp --dport 67 --in-interface xenapi -j ACCEPT
+# +-A RH-Firewall-1-INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+# +# Linux HA hearbeat (CA-9394)
+# +-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m udp -p udp --dport 694 -j ACCEPT
+# +-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 22 -j ACCEPT
+# +-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 80 -j ACCEPT
+# +-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 443 -j ACCEPT
+# +# dlm
+# +-A RH-Firewall-1-INPUT -p tcp -m tcp --dport 21064 -j ACCEPT
+# +-A RH-Firewall-1-INPUT -p udp -m multiport --dports 5404,5405 -j ACCEPT
+# +-A RH-Firewall-1-INPUT -j REJECT --reject-with icmp-host-prohibited
+#  COMMIT
+# EOF
+# # XCP-ng: disabled for now. Will enable the change if/when we add the feature.
+# #grep -q '^-A .* 5666 .*' /etc/sysconfig/iptables || sed -i '/^-A .* 443 .*/a # nrpe\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 5666 -j ACCEPT' /etc/sysconfig/iptables
+# #grep -q '^-A .* 161 .*' /etc/sysconfig/iptables || sed -i '/^-A .* 443 .*/a # snmp\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m udp -p udp --dport 161 -j ACCEPT' /etc/sysconfig/iptables
+# #systemctl try-restart iptables
+# ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
+# --- /etc/sysconfig/ip6tables    2014-06-10 06:02:35.000000000 +0100
+# +++ /etc/sysconfig/ip6tables    2015-05-15 11:25:34.416370193 +0100
+# @@ -5,11 +5,21 @@
+#  :INPUT ACCEPT [0:0]
+#  :FORWARD ACCEPT [0:0]
+#  :OUTPUT ACCEPT [0:0]
+# --A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+# --A INPUT -p ipv6-icmp -j ACCEPT
+# --A INPUT -i lo -j ACCEPT
+# --A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
+# --A INPUT -d fe80::/64 -p udp -m udp --dport 546 -m state --state NEW -j ACCEPT
+# --A INPUT -j REJECT --reject-with icmp6-adm-prohibited
+# --A FORWARD -j REJECT --reject-with icmp6-adm-prohibited
+# +:RH-Firewall-1-INPUT - [0:0]
+# +-A INPUT -j RH-Firewall-1-INPUT
+# +-A FORWARD -j RH-Firewall-1-INPUT
+# +-A RH-Firewall-1-INPUT -i lo -j ACCEPT
+# +-A RH-Firewall-1-INPUT -p icmpv6 -j ACCEPT
+# +# DHCP for host internal networks (CA-6996)
+# +-A RH-Firewall-1-INPUT -p udp -m udp --dport 67 --in-interface xenapi -j ACCEPT
+# +-A RH-Firewall-1-INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+# +# Linux HA hearbeat (CA-9394)
+# +-A RH-Firewall-1-INPUT -m state --state NEW -m udp -p udp --dport 694 -j ACCEPT
+# +-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
+# +-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
+# +-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 443 -j ACCEPT
+# +# dlm
+# +-A RH-Firewall-1-INPUT -p tcp -m tcp --dport 21064 -j ACCEPT
+# +-A RH-Firewall-1-INPUT -p udp -m multiport --dports 5404,5405 -j ACCEPT
+# +-A RH-Firewall-1-INPUT -j REJECT --reject-with icmp6-port-unreachable
+#  COMMIT
+# EOF
+# # XCP-ng: disabled for now, will enable this change if/when we add the feature.
+# #grep -q '^-A .* 5666 .*' /etc/sysconfig/ip6tables || sed -i '/^-A .* 443 .*/a # nrpe\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m tcp -p tcp --dport 5666 -j ACCEPT' /etc/sysconfig/ip6tables
+# #grep -q '^-A .* 161 .*' /etc/sysconfig/ip6tables || sed -i '/^-A .* 443 .*/a # snmp\n-A RH-Firewall-1-INPUT -m conntrack --ctstate NEW -m udp -p udp --dport 161 -j ACCEPT' /etc/sysconfig/ip6tables
+
+# # CA-38350
+# %triggerin config -- dhclient
+# ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
+# --- /usr/sbin/dhclient-script    2015-11-19 21:28:36.000000000 +0000
+# +++ /usr/sbin/dhclient-script    2016-01-22 17:15:09.000000000 +0000
+# @@ -790,6 +790,8 @@
+#              fi
+
+#              flush_dev ${interface}
+# +            # Remove IP address but leave up so that subsequent DHCPDISCOVERs are not dropped
+# +            ip link set $interface up
+#              exit_with_hooks 1
+#          else
+#              exit_with_hooks 1
+# EOF
+
+# %triggerin config -- smartmontools
+# ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
+# --- /etc/smartmontools/smartd.conf.orig    2015-09-24 09:13:05.000000000 +0100
+# +++ /etc/smartmontools/smartd.conf    2015-09-24 09:12:19.000000000 +0100
+# @@ -20,7 +20,7 @@
+#  # Directives listed below, which will be applied to all devices that
+#  # are found.  Most users should comment out DEVICESCAN and explicitly
+#  # list the devices that they wish to monitor.
+# -DEVICESCAN -H -m root -M exec /usr/libexec/smartmontools/smartdnotify -n standby,10,q
+# +DEVICESCAN -H -n standby,10,q
+
+#  # Alternative setting to ignore temperature and power-on hours reports
+#  # in syslog.
+# EOF
+
+# %triggerin config -- tzdata
+# ln -f %{_datadir}/zoneinfo/Asia/Shanghai %{_datadir}/zoneinfo/Asia/Beijing
+
+# %triggerin config -- shadow-utils
+# ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
+# --- /etc/login.defs.orig    2016-02-26 11:11:20.000000000 +0000
+# +++ /etc/login.defs 2016-02-26 11:11:57.000000000 +0000
+# @@ -70,3 +70,4 @@
+#  # Use SHA512 to encrypt password.
+#  ENCRYPT_METHOD SHA512
+
+# +MOTD_FILE /etc/motd.xs
+# EOF
+
+# %triggerin config -- yum
+# ( patch -tsN -r - -d / -p1 || : ) >/dev/null <<'EOF'
+# --- /etc/yum.conf.orig  2016-11-07 09:39:42.594325044 +0000
+# +++ /etc/yum.conf   2016-11-07 09:39:58.478743042 +0000
+# @@ -7,6 +7,7 @@
+#  obsoletes=1
+#  gpgcheck=1
+#  plugins=1
+# +installonlypkgs=
+#  installonly_limit=5
+#  bugtracker_url=http://bugs.centos.org/set_project.php?project_id=23&ref=http://bugs.centos.org/bug_report_page.php?category=yum
+#  distroverpkg=centos-release
+# EOF
+
+# # XCP-ng: exclude fallback mirror from fastestmirror
+# %triggerin config -- yum-plugin-fastestmirror
+# FM_PATCH=$(cat <<'EOF'
+# --- /etc/yum/pluginconf.d/fastestmirror.conf.orig     2019-07-10 18:51:55.253695553 +0200
+# +++ /etc/yum/pluginconf.d/fastestmirror.conf  2019-07-10 18:52:57.774059664 +0200
+# @@ -10,3 +10,6 @@
+#  maxthreads=15
+#  #exclude=.gov, facebook
+#  #include_only=.nl,.de,.uk,.ie
+# +
+# +# Exclude fallback mirror so that it's used as last resort
+# +exclude=updates.xcp-ng.org
+# EOF
+# )
+# # Do not apply patch if it was already applied
+# if ! echo "$FM_PATCH" | patch --dry-run -RsN -d / -p1 >/dev/null; then
+#     # Apply patch. Output NOT redirected to /dev/null so that error messages are displayed
+#     if ! echo "$FM_PATCH" | patch -tsN -r - -d / -p1; then
+#         echo "Error: failed to apply patch:"
+#         echo "$FM_PATCH"
+#     fi
+# fi
+
+# # XCP-ng: chrony
+# %triggerin config -- chrony
+# if [ -f /etc/systemd/system/chrony-wait.service ]; then
+#     # Since 8.2.1: remove our overriding service file
+#     # Now chrony-wait's timeout is overriden through an override.conf
+#     rm -f /etc/systemd/system/chrony-wait.service
+# fi
+
+# # XCP-ng 8.2.1: we switched back to using the official service file
+# # instead of our replacement file in /etc/systemd/system/chrony-wait.service,
+# # as we now use an override.conf to set the timeout to 120s.
+# # In order to make the /etc/systemd/system/multi-user.target.wants/chrony-wait.service
+# # symlink point to the right target (the official service /usr/lib/systemd/system/chrony-wait.service),
+# # we disable then reenable the service.
+# # TODO: remove in a future major release when update using yum from 8.2 or lower is not supported anymore.
+# #       (but still enable the services if they need to be, or fix the preset file)
+# systemctl disable chrony-wait >/dev/null 2>&1 || :
+# systemctl enable chrony-wait >/dev/null 2>&1 || :
+
+
+# # Hide previous 8.0 hotfixes from xapi
+# %triggerun config -- %{name}-config = 8.0.0, %{name}-config = 8.1.0
+# if [ -d /var/update/applied ]; then
+#     shopt -s nullglob
+#     for sfile in /var/update/applied/*; do
+#         label=$(xmllint --xpath "string(//update/@name-label)" $sfile)
+#         if [[ "$label" =~ ^XS8[01](E[0-9]{3}$|$) ]]; then
+#             rm -f $sfile
+#         fi
+#     done
+# fi
 
 %post config
 %systemd_post move-kernel-messages.service
@@ -615,6 +609,11 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.1
+- Bumbed versions to 8.99
+- Set xenserver_major to 9
+- Commented out all triggers
+
 * Thu May 08 2025 Andrii Sultanov <andriy.sultanov@vates.tech> - 8.3.0-32
 - Fix patches that weren't properly generated and included in the specfile:
   - 0002-Sync-vm.slice-with-xenserver-release-v8.4.0-12.tar.g.patch
