@@ -42,7 +42,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.2
+Release:        0.4
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -174,15 +174,15 @@ cp %{buildroot}%{_sysconfdir}/issue.net %{buildroot}%{_sysconfdir}/issue
 echo >> %{buildroot}%{_sysconfdir}/issue
 touch -r %{buildroot}%{_sysconfdir}/issue.net %{buildroot}%{_sysconfdir}/issue
 
-# copy yum repos
-install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
-install -m 644 CentOS-Base.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
-install -m 644 CentOS-Sources.repo %{buildroot}%{_sysconfdir}/yum.repos.d
-# XCP-ng: add epel and xcp-ng repos
-# install epel repos (disabled by default)
-install -m 644 epel.repo %{buildroot}%{_sysconfdir}/yum.repos.d
-# install the xcp-ng repo
-install -m 644 xcp-ng.repo %{buildroot}%{_sysconfdir}/yum.repos.d
+# # copy yum repos
+# install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
+# install -m 644 CentOS-Base.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
+# install -m 644 CentOS-Sources.repo %{buildroot}%{_sysconfdir}/yum.repos.d
+# # XCP-ng: add epel and xcp-ng repos
+# # install epel repos (disabled by default)
+# install -m 644 epel.repo %{buildroot}%{_sysconfdir}/yum.repos.d
+# # install the xcp-ng repo
+# install -m 644 xcp-ng.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 
 # set up the dist tag macros
 install -d -m 755 %{buildroot}%{_sysconfdir}/rpm
@@ -557,7 +557,7 @@ systemctl preset-all --preset-mode=enable-only || :
 %config(noreplace) %{_sysconfdir}/issue
 %config(noreplace) %{_sysconfdir}/issue.net
 %{_sysconfdir}/pki/rpm-gpg/
-%config(noreplace) %{_sysconfdir}/yum.repos.d/*
+# %config(noreplace) %{_sysconfdir}/yum.repos.d/*
 %config(noreplace) %{_sysconfdir}/yum/vars/*
 %{_sysconfdir}/rpm/macros.dist
 %{_docdir}/redhat-release
@@ -604,11 +604,12 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Mon Oct 28 2024 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.2
+* Mon Oct 28 2024 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.4
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
 - provides/obsolete 9.x rpms
+- Do not install yum depo definitions
 
 * Mon Oct 28 2024 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-29
 - Remove now-useless python2 build-deps
