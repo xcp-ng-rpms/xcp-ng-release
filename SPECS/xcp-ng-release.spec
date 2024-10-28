@@ -1,23 +1,18 @@
 # XCP-ng: TO BE UPDATED FOR EACH NEW RELEASE
 # TODO: use data from branding file instead
-%define PRODUCT_VERSION 8.3.0
-%define PRODUCT_VERSION_TEXT 8.3
+%define PRODUCT_VERSION 8.99.0
+%define PRODUCT_VERSION_TEXT 8.99
 %define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
 %define PLATFORM_VERSION 3.4.0
-%define BUILD_NUMBER 8.3.0
+%define BUILD_NUMBER 8.99.0
+%define xcpng_major 9
 # XCP-ng: macro tested by some spec files inherited from XenServer
-%define xenserver_major 8
+%define xenserver_major 9
 
-# XCP-ng: the globals below are not used. We only keep them as a reference
-# from the last xenserver-release we (loosely) synced with
-%global usver 8.4.0
-%global xsver 15
-%global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.4.0-15
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -44,8 +39,8 @@
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xcp-ng-release
-Version:        8.3.0
-Release:        37
+Version:        8.99.0
+Release:        1
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -103,8 +98,8 @@ BuildRequires:  python2
 BuildRequires:  python3-rpm-macros
 URL:            https://github.com/xcp-ng/xcp-ng-release
 # Before the tag of the final release, archives are exported this way from the source repository:
-# export VER=8.3.0; git archive --format tgz master . --prefix xcp-ng-release-$VER/ -o /path/to/SOURCES/xcp-ng-release-$VER.tar.gz
-Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
+# export VER=8.99.0; git archive --format tgz master . --prefix xcp-ng-release-$VER/ -o /path/to/SOURCES/xcp-ng-release-$VER.tar.gz
+Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-8.3.0.tar.gz
 
 # XCP-ng Patches generated during maintenance period with `git format-patch --no-numbered --no-signature v8.3.0`
 Patch1001: 0001-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
@@ -153,7 +148,7 @@ Additional utilities and configuration for XCP-ng.
 
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n %{name}-8.3.0
 
 # XCP-ng: copy LICENSES from branding package
 cp %{_usrsrc}/branding/LICENSES .
@@ -206,6 +201,7 @@ cat >> %{buildroot}%{_sysconfdir}/rpm/macros.dist << EOF
 %%dist %dist
 %%el%{base_release_version} 1
 %%xenserver %{xenserver_major}
+%%xcpng %{xcpng_major}
 EOF
 
 # use unbranded datadir
@@ -618,6 +614,11 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Tue Mar 17 2026 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-1 - WIP
+- Bump versions to 8.99
+- Set xenserver_major to 9
+- Provide %xcpng macro in macros.dist
+
 * Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
 - Realign upstream to prompt patch from RPM
 - Add timestamps to history
