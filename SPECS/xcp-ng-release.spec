@@ -566,9 +566,6 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_datadir}/centos-release
 %{_prefix}/lib/systemd/system-preset/90-default.preset
 /EULA
-%if %{with build_py2}
-%{python2_sitelib}/xcp/branding.py*
-%endif
 %{python3_sitelib}/xcp/branding.py
 %{python3_sitelib}/xcp/__pycache__
 %{_sysconfdir}/depmod.d/00-xcpng-override.conf
