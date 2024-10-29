@@ -32,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.4
+Release:        0.5
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -52,7 +52,7 @@ Provides:       system-release = %{upstream_rel_long}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      almalinux-release
 Obsoletes:      centos-release
-Obsoletes:      epel-release
+Requires:       epel-release
 
 #Obsolete CH80 hotfixes
 Obsoletes:      update-XS80E001 control-XS80E001
@@ -173,10 +173,7 @@ touch -r %{buildroot}%{_sysconfdir}/issue.net %{buildroot}%{_sysconfdir}/issue
 # install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
 # install -m 644 CentOS-Base.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
 # install -m 644 CentOS-Sources.repo %{buildroot}%{_sysconfdir}/yum.repos.d
-# # XCP-ng: add epel and xcp-ng repos
-# # install epel repos (disabled by default)
-# install -m 644 epel.repo %{buildroot}%{_sysconfdir}/yum.repos.d
-# # install the xcp-ng repo
+# # XCP-ng: add xcp-ng repos
 # install -m 644 xcp-ng.repo %{buildroot}%{_sysconfdir}/yum.repos.d
 
 # set up the dist tag macros
@@ -599,12 +596,13 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.4
+* Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.5
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
 - provides/obsolete 9.x rpms
 - Do not install yum depo definitions
+- Depend on epel-release instead of obsoleting it
 
 * Mon Oct 28 2024 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
