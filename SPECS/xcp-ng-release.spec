@@ -47,7 +47,6 @@ Provides:       system-release = %{upstream_rel_long}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      almalinux-release
 Obsoletes:      centos-release
-Obsoletes:      epel-release
 
 #Obsolete CH80 hotfixes
 Obsoletes:      update-XS80E001 control-XS80E001
@@ -598,6 +597,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Set xenserver_major to 9
 - Provide %xcpng macro in macros.dist
 - provides/obsolete 9.x rpms
+- Stop obsoleting epel-release
 - Pick macros.x86_64_v2 from almalinux-release-10.0-32.el10
 - Commented out all triggers
 - Remove now-useless python2 build-deps
