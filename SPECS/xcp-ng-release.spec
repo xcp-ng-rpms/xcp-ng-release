@@ -32,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.5
+Release:        0.6
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -44,6 +44,8 @@ Requires:       %{name}-presets
 %if 0%{?xenserver} < 9
 Requires:       xcp-python-libs-compat
 %endif
+Provides:       almalinux-kitten-release = %{upstream_rel_long}
+Provides:       almalinux-kitten-release(x86-64) = %{upstream_rel_long}
 Provides:       almalinux-release = %{upstream_rel_long}
 Provides:       almalinux-release(x86-64) = %{upstream_rel_long}
 Provides:       centos-release = %{base_release_version}
@@ -51,6 +53,7 @@ Provides:       redhat-release = %{upstream_rel_long}
 Provides:       system-release = %{upstream_rel_long}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      almalinux-release
+Obsoletes:      almalinux-kitten-release
 Obsoletes:      centos-release
 Requires:       epel-release
 
@@ -596,11 +599,12 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.5
+* Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.6
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
 - provides/obsolete 9.x rpms
+- also obsolete/provide almalinux-kitten-release :sigh:
 - Do not install yum depo definitions
 - Depend on epel-release instead of obsoleting it
 
