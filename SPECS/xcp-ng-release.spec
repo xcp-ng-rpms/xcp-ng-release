@@ -42,7 +42,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.5
+Release:        0.6
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -51,6 +51,8 @@ Requires:       %{name}-presets
 # XCP-ng: do not require system-config for now:
 # it pulls a useless empty xenserver-config everywhere
 #Requires:       system-config
+Provides:       almalinux-kitten-release = %{upstream_rel_long}
+Provides:       almalinux-kitten-release(x86-64) = %{upstream_rel_long}
 Provides:       almalinux-release = %{upstream_rel_long}
 Provides:       almalinux-release(x86-64) = %{upstream_rel_long}
 Provides:       centos-release = %{base_release_version}
@@ -58,6 +60,7 @@ Provides:       redhat-release = %{upstream_rel_long}
 Provides:       system-release = %{upstream_rel_long}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      almalinux-release
+Obsoletes:      almalinux-kitten-release
 Obsoletes:      centos-release
 Requires:       epel-release
 
@@ -601,6 +604,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Wed Oct 30 2024 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.6
+- also obsolete/provide almalinux-kitten-release :sigh:
+
 * Mon Oct 28 2024 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.5
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
