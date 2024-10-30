@@ -18,14 +18,9 @@
 # repo, only the release should be changed, not the version.
 
 %define debug_package %{nil}
-%define product_family CentOS Linux
-%define variant_titlecase Server
-%define variant_lowercase server
-%define release_name Core
 %define base_release_version 9
 %define upstream_rel_long 9.4-1.el9
 %define upstream_rel 9.4-1.el9
-%define centos_rel 5.1804
 
 %define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
 
