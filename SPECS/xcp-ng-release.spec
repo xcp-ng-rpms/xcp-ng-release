@@ -13,9 +13,9 @@
 # repo, only the release should be changed, not the version.
 
 %define debug_package %{nil}
-%define base_release_version 9
-%define upstream_rel_long 9.4-1.el9
-%define upstream_rel 9.4-1.el9
+%define base_release_version 10
+%define upstream_rel_long 10.0-0.21.el10.2
+%define upstream_rel 10.0-0.21.el10.2
 
 %define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
 
@@ -32,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.6
+Release:        0.7
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -599,7 +599,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.6
+* Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.7
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
