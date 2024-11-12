@@ -1,3 +1,15 @@
+%global package_speccommit eca17993731bdd50f9f74917437e9922d9142c2a
+%global usver 8.2.1
+%global xsver 11
+%global xsrel %{xsver}%{?xscount}%{?xshash}
+%global package_srccommit v8.2.1-11
+# This package is special since the package version needs to
+# match the product version. When making a change to the source
+# repo, only the release should be changed, not the version.
+
+## Do not redefine dist. Pass on whatever the
+## Build target gives us
+
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -10,14 +22,12 @@
 %define upstream_rel 7.5
 %define centos_rel 5.1804
 %define private_config_path /opt/xensource/config
-#define beta Beta
-%define dist .el%{dist_release_version}.centos
 
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xenserver-release
-Version:        8.2.1
-Release:        10
+Version: 8.2.1
+Release: %{?xsrel}%{?dist}
 Summary:        XenServer release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -77,20 +87,14 @@ Provides:       product-version-text = %{PRODUCT_VERSION_TEXT}
 Provides:       product-version-text-short = %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xenserver
-
-Source0: xenserver-release.tar.gz
-Source2: SOURCES/xenserver-release/sshd_config
-Source3: SOURCES/xenserver-release/ssh_config
-
-
-Provides: gitsha(ssh://git@code.citrite.net/XS/xenserver-release.git) = 466ed56020e223321ae117cc6c99ceb0cb4a034e
-
+Source0: xenserver-release-v8.2.1-11.tar.gz
+Source2: sshd_config
+Source3: ssh_config
 
 %description
 XenServer release files
 
 %package        presets
-Provides: gitsha(ssh://git@code.citrite.net/XS/xenserver-release.git) = 466ed56020e223321ae117cc6c99ceb0cb4a034e
 Summary:        XenServer presets file
 Group:          System Environment/Base
 Provides:       xs-presets = 1.3
@@ -100,7 +104,6 @@ Requires(posttrans): systemd
 XenServer preset file.
 
 %package        config
-Provides: gitsha(ssh://git@code.citrite.net/XS/xenserver-release.git) = 466ed56020e223321ae117cc6c99ceb0cb4a034e
 Summary:        XenServer configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
@@ -114,7 +117,7 @@ Additional utilities and configuration for XenServer.
 
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 
@@ -123,8 +126,8 @@ rm -rf %{buildroot}
 
 %{_usrsrc}/branding/brand-directory.py src/common %{buildroot}
 %{_usrsrc}/branding/brand-directory.py src/xenserver %{buildroot}
-install -d -m 755 %{buildroot}%{python_sitelib}/xcp
-%{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python_sitelib}/xcp/branding.py
+install -d -m 755 %{buildroot}%{python2_sitelib}/xcp
+%{_usrsrc}/branding/branding-compile.py --format=python > %{buildroot}%{python2_sitelib}/xcp/branding.py
 
 install -m 644 %{_usrsrc}/branding/xenserver/EULA %{buildroot}/
 install -D -m 644 \
@@ -548,7 +551,7 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_prefix}/lib/systemd/system-preset/90-default.preset
 /EULA
 %{_docdir}/XenServer/LICENSES
-%{python_sitelib}/xcp/branding.py*
+%{python2_sitelib}/xcp/branding.py*
 
 %files presets
 %{_prefix}/lib/systemd/system-preset/89-default.preset
@@ -569,7 +572,7 @@ systemctl preset-all --preset-mode=enable-only || :
 %{private_config_path}/*
 %attr(0755,-,-) /sbin/update-issue
 %attr(0755,-,-) /opt/xensource/libexec/xen-cmdline
-%attr(0755,-,-) /opt/xensource/libexec/ibft-to-ignore
+%attr(0755,-,-) /opt/xensource/libexec/iscsi-bfs-dhcp
 %attr(0755,-,-) /opt/xensource/libexec/bfs-interfaces
 %attr(0755,-,-) /opt/xensource/libexec/fcoe_driver
 %attr(0755,-,-) %{_sysconfdir}/dhcp/dhclient.d/xs.sh
@@ -588,8 +591,12 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Wed Sep 11 2024 Lin Liu <Lin.Liu01@cloud.com> - 8.2.1-11
+- CA-392433: Start dhclient on iSCSI BFS interfaces
+
 * Thu Sep 22 2022 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.2.1-10
 - CA-366439: Silence warnings and improve error handling in fcoe_driver
+- CP-50620: Update to koji build
 
 * Wed Jul 6 2022 Lin Liu <lin.liu@citrix.com> - 8.2.1-9
 - CA-362922: Outdated Ciphers used by Openssh when host is updated from hotfix
