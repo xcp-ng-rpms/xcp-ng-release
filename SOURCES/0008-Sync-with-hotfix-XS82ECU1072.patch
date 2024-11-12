@@ -1,0 +1,89 @@
+From fa83b54389651c1018a93daedece602954c25b3e Mon Sep 17 00:00:00 2001
+From: Thierry Escande <thierry.escande@vates.tech>
+Date: Tue, 12 Nov 2024 17:38:27 +0100
+Subject: [PATCH] Sync with hotfix XS82ECU1072
+Content-Type: text/plain; charset = "utf-8"
+Content-Transfert-Encoding: 8bit
+
+Signed-off-by: Thierry Escande <thierry.escande@vates.tech>
+---
+ .../opt/xensource/libexec/ibft-to-ignore      | 12 ------------
+ .../opt/xensource/libexec/iscsi-bfs-dhcp      | 19 +++++++++++++++++++
+ .../systemd/system-preset/89-default.preset   |  1 +
+ .../lib/systemd/system/iscsi-bfs-dhcp.service | 10 ++++++++++
+ 4 files changed, 30 insertions(+), 12 deletions(-)
+ delete mode 100755 src/common/opt/xensource/libexec/ibft-to-ignore
+ create mode 100644 src/common/opt/xensource/libexec/iscsi-bfs-dhcp
+ create mode 100644 src/common/usr/lib/systemd/system/iscsi-bfs-dhcp.service
+
+diff --git a/src/common/opt/xensource/libexec/ibft-to-ignore b/src/common/opt/xensource/libexec/ibft-to-ignore
+deleted file mode 100755
+index 126f649..0000000
+--- a/src/common/opt/xensource/libexec/ibft-to-ignore
++++ /dev/null
+@@ -1,12 +0,0 @@
+-#!/bin/bash
+-
+-for dir in /sys/firmware/ibft/ethernet{0,1} ; do
+-        [ ! -e $dir/mac ] && continue || \
+-            ibft_mac=$(cat $dir/mac)
+-        ibft_eth=$(ls $dir/device/net)
+-        if [ $? -ne 0 ]; then
+-            >&2 echo "Unable to find network interface for iSCSI iBFT mac $ibft_mac"
+-            continue
+-        fi
+-        echo ${ibft_eth}
+-    done
+diff --git a/src/common/opt/xensource/libexec/iscsi-bfs-dhcp b/src/common/opt/xensource/libexec/iscsi-bfs-dhcp
+new file mode 100644
+index 0000000..4c00b2e
+--- /dev/null
++++ b/src/common/opt/xensource/libexec/iscsi-bfs-dhcp
+@@ -0,0 +1,19 @@
++#!/bin/bash
++
++for dir in /sys/firmware/ibft/ethernet{0,1} ; do
++    [ ! -e $dir/dhcp ] && continue
++    [ ! -e $dir/mac ] && continue || \
++        ibft_mac=$(cat $dir/mac)
++    ibft_eth=$(ls $dir/device/net)
++    if [ $? -ne 0 ]; then
++        >&2 echo "Unable to find network interface for iSCSI iBFT mac $ibft_mac"
++        continue
++    fi
++
++    echo """interface \"$ibft_eth\" {
++  send host-name = gethostname();
++  request subnet-mask, broadcast-address, interface-mtu;
++}""" > /var/lib/xcp/dhclient-${ibft_eth}.conf
++
++    /sbin/dhclient -e PEERNTP=no -q -pf /var/run/dhclient-${ibft_eth}.pid -lf /var/lib/xcp/dhclient-${ibft_eth}.leases -cf /var/lib/xcp/dhclient-${ibft_eth}.conf $ibft_eth
++done
+diff --git a/src/common/usr/lib/systemd/system-preset/89-default.preset b/src/common/usr/lib/systemd/system-preset/89-default.preset
+index c1d9083..cb2e8c6 100644
+--- a/src/common/usr/lib/systemd/system-preset/89-default.preset
++++ b/src/common/usr/lib/systemd/system-preset/89-default.preset
+@@ -170,3 +170,4 @@ enable upgrade-likewise-to-pbis.service
+ enable generate-iscsi-iqn.service
+ enable control-domain-params-init.service
+ enable network-init.service
++enable iscsi-bfs-dhcp.service
+diff --git a/src/common/usr/lib/systemd/system/iscsi-bfs-dhcp.service b/src/common/usr/lib/systemd/system/iscsi-bfs-dhcp.service
+new file mode 100644
+index 0000000..845f324
+--- /dev/null
++++ b/src/common/usr/lib/systemd/system/iscsi-bfs-dhcp.service
+@@ -0,0 +1,10 @@
++[Unit]
++Description=DHCP client on iSCSI BFS interfaces
++
++[Service]
++Type=oneshot
++RemainAfterExit=yes
++ExecStart=/opt/xensource/libexec/iscsi-bfs-dhcp
++
++[Install]
++WantedBy=multi-user.target
+-- 
+2.45.2
+
