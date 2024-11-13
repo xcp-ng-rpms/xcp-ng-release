@@ -18,14 +18,13 @@
 %define upstream_rel 7.5
 %define centos_rel 5.1804
 %define private_config_path /opt/xensource/config
-#define beta Beta
 %define dist .xcpng%{PRODUCT_VERSION_TEXT_SHORT}
 
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        13
+Release:        14
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -102,6 +101,7 @@ Patch4: 0004-www-Refactor-and-clean-of-deploy-page.patch
 Patch5: 0005-Update-xcp-ng.repo-for-the-new-repository-structure.patch
 Patch6: 0006-www-remove-quick-deploy-script-link-to-vates.tech-de.patch
 Patch7: 0007-Update-CentOS-and-EPEL-repo-files.patch
+Patch8: 0008-Sync-with-hotfix-XS82ECU1072.patch
 
 %description
 XCP-ng release files
@@ -796,7 +796,7 @@ systemctl preset-all --preset-mode=enable-only || :
 %{private_config_path}/*
 %attr(0755,-,-) /sbin/update-issue
 %attr(0755,-,-) /opt/xensource/libexec/xen-cmdline
-%attr(0755,-,-) /opt/xensource/libexec/ibft-to-ignore
+%attr(0755,-,-) /opt/xensource/libexec/iscsi-bfs-dhcp
 %attr(0755,-,-) /opt/xensource/libexec/bfs-interfaces
 %attr(0755,-,-) /opt/xensource/libexec/fcoe_driver
 %attr(0755,-,-) %{_sysconfdir}/dhcp/dhclient.d/xs.sh
@@ -816,6 +816,12 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Tue Nov 12 2024 Thierry Escande <thierry.escande@vates.tech> - 8.2.1-14
+- Sync with hotfix XS82ECU1072
+- *** Upstream changelog ***
+- * Wed Sep 11 2024 Lin Liu <Lin.Liu01@cloud.com> - 8.2.1-11+
+- - CA-392433: Start dhclient on iSCSI BFS interfaces+
+
 * Fri Aug 23 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.2.1-13
 - Update repo files for CentOS and EPEL
 - Point at repo.vates.tech for CentOS since mirrorlist.centos.org was cut
