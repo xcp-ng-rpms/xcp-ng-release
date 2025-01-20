@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        28
+Release:        29
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -104,7 +104,7 @@ URL:            https://github.com/xcp-ng/xcp-ng-release
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
 
 # XCP-ng Patches generated during maintenance period with `git format-patch v8.3`
-# (None at the moment)
+Patch1000: 0001-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
 
 %description
 XCP-ng release files
@@ -610,6 +610,10 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Mon Jan 20 2025 Lucas Ravagnier <lucas.ravagnier@vates.tech> - 8.3.0-29
+- Add 0001-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
+- This adds a cipher to '.curlrc' to fix a TLS Handshake Error with xoa.io
+
 * Fri Aug 23 2024 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-28
 - Update repo files for CentOS and EPEL
 - Point at repo.vates.tech for CentOS since mirrorlist.centos.org was cut
