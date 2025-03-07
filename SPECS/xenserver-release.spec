@@ -1,12 +1,12 @@
-%global package_speccommit d4775156b236bf9b7759c752fec232baa359a629
+%global package_speccommit 5e2135aca0f608966ed891a87b55210f5e5b1903
 %global usver 8.4.0
-%global xsver 12
+%global xsver 13
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.4.0-12
+%global package_srccommit v8.4.0-13
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -86,7 +86,7 @@ Provides:       product-version-text = %replace_spaces %{PRODUCT_VERSION_TEXT}
 Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xenserver python3-devel
-Source0: xenserver-release-v8.4.0-12.tar.gz
+Source0: xenserver-release-v8.4.0-13.tar.gz
 Source1: RPM-GPG-KEY-XenServer
 Source2: sshd_config
 Source3: ssh_config
@@ -515,6 +515,9 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Fri Oct 04 2024 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.4.0-13
+- Enable new RRDD plugins
+
 * Fri Sep 20 2024 Mark Syms <mark.syms@cloud.com> - 8.4.0-12
 - CA-399511: Change systemd dependencies for vm.slice
 
