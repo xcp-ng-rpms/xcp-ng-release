@@ -1,6 +1,6 @@
-%global package_speccommit 5e2135aca0f608966ed891a87b55210f5e5b1903
+%global package_speccommit 235af80f2ed51a9cdcab2772dd01471f4c78019b
 %global usver 8.4.0
-%global xsver 13
+%global xsver 14
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
@@ -47,6 +47,9 @@ License:        GPLv2
 Requires(post): coreutils, grep
 Requires:       %{name}-presets
 Requires:       system-config
+%if 0%{?xenserver} < 9
+Requires:       xcp-python-libs-compat
+%endif
 Provides:       centos-release = %{base_release_version}
 Provides:       centos-release(upstream) = %{upstream_rel}
 Provides:       redhat-release = %{upstream_rel_long}
@@ -515,6 +518,9 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Thu Dec 05 2024 Frediano Ziglio <frediano.ziglio@cloud.com> - 8.4.0-14
+- CA-403415: Install xcp-python-libs-compat for XS8
+
 * Fri Oct 04 2024 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.4.0-13
 - Enable new RRDD plugins
 
