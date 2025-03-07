@@ -1,12 +1,12 @@
-%global package_speccommit 12fac58da1bbe95c7bdb3c6bdf76593cf4f8e319
+%global package_speccommit d4775156b236bf9b7759c752fec232baa359a629
 %global usver 8.4.0
-%global xsver 11
+%global xsver 12
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.4.0-11
+%global package_srccommit v8.4.0-12
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -86,7 +86,7 @@ Provides:       product-version-text = %replace_spaces %{PRODUCT_VERSION_TEXT}
 Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xenserver python3-devel
-Source0: xenserver-release-v8.4.0-11.tar.gz
+Source0: xenserver-release-v8.4.0-12.tar.gz
 Source1: RPM-GPG-KEY-XenServer
 Source2: sshd_config
 Source3: ssh_config
@@ -515,6 +515,9 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Fri Sep 20 2024 Mark Syms <mark.syms@cloud.com> - 8.4.0-12
+- CA-399511: Change systemd dependencies for vm.slice
+
 * Tue Jun 18 2024 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.4.0-11
 - CP-47026: Move mcelog config changes to mcelog.spec
 
