@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        29
+Release:        30
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -54,6 +54,9 @@ Requires:       %{name}-presets
 # XCP-ng: do not require system-config for now:
 # it pulls a useless empty xenserver-config everywhere
 #Requires:       system-config
+%if 0%{?xenserver} < 9
+Requires:       xcp-python-libs-compat
+%endif
 Provides:       centos-release = %{base_release_version}
 Provides:       centos-release(upstream) = %{upstream_rel}
 Provides:       redhat-release = %{upstream_rel_long}
@@ -610,6 +613,20 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Mon Mar 10 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-30
+- Sync with xenserver-release-8.4.0-14:
+  - 0001-Sync-vm.slice-with-xenserver-release-v8.4.0-12.tar.g.patch
+  - 0002-Sync-systemd-presets-with-xenserver-release-v8.4.0-1.patch
+  - Pull xcp-python-libs-compat (dropped from xapi deps between
+    4.19 and 4.39)
+- *** Upstream changelog ***
+  * Thu Dec 05 2024 Frediano Ziglio <frediano.ziglio@cloud.com> - 8.4.0-14
+  - CA-403415: Install xcp-python-libs-compat for XS8
+  * Fri Oct 04 2024 Ross Lagerwall <ross.lagerwall@citrix.com> - 8.4.0-13
+  - Enable new RRDD plugins
+  * Fri Sep 20 2024 Mark Syms <mark.syms@cloud.com> - 8.4.0-12
+  - CA-399511: Change systemd dependencies for vm.slice
+
 * Mon Jan 20 2025 Lucas Ravagnier <lucas.ravagnier@vates.tech> - 8.3.0-29
 - Add 0001-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
 - This adds a cipher to '.curlrc' to fix a TLS Handshake Error with xoa.io
