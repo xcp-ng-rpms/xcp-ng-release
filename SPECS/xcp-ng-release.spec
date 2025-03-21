@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.2.1
-Release:        15
+Release:        16
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -103,6 +103,7 @@ Patch6: 0006-www-remove-quick-deploy-script-link-to-vates.tech-de.patch
 Patch7: 0007-Update-CentOS-and-EPEL-repo-files.patch
 Patch8: 0008-Sync-with-hotfix-XS82ECU1072.patch
 Patch9: 0009-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
+Patch10: 0010-fix-curl-caused-by-incorrect-fix.patch
 
 %description
 XCP-ng release files
@@ -817,6 +818,10 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Fri Mar 21 2025 Lucas Ravagnier <lucas.ravagnier@vates.tech> - 8.2.1-16
+- Add 0010-fix-curl-caused-by-incorrect-fix.patch to fix previous patch (0009-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch)
+- By adding a new cipher to '.curlrc' to fix a TLS handshake error with xoa.io this blocked the use of other ciphers
+
 * Mon Jan 20 2025 Lucas Ravagnier <lucas.ravagnier@vates.tech> - 8.2.1-15
 - Add 0009-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
 - This adds a cipher to '.curlrc' to fix a TLS Handshake Error with xoa.io
