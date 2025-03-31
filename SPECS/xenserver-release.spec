@@ -1,12 +1,12 @@
-%global package_speccommit 235af80f2ed51a9cdcab2772dd01471f4c78019b
+%global package_speccommit 2d7783e4a1a74e73fd45043c489859582ab19d89
 %global usver 8.4.0
-%global xsver 14
+%global xsver 15
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.4.0-13
+%global package_srccommit v8.4.0-15
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -89,7 +89,7 @@ Provides:       product-version-text = %replace_spaces %{PRODUCT_VERSION_TEXT}
 Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xenserver python3-devel
-Source0: xenserver-release-v8.4.0-13.tar.gz
+Source0: xenserver-release-v8.4.0-15.tar.gz
 Source1: RPM-GPG-KEY-XenServer
 Source2: sshd_config
 Source3: ssh_config
@@ -518,6 +518,9 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Thu Jan 23 2025 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.4.0-15
+- CP-53338: Rebuild to pick up branding changes to 8.4
+
 * Thu Dec 05 2024 Frediano Ziglio <frediano.ziglio@cloud.com> - 8.4.0-14
 - CA-403415: Install xcp-python-libs-compat for XS8
 
