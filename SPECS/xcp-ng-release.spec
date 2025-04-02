@@ -11,13 +11,13 @@
 # XCP-ng: the globals below are not used. We only keep them as a reference
 # from the last xenserver-release we (loosely) synced with
 %global usver 8.4.0
-%global xsver 11
+%global xsver 14
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.4.0-11
+%global package_srccommit v8.4.0-13
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
