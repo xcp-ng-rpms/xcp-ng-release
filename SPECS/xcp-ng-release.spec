@@ -11,13 +11,13 @@
 # XCP-ng: the globals below are not used. We only keep them as a reference
 # from the last xenserver-release we (loosely) synced with
 %global usver 8.4.0
-%global xsver 11
+%global xsver 15
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.4.0-11
+%global package_srccommit v8.4.0-15
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -613,6 +613,12 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Thu Apr 03 2025 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-31
+- Rebuild for updated branding-xcp-ng
+- Loosely sync with xenserver-release-8.4.0-15 (no real change, just a merge point)
+  * Thu Jan 23 2025 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.4.0-15
+  - CP-53338: Rebuild to pick up branding changes to 8.4
+
 * Mon Mar 10 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-30
 - Sync with xenserver-release-8.4.0-14:
   - 0001-Sync-vm.slice-with-xenserver-release-v8.4.0-12.tar.g.patch
