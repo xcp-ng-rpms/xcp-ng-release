@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        31
+Release:        32
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -106,8 +106,10 @@ URL:            https://github.com/xcp-ng/xcp-ng-release
 # export VER=8.3.0; git archive --format tgz master . --prefix xcp-ng-release-$VER/ -o /path/to/SOURCES/xcp-ng-release-$VER.tar.gz
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-%{version}.tar.gz
 
-# XCP-ng Patches generated during maintenance period with `git format-patch v8.3`
-Patch1000: 0001-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
+# XCP-ng Patches generated during maintenance period with `git format-patch v8.3.0`
+Patch1001: 0001-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
+Patch1002: 0002-Sync-vm.slice-with-xenserver-release-v8.4.0-12.tar.g.patch
+Patch1003: 0003-Sync-systemd-presets-with-xenserver-release-v8.4.0-1.patch
 
 %description
 XCP-ng release files
@@ -613,6 +615,11 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Thu May 08 2025 Andrii Sultanov <andriy.sultanov@vates.tech> - 8.3.0-32
+- Fix patches that weren't properly generated and included in the specfile:
+  - 0002-Sync-vm.slice-with-xenserver-release-v8.4.0-12.tar.g.patch
+  - 0003-Sync-systemd-presets-with-xenserver-release-v8.4.0-1.patch
+
 * Thu Apr 03 2025 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-31
 - Rebuild for updated branding-xcp-ng
 - Loosely sync with xenserver-release-8.4.0-15 (no real change, just a merge point)
