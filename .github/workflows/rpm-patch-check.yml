@@ -1,0 +1,11 @@
+name: rpm-patch-check
+
+on: [push]
+
+jobs:
+  check-patches:
+    name: Verifying that all RPM patches are included in the spec file
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check all patches are included in the spec file
+        uses: last-genius/rpm-patch-check@v0.1
