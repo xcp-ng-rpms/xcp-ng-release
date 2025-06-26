@@ -14,8 +14,8 @@
 
 %define debug_package %{nil}
 %define base_release_version 10
-%define upstream_rel_long 10.0-0.21.el10.2
-%define upstream_rel 10.0-0.21.el10.2
+%define upstream_rel_long 10.0-30.el10
+%define upstream_rel 10.0-30.el10
 
 %define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
 
