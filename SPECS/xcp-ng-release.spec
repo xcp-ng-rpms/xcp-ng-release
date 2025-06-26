@@ -608,7 +608,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Do not install yum depo definitions
 - Depend on epel-release instead of obsoleting it
 
-* Mon Oct 28 2024 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
+* Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
 
 * Thu May 08 2025 Andrii Sultanov <andriy.sultanov@vates.tech> - 8.3.0-32
