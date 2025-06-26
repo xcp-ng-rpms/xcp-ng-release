@@ -32,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.7
+Release:        0.8
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -41,9 +41,6 @@ Requires:       %{name}-presets
 # XCP-ng: do not require system-config for now:
 # it pulls a useless empty xenserver-config everywhere
 #Requires:       system-config
-%if 0%{?xenserver} < 9
-Requires:       xcp-python-libs-compat
-%endif
 Provides:       almalinux-kitten-release = %{upstream_rel_long}
 Provides:       almalinux-kitten-release(x86-64) = %{upstream_rel_long}
 Provides:       almalinux-release = %{upstream_rel_long}
@@ -599,7 +596,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.7
+* Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
@@ -607,6 +604,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - also obsolete/provide almalinux-kitten-release :sigh:
 - Do not install yum depo definitions
 - Depend on epel-release instead of obsoleting it
+- Drop pull of xcp-python-libs-compat
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
