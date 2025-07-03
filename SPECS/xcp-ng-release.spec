@@ -32,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8
+Release:        0.8.ydi.1
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -138,6 +138,11 @@ Additional utilities and configuration for XCP-ng.
 
 %prep
 %autosetup -p1 -n %{name}-8.3.0
+# XCP-ng: files XS9 moves to xapi.spec
+rm src/common/etc/systemd/system/xapi.service.d/local.conf
+rm src/common/etc/systemd/system/xenopsd-xc.service.d/local.conf
+rmdir src/common/etc/systemd/system/xapi.service.d/
+rmdir src/common/etc/systemd/system/xenopsd-xc.service.d/
 
 # XCP-ng: copy LICENSES from branding package
 cp %{_usrsrc}/branding/LICENSES .
@@ -596,7 +601,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8
+* Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.1
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
@@ -605,6 +610,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Do not install yum depo definitions
 - Depend on epel-release instead of obsoleting it
 - Drop pull of xcp-python-libs-compat
+- Drop xapi and xenopsd snippets now provided by XAPI
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
