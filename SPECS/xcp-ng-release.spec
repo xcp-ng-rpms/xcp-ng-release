@@ -51,28 +51,6 @@ Obsoletes:      almalinux-release
 Obsoletes:      centos-release
 Requires:       epel-release
 
-#Obsolete CH80 hotfixes
-Obsoletes:      update-XS80E001 control-XS80E001
-Obsoletes:      update-XS80E002 control-XS80E002
-Obsoletes:      update-XS80E003 control-XS80E003
-Obsoletes:      update-XS80E004 control-XS80E004
-Obsoletes:      update-XS80E005 control-XS80E005
-Obsoletes:      update-XS80E006 control-XS80E006
-#there has been no XS80E007
-Obsoletes:      update-XS80E008 control-XS80E008
-Obsoletes:      update-XS80E009 control-XS80E009
-Obsoletes:      update-XS80E010 control-XS80E010
-Obsoletes:      update-XS80E011 control-XS80E011
-Obsoletes:      update-XS80E012 control-XS80E012
-
-#Obsolete CH81 hotfixes
-Obsoletes:      update-CH81 control-CH81
-Obsoletes:      update-XS81E001 control-XS81E001
-Obsoletes:      update-XS81E002 control-XS81E002
-Obsoletes:      update-XS81E003 control-XS81E003
-Obsoletes:      update-XS81E004 control-XS81E004
-Obsoletes:      update-XS81E005 control-XS81E005
-
 # Metadata for the installer to consume
 Provides:       product-brand = XCP-ng
 Provides:       product-version = %{PRODUCT_VERSION}
@@ -611,6 +589,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Drop xapi and xenopsd snippets now provided by XAPI
 - Provide %almalinux macros in macros.dist
 - Stop providing almalinux-kitten-release
+- Stop obsoleting XS8 hotfixes
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
