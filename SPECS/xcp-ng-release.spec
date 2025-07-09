@@ -32,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8.ydi.1
+Release:        0.8.ydi.2
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -189,6 +189,8 @@ cat >> %{buildroot}%{_sysconfdir}/rpm/macros.dist << EOF
 %%centos_ver %{base_release_version}
 %%centos %{base_release_version}
 %%rhel %{base_release_version}
+%%almalinux_ver %{base_release_version}
+%%almalinux %{base_release_version}
 %%dist %dist
 %%el%{base_release_version} 1
 %%xenserver %{xenserver_major}
@@ -601,7 +603,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.1
+* Thu Jul  9 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.2
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
@@ -611,6 +613,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Depend on epel-release instead of obsoleting it
 - Drop pull of xcp-python-libs-compat
 - Drop xapi and xenopsd snippets now provided by XAPI
+- Provide %almalinux macros in macros.dist
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
