@@ -41,8 +41,6 @@ Requires:       %{name}-presets
 # XCP-ng: do not require system-config for now:
 # it pulls a useless empty xenserver-config everywhere
 #Requires:       system-config
-Provides:       almalinux-kitten-release = %{upstream_rel_long}
-Provides:       almalinux-kitten-release(x86-64) = %{upstream_rel_long}
 Provides:       almalinux-release = %{upstream_rel_long}
 Provides:       almalinux-release(x86-64) = %{upstream_rel_long}
 Provides:       centos-release = %{base_release_version}
@@ -50,7 +48,6 @@ Provides:       redhat-release = %{upstream_rel_long}
 Provides:       system-release = %{upstream_rel_long}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      almalinux-release
-Obsoletes:      almalinux-kitten-release
 Obsoletes:      centos-release
 Requires:       epel-release
 
@@ -608,12 +605,12 @@ systemctl preset-all --preset-mode=enable-only || :
 - Set xenserver_major to 9
 - Commented out all triggers
 - provides/obsolete 9.x rpms
-- also obsolete/provide almalinux-kitten-release :sigh:
 - Do not install yum depo definitions
 - Depend on epel-release instead of obsoleting it
 - Drop pull of xcp-python-libs-compat
 - Drop xapi and xenopsd snippets now provided by XAPI
 - Provide %almalinux macros in macros.dist
+- Stop providing almalinux-kitten-release
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
