@@ -173,6 +173,8 @@ cat >> %{buildroot}%{_sysconfdir}/rpm/macros.dist << EOF
 %%centos_ver %{base_release_version}
 %%centos %{base_release_version}
 %%rhel %{base_release_version}
+%%almalinux_ver %{base_release_version}
+%%almalinux %{base_release_version}
 %%dist %dist
 %%el%{base_release_version} 1
 %%xenserver %{xenserver_major}
@@ -602,6 +604,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Stop obsoleting epel-release
 - Pick macros.x86_64_v2 from almalinux-release-10.0-32.el10
 - Commented out all triggers
+- Provide %almalinux macros in macros.dist
 - Remove now-useless python2 build-deps
 - Do not install 8.3 yum repo definitions (anyway moving to xcp-ng-config)
 - Drop support for XCP-ng/XS 8.x compatibility
