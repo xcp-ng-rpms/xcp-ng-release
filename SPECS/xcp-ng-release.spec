@@ -32,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8.ydi.2
+Release:        0.8.ydi.3
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -186,11 +186,14 @@ ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/getty@tty2.service
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty1.service
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty2.service
 
+# HACK move from yum to dnf
+mv %{buildroot}%{_sysconfdir}/yum %{buildroot}%{_sysconfdir}/dnf
+
 %posttrans
 # XCP-ng 8.1: running this in posttrans instead of post because xcp-ng-release may be installed after
 # coreutils, since they both require each other: no guaranteed order
 # XCP-ng 8.2: CH 8.2 switched to posttrans too. I'm keeping my previous comment to document why.
-/usr/bin/uname -m | grep -q 'x86_64'  && echo 'centos' >/etc/yum/vars/contentdir || echo 'altarch' > /etc/yum/vars/contentdir
+/usr/bin/uname -m | grep -q 'x86_64'  && echo 'centos' >/etc/dnf/vars/contentdir || echo 'altarch' > /etc/dnf/vars/contentdir
 
 %clean
 rm -rf %{buildroot}
@@ -532,7 +535,7 @@ systemctl preset-all --preset-mode=enable-only || :
 %config(noreplace) %{_sysconfdir}/issue.net
 %{_sysconfdir}/pki/rpm-gpg/
 # %config(noreplace) %{_sysconfdir}/yum.repos.d/*
-%config(noreplace) %{_sysconfdir}/yum/vars/*
+%config(noreplace) %{_sysconfdir}/dnf/vars/*
 %{_sysconfdir}/rpm/macros.dist
 %{_docdir}/redhat-release
 %{_docdir}/centos-release
@@ -578,7 +581,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Thu Jul  9 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.2
+* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.3
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
@@ -590,6 +593,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Provide %almalinux macros in macros.dist
 - Stop providing almalinux-kitten-release
 - Stop obsoleting XS8 hotfixes
+- HACK move /etc/yum to /etc/dnf
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
