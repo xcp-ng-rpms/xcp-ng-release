@@ -94,8 +94,6 @@ Requires:       grep sed coreutils patch systemd
 Requires(post): systemd
 # XCP-ng: no support for live patching yet
 #Requires:       kernel-livepatch xen-livepatch
-Obsoletes:      kernel-livepatch < 1.0.3-1.1
-Obsoletes:      xen-livepatch < 2.0-1.1
 
 # XCP-ng: don't require xenserver-config-packages
 ### This gets xenserver-config-packages included only in a real install, because
