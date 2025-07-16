@@ -32,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8.ydi.3
+Release:        0.8.ydi.4
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -91,7 +91,7 @@ Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
 # XCP-ng: requires rsyslog to be installed, in %%post,
 # (would have to be fixed in xenserver-config too)
-Requires(post): rsyslog systemd
+Requires(post): systemd
 # XCP-ng: no support for live patching yet
 #Requires:       kernel-livepatch xen-livepatch
 Obsoletes:      kernel-livepatch < 1.0.3-1.1
@@ -581,7 +581,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.3
+* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.4
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
@@ -594,6 +594,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Stop providing almalinux-kitten-release
 - Stop obsoleting XS8 hotfixes
 - HACK move /etc/yum to /etc/dnf
+- Stop pulling rsyslog, we want journald
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
