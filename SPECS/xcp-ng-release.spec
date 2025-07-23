@@ -593,6 +593,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Stop obsoleting XS8 hotfixes
 - HACK move /etc/yum to /etc/dnf
 - Stop pulling rsyslog, we want journald
+- Drop Obsoletes statements
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
