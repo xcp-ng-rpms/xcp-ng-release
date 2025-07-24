@@ -129,8 +129,9 @@ rm -rf %{buildroot}
 %{_usrsrc}/branding/brand-directory.py /usr/src/branding/branding src/xenserver %{buildroot}
 
 # make sure almalinux and xenserver packages all use the same EFI dir
-install -d -m 755 %{buildroot}/boot/efi/EFI
-ln -s almalinux %{buildroot}/boot/efi/EFI/xenserver
+install -d -m 755 %{buildroot}/boot/efi/EFI/xcp-ng
+ln -s xcp-ng %{buildroot}/boot/efi/EFI/almalinux
+ln -s xcp-ng %{buildroot}/boot/efi/EFI/xenserver
 
 %if %{with build_py2}
 install -d -m 755 %{buildroot}%{python2_sitelib}/xcp
@@ -527,7 +528,9 @@ if [ -x /sbin/depmod ]; then /sbin/depmod -a; fi
 systemctl preset-all --preset-mode=enable-only || :
 
 %files
+/boot/efi/EFI/almalinux
 /boot/efi/EFI/xenserver
+/boot/efi/EFI/xcp-ng
 %doc xcp-ng.repo LICENSES
 %defattr(0644,root,root,0755)
 %{_sysconfdir}/redhat-release
@@ -599,7 +602,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - HACK move /etc/yum to /etc/dnf
 - Stop pulling rsyslog, we want journald
 - Drop Obsoletes statements
-- Install symlinks to alma EFI binaries, for xs tools to find them
+- Use a single EFI/xcp-ng directory
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
