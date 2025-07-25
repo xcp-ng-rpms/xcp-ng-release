@@ -32,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8.ydi.6
+Release:        0.8.ydi.7
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -148,11 +148,23 @@ echo >> %{buildroot}%{_sysconfdir}/issue
 touch -r %{buildroot}%{_sysconfdir}/issue.net %{buildroot}%{_sysconfdir}/issue
 
 # # copy yum repos
-# install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
 # install -m 644 CentOS-Base.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
 # install -m 644 CentOS-Sources.repo %{buildroot}%{_sysconfdir}/yum.repos.d
-# # XCP-ng: add xcp-ng repos
+
+# XCP-ng: add xcp-ng repos
+install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
 # install -m 644 xcp-ng.repo %{buildroot}%{_sysconfdir}/yum.repos.d
+cat > %{buildroot}%{_sysconfdir}/yum.repos.d/xcp-ng.repo <<'EOF'
+[xcpng]
+name=xcpng
+baseurl=http://repos/repos/ydi/v9alma10v2/
+priority=1
+failovermethod=priority
+skip_if_unavailable=False
+# nothing signed yet
+#gpgkey=https://xcp-ng.org/RPM-GPG-KEY-xcpng
+gpgcheck=0
+EOF
 
 # set up the dist tag macros
 install -d -m 755 %{buildroot}%{_sysconfdir}/rpm
@@ -532,7 +544,7 @@ systemctl preset-all --preset-mode=enable-only || :
 %config(noreplace) %{_sysconfdir}/issue
 %config(noreplace) %{_sysconfdir}/issue.net
 %{_sysconfdir}/pki/rpm-gpg/
-# %config(noreplace) %{_sysconfdir}/yum.repos.d/*
+%config(noreplace) %{_sysconfdir}/yum.repos.d/*
 %config(noreplace) %{_sysconfdir}/dnf/vars/*
 %{_sysconfdir}/rpm/macros.dist
 %{_docdir}/redhat-release
@@ -579,12 +591,11 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.6
+* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.7
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
 - provides/obsolete 9.x rpms
-- Do not install yum depo definitions
 - Depend on epel-release instead of obsoleting it
 - Drop pull of xcp-python-libs-compat
 - Drop xapi and xenopsd snippets now provided by XAPI
