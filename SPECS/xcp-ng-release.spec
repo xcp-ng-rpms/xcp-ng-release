@@ -32,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8.ydi.8
+Release:        0.8.ydi.9
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -198,6 +198,8 @@ ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty2.service
 
 # HACK move from yum to dnf
 mv %{buildroot}%{_sysconfdir}/yum %{buildroot}%{_sysconfdir}/dnf
+
+rm %{buildroot}%{_sysconfdir}/systemd/system/rsyslog.service
 
 %posttrans
 # XCP-ng 8.1: running this in posttrans instead of post because xcp-ng-release may be installed after
@@ -591,7 +593,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.8
+* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.9
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
