@@ -32,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8.ydi.7
+Release:        0.8.ydi.8
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -484,13 +484,13 @@ grep -q '^hosts:.*myhostname' %{_sysconfdir}/nsswitch.conf || sed -i 's/^hosts:.
 # This needs to be kept until the next upgrade-only release after 8.0.
 grep -q '^NTPSERVERARGS=' %{_sysconfdir}/sysconfig/network || echo 'NTPSERVERARGS="iburst prefer"' >> %{_sysconfdir}/sysconfig/network
 
-# This package provides an updated rsyslog.service file.
-# Reenable it to ensure that the systemd symlink points to the correct file.
-# (XCP-ng: ... But do it only when needed...)
-if [ $(realpath /etc/systemd/system/multi-user.target.wants/rsyslog.service) != /etc/systemd/system/rsyslog.service ];
-then
-    systemctl reenable rsyslog.service
-fi
+# # This package provides an updated rsyslog.service file.
+# # Reenable it to ensure that the systemd symlink points to the correct file.
+# # (XCP-ng: ... But do it only when needed...)
+# if [ $(realpath /etc/systemd/system/multi-user.target.wants/rsyslog.service) != /etc/systemd/system/rsyslog.service ];
+# then
+#     systemctl reenable rsyslog.service
+# fi
 
 %posttrans config
 # We are shipping a file in depmod.d/, ensure it is used.
@@ -591,7 +591,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.7
+* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.8
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
@@ -603,7 +603,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Stop providing almalinux-kitten-release
 - Stop obsoleting XS8 hotfixes
 - HACK move /etc/yum to /etc/dnf
-- Stop pulling rsyslog, we want journald
+- Stop pulling rsyslog (and installing its service file), we want journald
 - Drop Obsoletes statements
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
