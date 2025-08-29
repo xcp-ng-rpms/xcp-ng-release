@@ -1,6 +1,6 @@
-%global package_speccommit 2d7783e4a1a74e73fd45043c489859582ab19d89
+%global package_speccommit a028f89b6481f4a9f23e0a5a4f6763b4164d3b37
 %global usver 8.4.0
-%global xsver 15
+%global xsver 17
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
@@ -19,16 +19,12 @@
 %define upstream_rel 7.5
 %define centos_rel 5.1804
 
-%define private_config_path /opt/xensource/config/
-
 %define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
 
 %if 0%{?xenserver} < 9
 %bcond_without build_py2
-%bcond_without update_config
 %else
 %bcond_with build_py2
-%bcond_with update_config
 %endif
 
 #define beta Beta
@@ -91,8 +87,6 @@ Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_T
 BuildRequires:  systemd branding-xenserver python3-devel
 Source0: xenserver-release-v8.4.0-15.tar.gz
 Source1: RPM-GPG-KEY-XenServer
-Source2: sshd_config
-Source3: ssh_config
 
 %description
 XenServer release files
@@ -115,6 +109,10 @@ Requires:       kernel-livepatch xen-livepatch
 ## xenserver-release-config is only included in real installs
 Requires:	xenserver-config-packages
 Requires:	python3-xcp-libs
+# CA-401322: /sbin/update-issue calls openssl command which must link to
+# compatible (or same version) openssl-libs. Here specify the require to
+# ensure openssl-libs, openssl and %%name-config rpms to be updated in order.
+Requires:       openssl >= 3.0.9
 Requires(post): systemd xs-presets >= 1.4
 Requires(preun): systemd xs-presets >= 1.4
 Requires(postun): systemd xs-presets >= 1.4
@@ -180,12 +178,6 @@ ln -s centos-release %{buildroot}/%{_datadir}/redhat-release
 install -d -m 755 %{buildroot}/%{_docdir}/centos-release
 ln -s centos-release %{buildroot}/%{_docdir}/redhat-release
 
-%if %{with update_config}
-# install dom0 configurations
-install -D -m 600 %{SOURCE2} %{buildroot}/%{private_config_path}/sshd_config
-install -D -m 644 %{SOURCE3} %{buildroot}/%{private_config_path}/ssh_config
-%endif
-
 # Prevent spawning gettys on tty1 and tty2
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/system
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/getty@tty1.service
@@ -230,18 +222,6 @@ rm -rf %{buildroot}
 
  #### RULES ####
 EOF
-
-%if %{with update_config}
-%triggerin config -- openssh-server
-# Replace openssh-server config as openssh package mark it as noreplace as follows
-# attr(0600,root,root) config(noreplace) {_sysconfdir}/ssh/sshd_config
-install -D -m 600 %{private_config_path}/sshd_config /etc/ssh/
-
-%triggerin config -- openssh-clients
-# Replace openssh-clients config as openssh package mark it as noreplace as follows
-# attr(0644,root,root) config(noreplace) {_sysconfdir}/ssh/ssh_config
-install -D -m 644 %{private_config_path}/ssh_config /etc/ssh/
-%endif
 
 %triggerin config -- setup
 # Replace /etc/motd with our branded version
@@ -499,9 +479,6 @@ systemctl preset-all --preset-mode=enable-only || :
 %{_sysconfdir}/xapi.conf.d/*.conf
 %{_unitdir}/*
 /opt/xensource/www/*
-%if %{with update_config}
-%{private_config_path}/*
-%endif
 %attr(0755,-,-) /sbin/update-issue
 %attr(0755,-,-) /opt/xensource/libexec/xen-cmdline
 %attr(0755,-,-) /opt/xensource/libexec/bfs-interfaces
@@ -518,6 +495,14 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Thu Mar 13 2025 Deli Zhang <deli.zhang@cloud.com> - 8.4.0-17
+- CP-50340: Revert "Obsolete unused packages for OpenSSL 3 upgrade"
+
+* Fri Feb 07 2025 Deli Zhang <deli.zhang@cloud.com> - 8.4.0-16
+- CA-401322: Ensure openssl-libs, openssl and xenserver-release-config rpms to be updated in order
+- CP-50340: Obsolete unused packages for OpenSSL 3 upgrade
+- CP-50298: Move ssh config files to openssh.spec
+
 * Thu Jan 23 2025 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.4.0-15
 - CP-53338: Rebuild to pick up branding changes to 8.4
 
