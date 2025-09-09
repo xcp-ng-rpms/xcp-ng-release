@@ -14,8 +14,8 @@
 
 %define debug_package %{nil}
 %define base_release_version 10
-%define upstream_rel_long 10.0-30.el10
-%define upstream_rel 10.0-30.el10
+%define upstream_rel_long 10.0-31.el10
+%define upstream_rel 10.0-31.el10
 
 %define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
 
@@ -32,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8.ydi.9
+Release:        0.8.ydi.10
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -593,7 +593,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.9
+* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.10
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
