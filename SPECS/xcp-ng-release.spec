@@ -14,8 +14,8 @@
 
 %define debug_package %{nil}
 %define base_release_version 10
-%define upstream_rel_long 10.0-31.el10
-%define upstream_rel 10.0-31.el10
+%define upstream_rel_long 10.0-32.el10
+%define upstream_rel 10.0-32.el10
 
 %define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
 
@@ -32,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8.ydi.10
+Release:        0.8.ydi.11
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -67,6 +67,8 @@ URL:            https://github.com/xcp-ng/xcp-ng-release
 # Before the tag of the final release, archives are exported this way from the source repository:
 # export VER=8.99.0; git archive --format tgz master . --prefix xcp-ng-release-$VER/ -o /path/to/SOURCES/xcp-ng-release-$VER.tar.gz
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-8.3.0.tar.gz
+
+Source700:      macros.x86_64_v2
 
 # XCP-ng Patches generated during maintenance period with `git format-patch v8.3.0`
 Patch1001: 0001-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
@@ -180,6 +182,12 @@ cat >> %{buildroot}%{_sysconfdir}/rpm/macros.dist << EOF
 %%el%{base_release_version} 1
 %%xenserver %{xenserver_major}
 EOF
+
+# These variables should be set in the build environment to change rpm names
+mkdir -p %{buildroot}%{_sysconfdir}/rpm
+%ifarch x86_64_v2
+install -p -m 0644 %{SOURCE700}  %{buildroot}%{_sysconfdir}/rpm/
+%endif
 
 # use unbranded datadir
 install -d -m 755 %{buildroot}/%{_datadir}/centos-release
@@ -558,6 +566,9 @@ systemctl preset-all --preset-mode=enable-only || :
 %{python3_sitelib}/xcp/branding.py
 %{python3_sitelib}/xcp/__pycache__
 %{_sysconfdir}/depmod.d/00-xcpng-override.conf
+%ifarch x86_64_v2
+%config(noreplace) %{_sysconfdir}/rpm/macros.x86_64_v2
+%endif
 
 %files presets
 %{_prefix}/lib/systemd/system-preset/89-default.preset
@@ -593,7 +604,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.10
+* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.11
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
@@ -607,6 +618,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - HACK move /etc/yum to /etc/dnf
 - Stop pulling rsyslog (and installing its service file), we want journald
 - Drop Obsoletes statements
+- (WIP) pick macros.x86_64_v2 from almalinux-release-10.0-32.el10
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
