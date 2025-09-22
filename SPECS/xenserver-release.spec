@@ -1,12 +1,12 @@
-%global package_speccommit a028f89b6481f4a9f23e0a5a4f6763b4164d3b37
+%global package_speccommit 71313baf67461a8e92876606f0c0ff61c873ef89
 %global usver 8.4.0
-%global xsver 17
+%global xsver 18
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.4.0-15
+%global package_srccommit v8.4.0-17
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -85,7 +85,7 @@ Provides:       product-version-text = %replace_spaces %{PRODUCT_VERSION_TEXT}
 Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_TEXT_SHORT}
 
 BuildRequires:  systemd branding-xenserver python3-devel
-Source0: xenserver-release-v8.4.0-15.tar.gz
+Source0: xenserver-release-v8.4.0-17.tar.gz
 Source1: RPM-GPG-KEY-XenServer
 
 %description
@@ -113,6 +113,8 @@ Requires:	python3-xcp-libs
 # compatible (or same version) openssl-libs. Here specify the require to
 # ensure openssl-libs, openssl and %%name-config rpms to be updated in order.
 Requires:       openssl >= 3.0.9
+Requires(pre): sed
+Requires(pre): coreutils
 Requires(post): systemd xs-presets >= 1.4
 Requires(preun): systemd xs-presets >= 1.4
 Requires(postun): systemd xs-presets >= 1.4
@@ -222,6 +224,10 @@ rm -rf %{buildroot}
 
  #### RULES ####
 EOF
+
+# Remove default rules from rsyslog.conf
+# This is defined as everything after the "$IncludeConfig" line
+sed -i '/$IncludeConfig/q' /etc/rsyslog.conf || true
 
 %triggerin config -- setup
 # Replace /etc/motd with our branded version
@@ -390,6 +396,12 @@ if [ -d /var/update/applied ]; then
     done
 fi
 
+%pre config
+# On first upgrade extract any log forwarding rules into remote.conf
+if [ "$1" -eq "2" ] && [ -f %{_sysconfdir}/rsyslog.d/xenserver.conf ] && ! [ -f %{_sysconfdir}/rsyslog.d/remote.conf ] ; then
+   sed -n '/\*\.\*.*@/p' %{_sysconfdir}/rsyslog.d/xenserver.conf > %{_sysconfdir}/rsyslog.d/remote.conf
+fi
+
 %post config
 %systemd_post move-kernel-messages.service
 %systemd_post update-issue.service
@@ -495,6 +507,9 @@ systemctl preset-all --preset-mode=enable-only || :
 /root/.wgetrc
 
 %changelog
+* Thu Mar 13 2025 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.4.0-18
+- CA-407370: Separate rsyslog configs for xenserver and customer
+
 * Thu Mar 13 2025 Deli Zhang <deli.zhang@cloud.com> - 8.4.0-17
 - CP-50340: Revert "Obsolete unused packages for OpenSSL 3 upgrade"
 
