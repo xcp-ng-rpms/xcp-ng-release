@@ -32,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8.ydi.11
+Release:        0.8.ydi.12
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -101,7 +101,8 @@ Requires(post): systemd
 ### This gets xenserver-config-packages included only in a real install, because
 ### xenserver-release-config is only included in real installs
 #Requires:	xenserver-config-packages
-Requires:	python3-xcp-libs
+# XCP-ng v9: this causes a loop at runtime level
+#Requires:	python3-xcp-libs
 Requires(post): systemd xs-presets >= 1.4
 Requires(preun): systemd xs-presets >= 1.4
 Requires(postun): systemd xs-presets >= 1.4
@@ -604,7 +605,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.11
+* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.12
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
@@ -619,6 +620,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Stop pulling rsyslog (and installing its service file), we want journald
 - Drop Obsoletes statements
 - (WIP) pick macros.x86_64_v2 from almalinux-release-10.0-32.el10
+- temporarily remove runtime Requires: python3-xcp-libs
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
