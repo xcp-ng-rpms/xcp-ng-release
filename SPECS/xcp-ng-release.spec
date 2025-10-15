@@ -11,13 +11,13 @@
 # XCP-ng: the globals below are not used. We only keep them as a reference
 # from the last xenserver-release we (loosely) synced with
 %global usver 8.4.0
-%global xsver 15
+%global xsver 18
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 # This package is special since the package version needs to
 # match the product version. When making a change to the source
 # repo, only the release should be changed, not the version.
 
-%global package_srccommit v8.4.0-15
+%global package_srccommit v8.4.0-17
 %define debug_package %{nil}
 %define product_family CentOS Linux
 %define variant_titlecase Server
@@ -38,6 +38,11 @@
 %bcond_with build_py2
 %endif
 
+# XCP-ng: until we are ready to build with OpenSSL 3, we conditionnally disable spec file
+# changes directly related to it.
+# NOTE: once we support it, remove the condition altogether.
+%bcond_with use_openssl3
+
 #define beta Beta
 %define dist .xcpng%{PRODUCT_VERSION_TEXT_SHORT}
 
@@ -45,7 +50,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        32
+Release:        33
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -110,6 +115,8 @@ Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp
 Patch1001: 0001-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
 Patch1002: 0002-Sync-vm.slice-with-xenserver-release-v8.4.0-12.tar.g.patch
 Patch1003: 0003-Sync-systemd-presets-with-xenserver-release-v8.4.0-1.patch
+Patch1004: 0004-Sync-with-xenserver-release-v8.4.0-17.tar.gz.patch
+Patch1005: 0005-Adapt-etc-rsyslog.d-xenserver.conf-header-for-XCP-ng.patch
 
 %description
 XCP-ng release files
@@ -140,6 +147,15 @@ Obsoletes:      xen-livepatch < 2.0-1.1
 ### xenserver-release-config is only included in real installs
 #Requires:	xenserver-config-packages
 Requires:	python3-xcp-libs
+
+%if %{with use_openssl3}
+# CA-401322: /sbin/update-issue calls openssl command which must link to
+# compatible (or same version) openssl-libs. Here specify the require to
+# ensure openssl-libs, openssl and %%name-config rpms to be updated in order.
+Requires:       openssl >= 3.0.9
+Requires(pre): sed
+Requires(pre): coreutils
+%endif
 Requires(post): systemd xs-presets >= 1.4
 Requires(preun): systemd xs-presets >= 1.4
 Requires(postun): systemd xs-presets >= 1.4
@@ -258,6 +274,10 @@ rm -rf %{buildroot}
 
  #### RULES ####
 EOF
+
+# Remove default rules from rsyslog.conf
+# This is defined as everything after the "$IncludeConfig" line
+sed -i '/$IncludeConfig/q' /etc/rsyslog.conf || true
 
 %triggerin config -- setup
 # Replace /etc/motd with our branded version
@@ -473,6 +493,12 @@ if [ -d /var/update/applied ]; then
     done
 fi
 
+%pre config
+# On first upgrade extract any log forwarding rules into remote.conf
+if [ "$1" -eq "2" ] && [ -f %{_sysconfdir}/rsyslog.d/xenserver.conf ] && ! [ -f %{_sysconfdir}/rsyslog.d/remote.conf ] ; then
+   sed -n '/\*\.\*.*@/p' %{_sysconfdir}/rsyslog.d/xenserver.conf > %{_sysconfdir}/rsyslog.d/remote.conf
+fi
+
 %post config
 %systemd_post move-kernel-messages.service
 %systemd_post update-issue.service
@@ -615,6 +641,20 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Mon Sep 22 2025 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-33
+- Sync with xenserver-release-8.4.0-18
+- Add 0004-Sync-with-xenserver-release-v8.4.0-17.tar.gz.patch
+- Add 0005-etc-rsyslog.d-xenserver.conf-mention-XCP-ng-in-addit.patch
+- *** Upstream changelog ***
+  * Thu Mar 13 2025 Gerald Elder-Vass <gerald.elder-vass@cloud.com> - 8.4.0-18
+  - CA-407370: Separate rsyslog configs for xenserver and customer
+  * Thu Mar 13 2025 Deli Zhang <deli.zhang@cloud.com> - 8.4.0-17
+  - CP-50340: Revert "Obsolete unused packages for OpenSSL 3 upgrade"
+  * Fri Feb 07 2025 Deli Zhang <deli.zhang@cloud.com> - 8.4.0-16
+  - CA-401322: Ensure openssl-libs, openssl and xenserver-release-config rpms to be updated in order
+  - CP-50340: Obsolete unused packages for OpenSSL 3 upgrade
+  - CP-50298: Move ssh config files to openssh.spec
+
 * Thu May 08 2025 Andrii Sultanov <andriy.sultanov@vates.tech> - 8.3.0-32
 - Fix patches that weren't properly generated and included in the specfile:
   - 0002-Sync-vm.slice-with-xenserver-release-v8.4.0-12.tar.g.patch
