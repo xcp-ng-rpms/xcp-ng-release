@@ -116,7 +116,7 @@ Patch1001: 0001-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
 Patch1002: 0002-Sync-vm.slice-with-xenserver-release-v8.4.0-12.tar.g.patch
 Patch1003: 0003-Sync-systemd-presets-with-xenserver-release-v8.4.0-1.patch
 Patch1004: 0004-Sync-with-xenserver-release-v8.4.0-17.tar.gz.patch
-Patch1005: 0005-etc-rsyslog.d-xenserver.conf-mention-XCP-ng-in-addit.patch
+Patch1005: 0005-Adapt-etc-rsyslog.d-xenserver.conf-header-for-XCP-ng.patch
 
 %description
 XCP-ng release files
