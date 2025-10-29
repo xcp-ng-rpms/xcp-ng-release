@@ -179,6 +179,9 @@ ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty2.service
 # move from yum to dnf
 mv %{buildroot}%{_sysconfdir}/yum %{buildroot}%{_sysconfdir}/dnf
 
+# HACK avoid overriding system setting with a broken one
+sed -i '/^kernel.core_pattern=/ s/^/#/' %{buildroot}%{_sysconfdir}/sysctl.d/90-dom0.conf
+
 # Don't install rsyslog config
 rm -r %{buildroot}%{_sysconfdir}/rsyslog.d/
 
@@ -585,6 +588,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Drop rsyslog support, we use journald
 - Drop Obsoletes statements
 - Remove runtime Requires: python3-xcp-libs
+- Hack away broken sysctl setting for coredumps
 
 * Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
 - Realign upstream to prompt patch from RPM
