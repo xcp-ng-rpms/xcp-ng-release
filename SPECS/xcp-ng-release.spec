@@ -32,7 +32,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8.ydi.14
+Release:        0.8.ydi.15
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -209,6 +209,9 @@ ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty2.service
 mv %{buildroot}%{_sysconfdir}/yum %{buildroot}%{_sysconfdir}/dnf
 
 rm %{buildroot}%{_sysconfdir}/systemd/system/rsyslog.service
+
+# HACK avoid overriding system setting with a broken one
+sed -i '/^kernel.core_pattern=/ s/^/#/' %{buildroot}%{_sysconfdir}/sysctl.d/90-dom0.conf
 
 %posttrans
 # XCP-ng 8.1: running this in posttrans instead of post because xcp-ng-release may be installed after
@@ -605,7 +608,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.14
+* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.15
 - Bumbed versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
@@ -621,6 +624,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Drop Obsoletes statements
 - (WIP) pick macros.x86_64_v2 from almalinux-release-10.0-32.el10
 - temporarily remove runtime Requires: python3-xcp-libs
+- HACK away broken sysctl setting for coredumps
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
