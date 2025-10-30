@@ -29,7 +29,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8.ydi.15
+Release:        0.8.ydi.16
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -176,7 +176,7 @@ cat >> %{buildroot}%{_sysconfdir}/rpm/macros.dist << EOF
 %%rhel %{base_release_version}
 %%almalinux_ver %{base_release_version}
 %%almalinux %{base_release_version}
-%%dist .xcpng%{PRODUCT_VERSION_TEXT_SHORT}
+%%dist %%{?autorev}.xcpng%{PRODUCT_VERSION_TEXT_SHORT}
 %%el%{base_release_version} 1
 %%xenserver %{xenserver_major}
 EOF
@@ -605,8 +605,8 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Jul 15 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.15
-- Bumbed versions to 8.99
+* Tue Dec 09 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.16
+- Bumped versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
 - provides/obsolete 9.x rpms
@@ -622,6 +622,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - (WIP) pick macros.x86_64_v2 from almalinux-release-10.0-32.el10
 - temporarily remove runtime Requires: python3-xcp-libs
 - HACK away broken sysctl setting for coredumps
+- Add support for %%autorev macro to bump revision on rebuild
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
