@@ -1,7 +1,7 @@
 From a0ad0bb5158e491a577c3fa0f0522fefc14e9f80 Mon Sep 17 00:00:00 2001
 From: XenServer <xenserver@cloud.com>
 Date: Fri, 20 Sep 2024 16:41:00 +0000
-Subject: [PATCH 2/3] Sync vm.slice with xenserver-release-v8.4.0-12.tar.gz
+Subject: [PATCH] Sync vm.slice with xenserver-release-v8.4.0-12.tar.gz
 
   * Fri Sep 20 2024 Mark Syms <mark.syms@cloud.com> - 8.4.0-12
   - CA-399511: Change systemd dependencies for vm.slice
@@ -27,5 +27,5 @@ index a5792eb..edf4cc2 100644
 -WantedBy=multi-user.target
 +RequiredBy=multi-user.target
 -- 
-2.49.0
+2.51.1
 
