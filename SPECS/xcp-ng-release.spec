@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        32
+Release:        33
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -615,6 +615,10 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Fri Nov 7 2025 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-33
+- chore(spec): Update procedure for git-format-patch --no-numbered
+- chore(patches): Regen patches without numbered subject
+
 * Thu May 08 2025 Andrii Sultanov <andriy.sultanov@vates.tech> - 8.3.0-32
 - Fix patches that weren't properly generated and included in the specfile:
   - 0002-Sync-vm.slice-with-xenserver-release-v8.4.0-12.tar.g.patch
