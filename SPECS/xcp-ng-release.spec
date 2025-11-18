@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        34
+Release:        35
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -110,6 +110,7 @@ Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp
 Patch1001: 0001-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
 Patch1002: 0002-Sync-vm.slice-with-xenserver-release-v8.4.0-12.tar.g.patch
 Patch1003: 0003-Sync-systemd-presets-with-xenserver-release-v8.4.0-1.patch
+Patch1004: 0004-s-s-c-e-p-xcp-ng-prompt.sh-Fix-prompt-on-testing-tpu.patch
 
 %description
 XCP-ng release files
@@ -615,7 +616,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Nov 18 2025 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-34
+* Wed Nov 19 2025 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-35
 - Fix prompt on testing tput output
 
 * Fri Nov 14 2025 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-33
