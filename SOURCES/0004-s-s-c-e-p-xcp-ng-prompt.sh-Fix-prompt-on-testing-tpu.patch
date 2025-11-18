@@ -1,0 +1,25 @@
+From 1762faf8c6876c89f961e53457d2040b56b105bf Mon Sep 17 00:00:00 2001
+From: Philippe Coval <philippe.coval@vates.tech>
+Date: Thu, 6 Nov 2025 10:08:27 +0100
+Subject: [PATCH] s/s/c/e/p/xcp-ng-prompt.sh: Fix prompt on testing tput output
+
+Harden the prompt test, in case tput is failing or output is null.
+
+Signed-off-by: Philippe Coval <philippe.coval@vates.tech>
+---
+ src/common/etc/profile.d/xcp-ng-prompt.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/common/etc/profile.d/xcp-ng-prompt.sh b/src/common/etc/profile.d/xcp-ng-prompt.sh
+index 98fcc4b..a7ed2af 100644
+--- a/src/common/etc/profile.d/xcp-ng-prompt.sh
++++ b/src/common/etc/profile.d/xcp-ng-prompt.sh
+@@ -3,7 +3,7 @@
+ ########################################
+ 
+ # BASH : Configure things differently if current terminal has >= 8 colors.
+-if [ "$PS1" ] && [ $(tput colors 2>/dev/null) -ge 8 ]; then
++if [ "$PS1" ] && [ "$(tput colors 2>/dev/null || printf 0)" -ge 8 ]; then
+     PS1='\[\e[0;38;5;160m\][\[\e[0;2m\]\A \[\e[0;1;38;5;105m\]\h \[\e[0m\]\W\[\e[0;38;5;160m\]]\[\e[0m\]\$ '
+ else
+     PS1='[\A \h \W]\$ '
