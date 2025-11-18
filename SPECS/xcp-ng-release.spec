@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        33
+Release:        34
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -615,6 +615,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Tue Nov 18 2025 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-34
+- Fix prompt on testing tput output
+
 * Fri Nov 14 2025 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-33
 - Remove noise from patches using git-format-patch options
 
