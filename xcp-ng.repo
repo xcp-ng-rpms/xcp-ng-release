@@ -1,0 +1,13 @@
+# FIXME: for now this refers to a single repository, and will need to
+# evolve to include the dev-to-prod pipeline
+
+[xcpng]
+name=XCP-ng Main Repository
+baseurl=http://repos/repos/ydi/v9alma10v2/
+enabled=1
+priority=1
+failovermethod=priority
+skip_if_unavailable=False
+# nothing signed yet
+#gpgkey=https://xcp-ng.org/RPM-GPG-KEY-xcpng
+gpgcheck=0
