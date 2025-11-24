@@ -116,8 +116,9 @@ Patch1001: 0001-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
 Patch1002: 0002-Sync-vm.slice-with-xenserver-release-v8.4.0-12.tar.g.patch
 Patch1003: 0003-Sync-systemd-presets-with-xenserver-release-v8.4.0-1.patch
 Patch1004: 0004-s-s-c-e-p-xcp-ng-prompt.sh-Fix-prompt-on-testing-tpu.patch
-Patch1004: 0004-Sync-with-xenserver-release-v8.4.0-17.tar.gz.patch
-Patch1005: 0005-Adapt-etc-rsyslog.d-xenserver.conf-header-for-XCP-ng.patch
+Patch1005: 0005-Sync-with-xenserver-release-v8.4.0-17.tar.gz.patch
+Patch1006: 0006-Adapt-etc-rsyslog.d-xenserver.conf-header-for-XCP-ng.patch
+Patch1007: 0007-s-c-e-s-xenserver.conf-Fix-comment-about-rsyslog-inc.patch
 
 %description
 XCP-ng release files
@@ -276,9 +277,30 @@ rm -rf %{buildroot}
  #### RULES ####
 EOF
 
+# Preserve any potential "custom" rules (previously ignored by xenserver.conf)
+src=%{_sysconfdir}/rsyslog.conf
+dst=%{_sysconfdir}/rsyslog.d/zz-00-custom.conf
+if [ -f "$dst" ] ; then
+  rm -f "$dst.template"
+elif [ ! -f "$dst.template" ] ; then
+  cat<<EOF > "$dst.template"
+# $dst
+# WARNING: 'zz-*.conf' files are not supported
+# Reminder: $src and other files should not be edited either
+# If necessary user can rename this template file to $dst, do cleanup and/or maintain its rules
+# Previously defined rules will be ignored
+# For the record here are previously (ignored) rules migrated from earlier version of $src
+#
+EOF
+  awk '/\$IncludeConfig/{found=1; next} found && NF' "$src" >> $dst
+fi
+
 # Remove default rules from rsyslog.conf
 # This is defined as everything after the "$IncludeConfig" line
-sed -i '/$IncludeConfig/q' /etc/rsyslog.conf || true
+sed -i '/$IncludeConfig/q' $src \
+&& echo "info: Discarding $src's rules defined after includes (see ${dst}*)" \
+|| true
+
 
 %triggerin config -- setup
 # Replace /etc/motd with our branded version
@@ -495,9 +517,13 @@ if [ -d /var/update/applied ]; then
 fi
 
 %pre config
-# On first upgrade extract any log forwarding rules into remote.conf
-if [ "$1" -eq "2" ] && [ -f %{_sysconfdir}/rsyslog.d/xenserver.conf ] && ! [ -f %{_sysconfdir}/rsyslog.d/remote.conf ] ; then
-   sed -n '/\*\.\*.*@/p' %{_sysconfdir}/rsyslog.d/xenserver.conf > %{_sysconfdir}/rsyslog.d/remote.conf
+if [ "$1" -eq "2" ]; then
+   # Preserve any log forwarding rules (@) to remote.conf if not present
+   dst=%{_sysconfdir}/rsyslog.d/remote.conf
+   if [ -f %{_sysconfdir}/rsyslog.d/xenserver.conf ] && ! [ -f $dst ] ; then
+      echo "# $dst used for forwarding logging (not supposed to be edited)" > $dst
+      sed -n '/\*\.\*.*@/p' %{_sysconfdir}/rsyslog.d/xenserver.conf >> $dst
+   fi
 fi
 
 %post config
@@ -642,7 +668,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Mon Sep 22 2025 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-36
+* Mon Nov 24 2025 Samuel Verschelde <stormi-xcp@ylix.fr> - 8.3.0-36
 - Sync with xenserver-release-8.4.0-18
 - Add 0004-Sync-with-xenserver-release-v8.4.0-17.tar.gz.patch
 - Add 0005-etc-rsyslog.d-xenserver.conf-mention-XCP-ng-in-addit.patch
