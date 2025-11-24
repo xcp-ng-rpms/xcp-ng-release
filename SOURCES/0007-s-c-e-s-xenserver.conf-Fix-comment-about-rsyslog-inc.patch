@@ -1,0 +1,66 @@
+From 758125320f5476c2d31ed856c8d8cc8fb90c53d6 Mon Sep 17 00:00:00 2001
+From: Philippe Coval <philippe.coval@vates.tech>
+Date: Mon, 24 Nov 2025 10:58:41 +0100
+Subject: [PATCH] s/c/e/s/xenserver.conf: Fix comment about rsyslog included
+ configs
+
+For the record this has been verified by enabling debug mode
+
+    # /etc/sysconfig/rsyslog: Enable logs with
+    SYSLOGD_OPTIONS="-d"
+    RSYSLOG_DEBUG="Debug"
+    RSYSLOG_DEBUGLOG="/tmp/rsyslog.log"
+
+    # Create dummy files
+    touch /etc/rsyslog.d/aa-before-listen.conf
+    touch /etc/rsyslog.d/uu-before-xenserver.conf
+    touch /etc/rsyslog.d/zz-after-xenserver.conf
+
+    # Reparse
+    sudo systemctl restart rsyslog && grep '\.conf' /tmp/rsyslog.log
+
+    : config parser: pushed file /etc/rsyslog.conf on top of stack
+    : requested to include config file '/etc/rsyslog.d/zz-after-xenserver.conf'
+    : config parser: pushed file /etc/rsyslog.d/zz-after-xenserver.conf on top of stack
+    : requested to include config file '/etc/rsyslog.d/xenserver.conf'
+    : config parser: pushed file /etc/rsyslog.d/xenserver.conf on top of stack
+    : requested to include config file '/etc/rsyslog.d/uu-before-xenserver.conf'
+    : config parser: pushed file /etc/rsyslog.d/uu-before-xenserver.conf on top of stack
+    : requested to include config file '/etc/rsyslog.d/listen.conf'
+    : config parser: pushed file /etc/rsyslog.d/listen.conf on top of stack
+    : requested to include config file '/etc/rsyslog.d/aa-before-listen.conf'
+    : config parser: pushed file /etc/rsyslog.d/aa-before-listen.conf on top of stack
+    : config parser: reached end of file /etc/rsyslog.d/aa-before-listen.conf
+    : config parser: resume parsing of file /etc/rsyslog.d/listen.conf at line 1
+    : config parser: reached end of file /etc/rsyslog.d/listen.conf
+    : config parser: resume parsing of file /etc/rsyslog.d/uu-before-xenserver.conf at line 1
+    : config parser: reached end of file /etc/rsyslog.d/uu-before-xenserver.conf
+    : config parser: resume parsing of file /etc/rsyslog.d/xenserver.conf at line 1
+    : config parser: reached end of file /etc/rsyslog.d/xenserver.conf
+    : config parser: resume parsing of file /etc/rsyslog.d/zz-after-xenserver.conf at line 1
+    : config parser: reached end of file /etc/rsyslog.d/zz-after-xenserver.conf
+    : config parser: resume parsing of file /etc/rsyslog.conf at line 36
+    : config parser: reached end of file /etc/rsyslog.conf
+
+Relate-to: https://github.com/xcp-ng-rpms/xcp-ng-release/pull/33#discussion_r2526777635
+Signed-off-by: Philippe Coval <philippe.coval@vates.tech>
+---
+ src/common/etc/rsyslog.d/xenserver.conf | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/common/etc/rsyslog.d/xenserver.conf b/src/common/etc/rsyslog.d/xenserver.conf
+index ff08c48..f95aa67 100644
+--- a/src/common/etc/rsyslog.d/xenserver.conf
++++ b/src/common/etc/rsyslog.d/xenserver.conf
+@@ -7,8 +7,9 @@
+ # Any other rsyslog configuration change must be avoided.
+ # However, if there are no other options, they must be evaluated with technical support
+ # representatives, and written to a file named /etc/rsyslog.d/custom.conf.
+-# Note that there are no guarantees regarding the order in which rules from different
+-# files are applied.
++# Note that naming of "sub config" files matters,
++# because they will be processed by alphabetical order, as explained at:
++# https://www.rsyslog.com/doc/configuration/global/options/rsconf1_includeconfig.html
+ 
+ # Suppress duplicate messages and report "Last line repeated n times"
+ $RepeatedMsgReduction on
