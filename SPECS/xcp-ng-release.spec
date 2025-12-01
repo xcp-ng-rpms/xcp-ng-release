@@ -292,13 +292,13 @@ elif [ ! -f "$dst.template" ] ; then
 # For the record here are previously (ignored) rules migrated from earlier version of $src
 #
 EOF
-  awk '/\$IncludeConfig/{found=1; next} found && NF' "$src" >> $dst
+  awk '/\$IncludeConfig/{found=1; next} found && NF' $src >> $dst.template
 fi
 
 # Remove default rules from rsyslog.conf
 # This is defined as everything after the "$IncludeConfig" line
 sed -i '/$IncludeConfig/q' $src \
-&& echo "info: Discarding $src's rules defined after includes (see ${dst}*)" \
+&& echo "info: Discarding $src's rules defined after includes (check $dst*)" \
 || true
 
 
