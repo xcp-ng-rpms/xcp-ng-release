@@ -29,7 +29,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8.ydi.16
+Release:        0.8.ydi.17
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -150,21 +150,6 @@ touch -r %{buildroot}%{_sysconfdir}/issue.net %{buildroot}%{_sysconfdir}/issue
 # # copy yum repos
 # install -m 644 CentOS-Base.repo %{buildroot}%{_sysconfdir}/yum.repos.d/CentOS-Base.repo
 # install -m 644 CentOS-Sources.repo %{buildroot}%{_sysconfdir}/yum.repos.d
-
-# XCP-ng: add xcp-ng repos
-install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
-# install -m 644 xcp-ng.repo %{buildroot}%{_sysconfdir}/yum.repos.d
-cat > %{buildroot}%{_sysconfdir}/yum.repos.d/xcp-ng.repo <<'EOF'
-[xcpng]
-name=xcpng
-baseurl=http://repos/repos/ydi/v9alma10v2/
-priority=1
-failovermethod=priority
-skip_if_unavailable=False
-# nothing signed yet
-#gpgkey=https://xcp-ng.org/RPM-GPG-KEY-xcpng
-gpgcheck=0
-EOF
 
 # set up the dist tag macros
 install -d -m 755 %{buildroot}%{_sysconfdir}/rpm
@@ -546,7 +531,7 @@ if [ -x /sbin/depmod ]; then /sbin/depmod -a; fi
 systemctl preset-all --preset-mode=enable-only || :
 
 %files
-%doc xcp-ng.repo LICENSES
+%doc LICENSES
 %defattr(0644,root,root,0755)
 %{_sysconfdir}/redhat-release
 %{_sysconfdir}/system-release
@@ -555,7 +540,6 @@ systemctl preset-all --preset-mode=enable-only || :
 %config(noreplace) %{_sysconfdir}/issue
 %config(noreplace) %{_sysconfdir}/issue.net
 %{_sysconfdir}/pki/rpm-gpg/
-%config(noreplace) %{_sysconfdir}/yum.repos.d/*
 %config(noreplace) %{_sysconfdir}/dnf/vars/*
 %{_sysconfdir}/rpm/macros.dist
 %{_docdir}/redhat-release
@@ -605,7 +589,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Dec 09 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.16
+* Tue Dec 09 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.17
 - Bumped versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
@@ -623,6 +607,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - temporarily remove runtime Requires: python3-xcp-libs
 - HACK away broken sysctl setting for coredumps
 - Add support for %%autorev macro to bump revision on rebuild
+- Don't ship xcp-ng.repo, moved to xcp-ng-config
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
