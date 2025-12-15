@@ -286,9 +286,9 @@ elif [ ! -f "$dst.template" ] ; then
   cat<<EOF > "$dst.template"
 # $dst
 # WARNING: 'zz-*.conf' files are not supported
-# Reminder: $src and other files should not be edited either
-# If necessary user can rename this template file to $dst, do cleanup and/or maintain its rules
-# Previously defined rules will be ignored
+# Reminder: $src and other files from /etc/rsyslog.d should not be alerted either
+# If necessary user can rename this template file to $dst, then
+# do cleanup and/or maintain custom rules (not previously defined conf files).
 # For the record here are previously (ignored) rules migrated from earlier version of $src
 #
 EOF
