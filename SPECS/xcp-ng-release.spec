@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        36
+Release:        37
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -110,7 +110,9 @@ Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp
 Patch1001: 0001-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
 Patch1002: 0002-Sync-vm.slice-with-xenserver-release-v8.4.0-12.tar.g.patch
 Patch1003: 0003-Sync-systemd-presets-with-xenserver-release-v8.4.0-1.patch
-Patch1004: 0004-s-s-c-e-p-xcp-ng-prompt.sh-Fix-prompt-on-testing-tpu.patch
+Patch1004: 0004-fix-prompt-s-c-e-p-xcp-ng-prompt.sh-Fix-prompt-on-te.patch
+Patch1005: 0005-s-c-e-profile.d-history.sh-Add-timestamps-to-history.patch
+Patch1006: 0006-fix-prompt-s-c-e-p-xcp-ng-prompt.sh-Align-to-RPM-pat.patch
 
 %description
 XCP-ng release files
@@ -616,6 +618,10 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
+- Realign upstream to prompt patch from RPM
+- Add timestamps to history
+
 * Mon Jan 26 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-36
 - Preserve /etc/rsyslog.d/xenserver.conf if present
 
