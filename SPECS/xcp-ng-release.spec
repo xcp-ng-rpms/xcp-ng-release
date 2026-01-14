@@ -5,6 +5,7 @@
 %define PRODUCT_VERSION_TEXT_SHORT %{PRODUCT_VERSION_TEXT}
 %define PLATFORM_VERSION 3.4.0
 %define BUILD_NUMBER 8.99.0
+%define xcpng_major 9
 # XCP-ng: macro tested by some spec files inherited from XenServer
 %define xenserver_major 9
 
@@ -29,7 +30,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8.ydi.17
+Release:        0.8.ydi.18
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -164,6 +165,7 @@ cat >> %{buildroot}%{_sysconfdir}/rpm/macros.dist << EOF
 %%dist %%{?autorev}.xcpng%{PRODUCT_VERSION_TEXT_SHORT}
 %%el%{base_release_version} 1
 %%xenserver %{xenserver_major}
+%%xcpng %{xcpng_major}
 EOF
 
 # These variables should be set in the build environment to change rpm names
@@ -589,7 +591,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Dec 09 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.17
+* Tue Dec 09 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.18
 - Bumped versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
@@ -597,6 +599,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Depend on epel-release instead of obsoleting it
 - Drop pull of xcp-python-libs-compat
 - Drop xapi and xenopsd snippets now provided by XAPI
+- Provide %xcpng macro in macros.dist
 - Provide %almalinux macros in macros.dist
 - Stop providing almalinux-kitten-release
 - Stop obsoleting XS8 hotfixes
