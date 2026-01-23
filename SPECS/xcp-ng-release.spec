@@ -87,6 +87,9 @@ Obsoletes:      update-XS81E003 control-XS81E003
 Obsoletes:      update-XS81E004 control-XS81E004
 Obsoletes:      update-XS81E005 control-XS81E005
 
+#Obsolete: Obsolete unused packages for OpenSSL 3 upgrade
+Obsoletes: gnutls-dane <= 3.3.29-9.el7_6
+
 # Metadata for the installer to consume
 Provides:       product-brand = XCP-ng
 Provides:       product-version = %{PRODUCT_VERSION}
