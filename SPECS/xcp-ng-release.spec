@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        35
+Release:        36
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -591,7 +591,7 @@ systemctl preset-all --preset-mode=enable-only || :
 %config(noreplace) %{_sysconfdir}/motd.xs
 %config(noreplace) %{_sysconfdir}/profile.d/*.sh
 %config(noreplace) %{_sysconfdir}/sysctl.d/*.conf
-%{_sysconfdir}/rsyslog.d/xenserver.conf
+%config(noreplace) %{_sysconfdir}/rsyslog.d/xenserver.conf
 %{_sysconfdir}/logrotate.d/*
 %{_sysconfdir}/udev/rules.d/*.rules
 %{_sysconfdir}/systemd/system/*
@@ -616,6 +616,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Mon Jan 26 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-36
+- Preserve /etc/rsyslog.d/xenserver.conf if present
+
 * Wed Nov 19 2025 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-35
 - Fix prompt on testing tput output
 
