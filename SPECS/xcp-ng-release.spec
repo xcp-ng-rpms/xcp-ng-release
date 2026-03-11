@@ -30,12 +30,11 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8.ydi.18
+Release:        0.8.ydi.19
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
 Requires(post): coreutils, grep
-Requires:       %{name}-presets
 # XCP-ng: do not require system-config for now:
 # it pulls a useless empty xenserver-config everywhere
 #Requires:       system-config
@@ -591,7 +590,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Dec 09 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.18
+* Tue Dec 09 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.19
 - Bumped versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
@@ -611,6 +610,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - HACK away broken sysctl setting for coredumps
 - Add support for %%autorev macro to bump revision on rebuild
 - Don't ship xcp-ng.repo, moved to xcp-ng-config
+- Drop dependency of -release on -release-presets
 
 * Thu Jun 26 2025 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-32+
 - Remove now-useless python2 build-deps
