@@ -30,7 +30,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        0.8.ydi.19
+Release:        0.8.ydi.20
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -46,7 +46,6 @@ Provides:       system-release = %{upstream_rel_long}
 Provides:       system-release(releasever) = %{base_release_version}
 Obsoletes:      almalinux-release
 Obsoletes:      centos-release
-Requires:       epel-release
 
 # Metadata for the installer to consume
 Provides:       product-brand = XCP-ng
@@ -590,12 +589,12 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Dec 09 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.19
+* Tue Dec 09 2025 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-0.8.ydi.20
 - Bumped versions to 8.99
 - Set xenserver_major to 9
 - Commented out all triggers
 - provides/obsolete 9.x rpms
-- Depend on epel-release instead of obsoleting it
+- Stop obsoleting epel-release
 - Drop pull of xcp-python-libs-compat
 - Drop xapi and xenopsd snippets now provided by XAPI
 - Provide %xcpng macro in macros.dist
