@@ -20,9 +20,6 @@
 
 %define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
 
-#define beta Beta
-%define dist .xcpng%{PRODUCT_VERSION_TEXT_SHORT}
-
 %define _unitdir /usr/lib/systemd/system
 
 Name:           xcp-ng-release
@@ -149,7 +146,7 @@ cat >> %{buildroot}%{_sysconfdir}/rpm/macros.dist << EOF
 %%rhel %{base_release_version}
 %%almalinux_ver %{base_release_version}
 %%almalinux %{base_release_version}
-%%dist %dist
+%%dist .xcpng%{PRODUCT_VERSION_TEXT_SHORT}
 %%el%{base_release_version} 1
 %%xenserver %{xenserver_major}
 %%xcpng %{xcpng_major}
