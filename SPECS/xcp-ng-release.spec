@@ -134,6 +134,11 @@ Additional utilities and configuration for XCP-ng.
 
 %prep
 %autosetup -p1 -n %{name}-8.3.0
+# XCP-ng: files XS9 moves to xapi.spec
+rm src/common/etc/systemd/system/xapi.service.d/local.conf
+rm src/common/etc/systemd/system/xenopsd-xc.service.d/local.conf
+rmdir src/common/etc/systemd/system/xapi.service.d/
+rmdir src/common/etc/systemd/system/xenopsd-xc.service.d/
 
 # XCP-ng: copy LICENSES from branding package
 cp %{_usrsrc}/branding/LICENSES .
@@ -600,6 +605,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Remove now-useless python2 build-deps
 - Do not install 8.3 yum repo definitions (anyway moving to xcp-ng-config)
 - Drop support for XCP-ng/XS 8.x compatibility
+- Drop xapi and xenopsd snippets now provided by XAPI
 
 * Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
 - Realign upstream to prompt patch from RPM
