@@ -96,6 +96,8 @@ URL:            https://github.com/xcp-ng/xcp-ng-release
 # export VER=8.99.0; git archive --format tgz master . --prefix xcp-ng-release-$VER/ -o /path/to/SOURCES/xcp-ng-release-$VER.tar.gz
 Source0:        https://github.com/xcp-ng/xcp-ng-release/archive/v%{version}/xcp-ng-release-8.3.0.tar.gz
 
+Source700:      macros.x86_64_v2
+
 # XCP-ng Patches generated during maintenance period with `git format-patch --no-numbered --no-signature v8.3.0`
 Patch1001: 0001-fix-curl-resolve-TLS-issue-caused-by-restrictive-con.patch
 Patch1002: 0002-Sync-vm.slice-with-xenserver-release-v8.4.0-12.tar.g.patch
@@ -198,6 +200,12 @@ cat >> %{buildroot}%{_sysconfdir}/rpm/macros.dist << EOF
 %%xenserver %{xenserver_major}
 %%xcpng %{xcpng_major}
 EOF
+
+# These variables should be set in the build environment to change rpm names
+mkdir -p %{buildroot}%{_sysconfdir}/rpm
+%ifarch x86_64_v2
+install -p -m 0644 %{SOURCE700}  %{buildroot}%{_sysconfdir}/rpm/
+%endif
 
 # use unbranded datadir
 install -d -m 755 %{buildroot}/%{_datadir}/centos-release
@@ -574,6 +582,9 @@ systemctl preset-all --preset-mode=enable-only || :
 %{python3_sitelib}/xcp/branding.py
 %{python3_sitelib}/xcp/__pycache__
 %{_sysconfdir}/depmod.d/00-xcpng-override.conf
+%ifarch x86_64_v2
+%config(noreplace) %{_sysconfdir}/rpm/macros.x86_64_v2
+%endif
 
 %files presets
 %{_prefix}/lib/systemd/system-preset/89-default.preset
@@ -614,6 +625,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Set xenserver_major to 9
 - Provide %xcpng macro in macros.dist
 - provides/obsolete 9.x rpms
+- Pick macros.x86_64_v2 from almalinux-release-10.0-32.el10
 
 * Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
 - Realign upstream to prompt patch from RPM
