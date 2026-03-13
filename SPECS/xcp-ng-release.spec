@@ -146,7 +146,7 @@ cat >> %{buildroot}%{_sysconfdir}/rpm/macros.dist << EOF
 %%rhel %{base_release_version}
 %%almalinux_ver %{base_release_version}
 %%almalinux %{base_release_version}
-%%dist .xcpng%{PRODUCT_VERSION_TEXT_SHORT}
+%%dist %%{?autorev}.xcpng%{PRODUCT_VERSION_TEXT_SHORT}
 %%el%{base_release_version} 1
 %%xenserver %{xenserver_major}
 %%xcpng %{xcpng_major}
@@ -586,6 +586,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Drop Obsoletes statements
 - Remove runtime Requires: python3-xcp-libs
 - Hack away broken sysctl setting for coredumps
+- Add support for %%autorev macro to bump revision on rebuild
 
 * Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
 - Realign upstream to prompt patch from RPM
