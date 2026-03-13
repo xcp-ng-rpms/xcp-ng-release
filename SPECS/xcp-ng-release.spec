@@ -14,16 +14,9 @@
 # repo, only the release should be changed, not the version.
 
 %define debug_package %{nil}
-%define product_family CentOS Linux
-%define variant_titlecase Server
-%define variant_lowercase server
-%define release_name Core
-%define base_release_version 7
-%define full_release_version 7
-%define dist_release_version 7
-%define upstream_rel_long 7.5-8
-%define upstream_rel 7.5
-%define centos_rel 5.1804
+%define base_release_version 10
+%define upstream_rel_long 10.0-32.el10
+%define upstream_rel 10.0-32.el10
 
 %define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
 
@@ -52,11 +45,13 @@ Requires:       %{name}-presets
 %if 0%{?xenserver} < 9
 Requires:       xcp-python-libs-compat
 %endif
+Provides:       almalinux-release = %{upstream_rel_long}
+Provides:       almalinux-release(x86-64) = %{upstream_rel_long}
 Provides:       centos-release = %{base_release_version}
-Provides:       centos-release(upstream) = %{upstream_rel}
 Provides:       redhat-release = %{upstream_rel_long}
 Provides:       system-release = %{upstream_rel_long}
 Provides:       system-release(releasever) = %{base_release_version}
+Obsoletes:      almalinux-release
 Obsoletes:      centos-release
 Obsoletes:      epel-release
 
@@ -618,6 +613,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Bump versions to 8.99
 - Set xenserver_major to 9
 - Provide %xcpng macro in macros.dist
+- provides/obsolete 9.x rpms
 
 * Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
 - Realign upstream to prompt patch from RPM
