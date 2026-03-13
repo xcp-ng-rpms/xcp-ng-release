@@ -95,7 +95,8 @@ Requires:       grep sed coreutils patch systemd
 ### This gets xenserver-config-packages included only in a real install, because
 ### xenserver-release-config is only included in real installs
 #Requires:	xenserver-config-packages
-Requires:	python3-xcp-libs
+# XCP-ng v9: this causes a loop at runtime level
+#Requires:	python3-xcp-libs
 Requires(post): systemd xs-presets >= 1.4
 Requires(preun): systemd xs-presets >= 1.4
 Requires(postun): systemd xs-presets >= 1.4
@@ -583,6 +584,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Move /etc/yum to /etc/dnf
 - Drop rsyslog support, we use journald
 - Drop Obsoletes statements
+- Remove runtime Requires: python3-xcp-libs
 
 * Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
 - Realign upstream to prompt patch from RPM
