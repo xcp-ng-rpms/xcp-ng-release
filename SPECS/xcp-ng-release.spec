@@ -36,9 +36,6 @@ Requires:       %{name}-presets
 # XCP-ng: do not require system-config for now:
 # it pulls a useless empty xenserver-config everywhere
 #Requires:       system-config
-%if 0%{?xenserver} < 9
-Requires:       xcp-python-libs-compat
-%endif
 Provides:       almalinux-release = %{upstream_rel_long}
 Provides:       almalinux-release(x86-64) = %{upstream_rel_long}
 Provides:       centos-release = %{base_release_version}
@@ -602,6 +599,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Commented out all triggers
 - Remove now-useless python2 build-deps
 - Do not install 8.3 yum repo definitions (anyway moving to xcp-ng-config)
+- Drop support for XCP-ng/XS 8.x compatibility
 
 * Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
 - Realign upstream to prompt patch from RPM
