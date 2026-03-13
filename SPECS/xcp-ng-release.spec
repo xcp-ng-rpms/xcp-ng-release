@@ -88,9 +88,6 @@ XCP-ng presets file.
 Summary:        XCP-ng configuration
 Group:          System Environment/Base
 Requires:       grep sed coreutils patch systemd
-# XCP-ng: requires rsyslog to be installed, in %%post,
-# (would have to be fixed in xenserver-config too)
-Requires(post): rsyslog systemd
 # XCP-ng: no support for live patching yet
 #Requires:       kernel-livepatch xen-livepatch
 Obsoletes:      kernel-livepatch < 1.0.3-1.1
@@ -182,6 +179,9 @@ ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty2.service
 
 # move from yum to dnf
 mv %{buildroot}%{_sysconfdir}/yum %{buildroot}%{_sysconfdir}/dnf
+
+# Don't install rsyslog config
+rm -r %{buildroot}%{_sysconfdir}/rsyslog.d/
 
 %posttrans
 # XCP-ng 8.1: running this in posttrans instead of post because xcp-ng-release may be installed after
@@ -468,14 +468,6 @@ grep -q '^hosts:.*myhostname' %{_sysconfdir}/nsswitch.conf || sed -i 's/^hosts:.
 # This needs to be kept until the next upgrade-only release after 8.0.
 grep -q '^NTPSERVERARGS=' %{_sysconfdir}/sysconfig/network || echo 'NTPSERVERARGS="iburst prefer"' >> %{_sysconfdir}/sysconfig/network
 
-# This package provides an updated rsyslog.service file.
-# Reenable it to ensure that the systemd symlink points to the correct file.
-# (XCP-ng: ... But do it only when needed...)
-if [ $(realpath /etc/systemd/system/multi-user.target.wants/rsyslog.service) != /etc/systemd/system/rsyslog.service ];
-then
-    systemctl reenable rsyslog.service
-fi
-
 %posttrans config
 # We are shipping a file in depmod.d/, ensure it is used.
 # Note: if depmod is not present yet, no cache was created before we add
@@ -552,7 +544,6 @@ systemctl preset-all --preset-mode=enable-only || :
 %config(noreplace) %{_sysconfdir}/motd.xs
 %config(noreplace) %{_sysconfdir}/profile.d/*.sh
 %config(noreplace) %{_sysconfdir}/sysctl.d/*.conf
-%config(noreplace) %{_sysconfdir}/rsyslog.d/xenserver.conf
 %{_sysconfdir}/logrotate.d/*
 %{_sysconfdir}/udev/rules.d/*.rules
 %{_sysconfdir}/systemd/system/*
@@ -592,6 +583,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Drop xapi and xenopsd snippets now provided by XAPI
 - Stop obsoleting XS8 hotfixes
 - Move /etc/yum to /etc/dnf
+- Drop rsyslog support, we use journald
 
 * Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
 - Realign upstream to prompt patch from RPM
