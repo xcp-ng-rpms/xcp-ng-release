@@ -180,11 +180,14 @@ ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/getty@tty2.service
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty1.service
 ln -s /dev/null %{buildroot}%{_sysconfdir}/systemd/system/autovt@tty2.service
 
+# move from yum to dnf
+mv %{buildroot}%{_sysconfdir}/yum %{buildroot}%{_sysconfdir}/dnf
+
 %posttrans
 # XCP-ng 8.1: running this in posttrans instead of post because xcp-ng-release may be installed after
 # coreutils, since they both require each other: no guaranteed order
 # XCP-ng 8.2: CH 8.2 switched to posttrans too. I'm keeping my previous comment to document why.
-/usr/bin/uname -m | grep -q 'x86_64'  && echo 'centos' >/etc/yum/vars/contentdir || echo 'altarch' > /etc/yum/vars/contentdir
+/usr/bin/uname -m | grep -q 'x86_64'  && echo 'centos' >/etc/dnf/vars/contentdir || echo 'altarch' > /etc/dnf/vars/contentdir
 
 %clean
 rm -rf %{buildroot}
@@ -525,7 +528,7 @@ systemctl preset-all --preset-mode=enable-only || :
 %config(noreplace) %{_sysconfdir}/issue
 %config(noreplace) %{_sysconfdir}/issue.net
 %{_sysconfdir}/pki/rpm-gpg/
-%config(noreplace) %{_sysconfdir}/yum/vars/*
+%config(noreplace) %{_sysconfdir}/dnf/vars/*
 %{_sysconfdir}/rpm/macros.dist
 %{_docdir}/redhat-release
 %{_docdir}/centos-release
@@ -588,6 +591,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Drop support for XCP-ng/XS 8.x compatibility
 - Drop xapi and xenopsd snippets now provided by XAPI
 - Stop obsoleting XS8 hotfixes
+- Move /etc/yum to /etc/dnf
 
 * Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
 - Realign upstream to prompt patch from RPM
