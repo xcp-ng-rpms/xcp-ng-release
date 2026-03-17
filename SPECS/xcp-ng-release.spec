@@ -567,7 +567,7 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
-* Tue Mar 17 2026 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-1 - WIP
+* Tue Mar 17 2026 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-1
 - Bump versions to 8.99
 - Set xenserver_major to 9
 - Provide %xcpng macro in macros.dist
