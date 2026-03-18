@@ -28,7 +28,8 @@ Release:        1
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
-Requires(post): coreutils, grep
+# XCP-ng: fixed from post to posttrans
+Requires(posttrans): coreutils, grep
 # XCP-ng: do not require system-config for now:
 # it pulls a useless empty xenserver-config everywhere
 #Requires:       system-config
@@ -587,6 +588,7 @@ systemctl preset-all --preset-mode=enable-only || :
 - Hack away broken sysctl setting for coredumps
 - Add support for %%autorev macro to bump revision on rebuild
 - Drop dependency of -release on -release-presets
+- Drop dependency of -release on coreutils and grep
 
 * Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
 - Realign upstream to prompt patch from RPM
