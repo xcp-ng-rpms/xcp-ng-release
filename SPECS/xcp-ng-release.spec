@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        37
+Release:        38
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -147,6 +147,11 @@ Requires(post): systemd xs-presets >= 1.4
 Requires(preun): systemd xs-presets >= 1.4
 Requires(postun): systemd xs-presets >= 1.4
 Requires(post): sed
+
+# Workaround for (non defered) scriptlets
+# Related-to: https://bugzilla.redhat.com/show_bug.cgi?id=1402023#c1
+# TODO: Remove this once it is fixed (in rpm/dnf ?)
+Requires(post): filesystem, bash, ncurses-compat-libs
 
 %description    config
 Additional utilities and configuration for XCP-ng.
@@ -618,6 +623,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Wed May 13 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-38
+- Add workaround for (non defered) scriptlets
+
 * Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
 - Realign upstream to prompt patch from RPM
 - Add timestamps to history
