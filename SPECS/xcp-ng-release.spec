@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        1
+Release:        1.0.ydi.1
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
