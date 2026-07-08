@@ -45,7 +45,7 @@
 
 Name:           xcp-ng-release
 Version:        8.3.0
-Release:        37
+Release:        38
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -618,6 +618,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Tue Jul 07 2026 Yann Dirson <yann.dirson@vates.tech> - 8.3.0-38
+- Rebuild for updated branding-xcp-ng (copyright 2026)
+
 * Sun Feb 22 2026 Philippe Coval <philippe.coval@vates.tech> - 8.3.0-37
 - Realign upstream to prompt patch from RPM
 - Add timestamps to history
