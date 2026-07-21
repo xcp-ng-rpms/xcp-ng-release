@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        1
+Release:        2
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -51,7 +51,9 @@ Provides:       platform-version = %{PLATFORM_VERSION}
 Provides:       product-version-text = %replace_spaces %{PRODUCT_VERSION_TEXT}
 Provides:       product-version-text-short = %replace_spaces %{PRODUCT_VERSION_TEXT_SHORT}
 
-BuildRequires:  systemd branding-xcp-ng python3-devel
+BuildRequires:  systemd
+BuildRequires:  branding-xcp-ng
+BuildRequires:  python3-devel
 # XCP-ng: python dependencies for building branding files
 BuildRequires:  python3-rpm-macros
 URL:            https://github.com/xcp-ng/xcp-ng-release
@@ -567,6 +569,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Tue Jul 21 2026 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-2
+- Stop using space as separator in BuildRequires
+
 * Tue Mar 17 2026 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-1
 - Bump versions to 8.99
 - Set xenserver_major to 9
