@@ -15,8 +15,8 @@
 
 %define debug_package %{nil}
 %define base_release_version 10
-%define upstream_rel_long 10.0-32.el10
-%define upstream_rel 10.0-32.el10
+%define upstream_rel_long 10.1-16.el10
+%define upstream_rel 10.1-16.el10
 
 %define replace_spaces() %(echo -n "%1" | sed 's/ /_/g')
 
@@ -569,6 +569,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Tue Oct 20 2026 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-3.1
+- Bump provided almalinux-release to 10.1-16.el10 for 10.1
+
 * Fri Sep 18 2026 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-3
 - Append autorev macro to Release
 
