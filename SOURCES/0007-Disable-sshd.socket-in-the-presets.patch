@@ -1,0 +1,26 @@
+From 1763a1e9397439feb3088d1fa7311be6b4f962b4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ga=C3=ABtan=20Lehmann?= <gaetan.lehmann@vates.tech>
+Date: Wed, 4 Nov 2026 13:42:28 +0100
+Subject: [PATCH] Disable sshd.socket in the presets
+
+sshd.socket conflicts with sshd.service. No preset disables it, so
+`systemctl preset-all` in the presets %posttrans enables it along with
+sshd.service, and at boot systemd starts neither: the host has no ssh
+access until sshd is started manually.
+---
+ src/common/usr/lib/systemd/system-preset/89-default.preset | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/common/usr/lib/systemd/system-preset/89-default.preset b/src/common/usr/lib/systemd/system-preset/89-default.preset
+index e1dfaf6..0b091a2 100644
+--- a/src/common/usr/lib/systemd/system-preset/89-default.preset
++++ b/src/common/usr/lib/systemd/system-preset/89-default.preset
+@@ -8,6 +8,8 @@ disable systemd-readahead-collect.service
+ 
+ # System stuff
+ enable sshd.service
++# sshd.socket conflicts with sshd.service: when both are enabled, neither starts at boot
++disable sshd.socket
+ enable atd.*
+ enable crond.*
+ enable chronyd.service
