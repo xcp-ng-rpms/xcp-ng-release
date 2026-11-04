@@ -24,7 +24,7 @@
 
 Name:           xcp-ng-release
 Version:        8.99.0
-Release:        3%{?autorev}
+Release:        4%{?autorev}
 Summary:        XCP-ng release file
 Group:          System Environment/Base
 License:        GPLv2
@@ -70,6 +70,7 @@ Patch1003: 0003-Sync-systemd-presets-with-xenserver-release-v8.4.0-1.patch
 Patch1004: 0004-fix-prompt-s-c-e-p-xcp-ng-prompt.sh-Fix-prompt-on-te.patch
 Patch1005: 0005-s-c-e-profile.d-history.sh-Add-timestamps-to-history.patch
 Patch1006: 0006-fix-prompt-s-c-e-p-xcp-ng-prompt.sh-Align-to-RPM-pat.patch
+Patch1007: 0007-Disable-sshd.socket-in-the-presets.patch
 
 %description
 XCP-ng release files
@@ -569,6 +570,10 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Wed Nov 04 2026 Gaëtan Lehmann <gaetan.lehmann@vates.tech> - 8.99.0-4
+- Disable sshd.socket in the presets: it conflicts with sshd.service, and
+  sshd doesn't start at boot when both are enabled
+
 * Fri Sep 18 2026 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-3
 - Append autorev macro to Release
 
