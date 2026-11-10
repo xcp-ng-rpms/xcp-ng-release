@@ -183,6 +183,7 @@ sed -i '/^kernel.core_pattern=/ s/^/#/' %{buildroot}%{_sysconfdir}/sysctl.d/90-d
 
 # Don't install rsyslog config
 rm -r %{buildroot}%{_sysconfdir}/rsyslog.d/
+rm %{buildroot}%{_sysconfdir}/systemd/system/rsyslog.service
 
 %posttrans
 # XCP-ng 8.1: running this in posttrans instead of post because xcp-ng-release may be installed after
@@ -569,6 +570,9 @@ systemctl preset-all --preset-mode=enable-only || :
 
 # Keep this changelog through future updates
 %changelog
+* Tue Nov 09 2026 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-4
+- Stop installing rsyslog.service file
+
 * Fri Sep 18 2026 Yann Dirson <yann.dirson@vates.tech> - 8.99.0-3
 - Append autorev macro to Release
 
